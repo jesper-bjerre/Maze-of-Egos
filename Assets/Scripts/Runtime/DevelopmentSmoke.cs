@@ -112,6 +112,7 @@ namespace MazeOfEgos.Runtime
             yield return new WaitForSecondsRealtime(0.15f); Point2 stopped = app.Session.Player;
             yield return new WaitForSecondsRealtime(0.2f);
             Require(joystick.Movement == Vector2.zero && (app.Session.Player - stopped).Length < 0.001, "Release did not stop the player.");
+            RequireHud(app.Session);
             yield return new WaitForEndOfFrame(); Capture("02-gameplay.png");
 
             Vector2 pause = ButtonPosition("Ⅱ"); Touch(5, TouchPhase.Began, pause);
@@ -306,12 +307,14 @@ namespace MazeOfEgos.Runtime
             yield return null;
             Require(app.Session.Phase == SessionPhase.GameOver && app.Session.Chances == 0 && GameObject.Find("Game Over") && !app.HasSavedGame,
                 "Final capture did not show Game Over and clear the saved run.");
+            RequireVisibleText("SLUT FOR NU\nPoint: " + app.Session.Score.ToString("N0") + " · Level " + app.Session.Level + "\nRekord: " + app.Settings.highScore.ToString("N0"));
             yield return new WaitForEndOfFrame(); Capture("10-game-over.png");
             Vector2 replay = ButtonPosition("SPIL IGEN"); Touch(18, TouchPhase.Began, replay);
             yield return new WaitForSecondsRealtime(0.1f); Touch(18, TouchPhase.Ended, replay);
             yield return new WaitForSecondsRealtime(3.6f);
             Require(app.Session.Phase == SessionPhase.Playing && app.Session.Level == 1 && app.Session.Score == 0 && app.Session.Chances == 3 && app.Session.RemainingHearts == 244,
                 "Replay did not reset the game.");
+            RequireHud(app.Session);
             yield return new WaitForSecondsRealtime(0.3f);
             foreach (string name in new[] { "01-menu.png", "02-gameplay.png", "03-settings.png", "04-left-handed.png", "05-items.png", "06-shortcut-warning.png", "07-shortcut-open.png", "08-base.png", "09-level-clear.png", "10-game-over.png", "11-banana-flight.png", "12-banana-landed.png", "13-banana-reduced-motion.png" })
                 Require(File.Exists(Path.Combine(output, name)), "Screenshot was not written: " + name);
@@ -364,6 +367,16 @@ namespace MazeOfEgos.Runtime
             finally { Destroy(capture); }
         }
         private static void Require(bool condition, string message) { if (!condition) throw new InvalidOperationException(message); }
+        private static void RequireHud(GameSession session)
+        {
+            RequireVisibleText("POINT " + session.Score.ToString("N0") + "\nLEVEL " + session.Level);
+            RequireVisibleText("Chancer × " + session.Chances + "\nHjerter tilbage: " + session.RemainingHearts);
+        }
+        private static void RequireVisibleText(string expected)
+        {
+            foreach (Text text in FindObjectsByType<Text>(FindObjectsSortMode.None)) if (text.text == expected) return;
+            throw new InvalidOperationException("HUD did not refresh: " + expected);
+        }
         private void OnDestroy() => Application.logMessageReceived -= OnLog;
     }
 }

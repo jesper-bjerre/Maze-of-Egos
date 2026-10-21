@@ -218,6 +218,97 @@ et særskilt midlertidigt lager; normale spildata er bevaret. De nye kastforløb
 opsættes kontrolleret, og touchhændelserne er syntetiske. Tidligere manuelle,
 iPad-, fuld-runde- og performance-forbehold gælder derfor fortsat.
 
+## Build 4 — performanceinstrumentering og stabilitet
+
+HUD-tekst for point, level, chancer, hjerter, rekord og Game Over genbygges nu
+ved dataændring. Effekttimere opdateres pr. tiendedel sekund; fareteksten sættes
+én gang pr. billede. Det fjerner unødvendig formatering og gentagne tom/fuld-
+ændringer i samme billede. Der hævdes ingen procentvis forbedring uden en
+sammenlignelig førmåling.
+
+En opt-in Release-player måler billedintervaller, CPU/GPU-tællere når de findes,
+samplet hukommelse og på iPhone batteri-/temperaturtilstand. Automatisk styring
+bruger normale regler, aktive forfølgere, fangst, genstande og genstart efter
+Game Over. Se [målemetode og gentagelse](PERFORMANCE.md).
+
+53 regeltests, Newtonsoft-kontrol, repositoryvalidering og C#-kompilering med
+0 fejl/advarsler består. Tre nye tests verificerer tidsvægtet FPS, percentiler,
+lange stalls, ugyldige målinger og nulstilling. Den grafiske kontrol er udvidet
+med faktisk HUD-tekst efter opsamling, Game Over og genstart.
+
+Den endelige korte Mac Release-kørsel gennemførte 30,02 sekunder efter tre
+sekunders opvarmning: 59,73 fps, p95 17,25 ms, p99 17,75 ms og værste interval
+36,36 ms. Der var 44 opsamlede hjerter, en fangst og en brugt genstand.
+[Uændret Mac-rapport](verification/2026-10-21-build4-mac-performance.json).
+Mac-kørsel beviser værktøjets funktion, ikke iPhone-performance. Testværktøjet
+fortsætter nu ved tab af Mac-vinduesfokus; normal spilpause og iPhone-baggrund
+har fortsat deres almindelige beskyttelse.
+
+Den udvidede grafiske Mac-kontrol med faktisk HUD-tekst består, og den normale
+iOS-eksport og signerede Xcode Debug-build er gennemført.
+
+**Fysisk performancekørsel:** Unity Release-player, Xcode Release, version
+0.1.0 (4), iPhone 13 / Apple A15 / iOS 26.6.2, 2532 × 1170, mål 60 fps.
+15 sekunders opvarmning er udeladt. Målingen gennemførte **900,04 sekunder**,
+udtrykkeligt bekræftet af både log, resultatfil og rapportens completed/status.
+Ingen runtime-fejl eller baggrundsafbrydelser er registreret.
+
+| Måling | Resultat |
+| --- | --- |
+| Antal målte billeder | 53.985 |
+| Gennemsnit | 59,98 fps / 16,67 ms |
+| p50 / p95 / p99, histogrammets øvre grænser | 16,75 / 17,25 / 17,75 ms |
+| Værste billedinterval | 50,77 ms |
+| Intervaller over 33,33 / 50 ms | 3 / 1 |
+| CPU-hovedtrådens frame-tæller, gennemsnit / p95 | 1,82 / 3,00 ms |
+| GPU-tider og GC-allokering pr. billede | Ikke tilgængelige i denne Release-kørsel |
+| Samplet peak resident / Unity-allokeret / managed | 188,50 / 79,25 / 5,24 MiB |
+| Temperaturtilstand, 181 prøver | Alle 0: nominal |
+| Batteri / Low Power Mode | 100 %, full via USB / deaktiveret |
+| Aktiv Playing / countdown / Caught | 830,90 / 45,91 / 23,09 sekunder |
+| Runder / hjerter / fangster / brugte genstande | 7 / 1.140 / 19 / 21 |
+| Aktive AI-roller set / højeste level | Alle fire / level 1 |
+
+Dette er 15 minutters sammenhængende afvikling inklusive almindelig fangst,
+nedtælling og automatisk genstart. Det er ikke 15 minutter udelukkende i
+Playing og ikke en manuelt gennemført hel runde med alle 244 hjerter mod AI.
+Der er ét mærkbart langt interval, selv om gennemsnittet ligger nær 60 fps.
+Der er ikke fastlagt en særskilt endelig udgivelsesgrænse for hitch-frekvens.
+
+Unity-allokeret hukommelse var ca. 79,11 MiB ved første prøve og 79,25 MiB ved
+sidste. Managed heap var ca. 4,63 → 4,93 MiB med peak 5,24 MiB. Resident memory
+var ca. 182,64 → 91,66 MiB og varierede mellem 84,52 og 91,66 MiB i de sidste
+fem minutter. Dette viser ingen stor vedvarende vækst i Unity-allokeret
+hukommelse under denne måling; det beviser ikke fravær af alle lækager.
+Den tidligere noterede Unity-meddelelse om én persistent allocation ved
+procesafslutning er fortsat til stede. Alle nye ProfilerRecorder-ressourcer
+frigives udtrykkeligt. Der hævdes ingen målt allokeringsrate, når GC-tælleren
+ikke er tilgængelig, og intet uopladet batteriforbrug udledes af USB-testen.
+
+Log: `Logs/iphone-performance-build4.log`. Fuld lokal eksport:
+`.artifacts/performance-iphone-build4/`. Uændrede evidenskopier følger repoet:
+[rapport med alle prøver](verification/2026-10-21-build4-iphone13-performance.json)
+og [CSV-tidsserie](verification/2026-10-21-build4-iphone13-performance.csv).
+Rapporten indeholder build-GUID, miljø, målemetode og manglende tællere.
+Resultaterne gælder den aktuelle prototype med midlertidige karaktermodeller.
+Der skal måles igen med endelige karakterer og grafik.
+
+Den normale Unity-udviklingsbuild, signeret Xcode Debug, version 0.1.0 (4), er
+installeret bagefter. Hele den udvidede runtimekontrol består på samme fysiske
+iPhone, inklusive de nye kontroller af faktisk HUD-tekst efter opsamling,
+Game Over og genstart. Både `RUNTIME SMOKE PASSED` og resultatfilens `PASS` er
+kontrolleret. Alle 13 framebuffer-PNG'er er hentet og deres 2532 × 1170-format
+kontrolleret; gameplay og Game Over er også kontrolleret visuelt.
+
+Log: `Logs/iphone-smoke-build4.log`, lokale billeder/resultat:
+`.artifacts/smoke-iphone-build4/`. Appen er derefter startet normalt uden
+miljøvariabler for test, bekræftet i `Logs/iphone-build4-normal-launch.json`.
+Normale gemte spil er bevaret. Manuel tredje finger, begge landscape-retninger,
+iPad, en hel normalt spillet runde mod AI og endelige karaktermodeller er
+fortsat udestående. Release-performance og Debug-funktionskontrol er separate
+builds med samme spilændringer; målerens senere håndtering af Mac-vinduesfokus
+ændrer ingen iPhone-spilregel eller den målte renderkode.
+
 ## Gentagelse og næste trin
 
 ```sh

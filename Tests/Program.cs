@@ -40,6 +40,25 @@ internal static class Program
     }
     private static int Main()
     {
+        Run("Frame statistics measure time-weighted FPS and preserve long stalls", () => {
+            var stats = new FrameStatistics(); for (int i = 0; i < 60; i++) stats.Add(1000.0 / 60);
+            Equal(stats.FramesPerSecond, 60); Equal(stats.AverageMs, 1000.0 / 60);
+            stats.Add(1000); Assert(stats.Count == 61 && stats.Over33Ms == 1 && stats.Over50Ms == 1);
+            Equal(stats.FramesPerSecond, 30.5); Equal(stats.WorstMs, 1000); Equal(stats.Percentile(1), 1000);
+        });
+        Run("Frame percentiles bound a known distribution to 0.25ms", () => {
+            var stats = new FrameStatistics(); for (int i = 0; i < 95; i++) stats.Add(16.67);
+            for (int i = 0; i < 4; i++) stats.Add(33.34); stats.Add(100);
+            Equal(stats.Percentile(0.5), 16.75); Equal(stats.Percentile(0.95), 16.75);
+            Equal(stats.Percentile(0.99), 33.5); Assert(stats.Over33Ms == 5 && stats.Over50Ms == 1);
+        });
+        Run("Frame collector rejects invalid times and clears all accumulated state", () => {
+            var stats = new FrameStatistics();
+            foreach (double value in new[] { 0, -1, double.NaN, double.PositiveInfinity })
+                try { stats.Add(value); throw new Exception("Invalid frame accepted"); } catch (ArgumentOutOfRangeException) { }
+            stats.Add(70); stats.Clear(); Assert(stats.Count == 0 && stats.Over50Ms == 0 && stats.WorstMs == 0 && stats.Percentile(0.95) == 0);
+            stats.Add(5); Equal(stats.Percentile(0.95), 5); Equal(stats.FramesPerSecond, 200);
+        });
         Run("A01 reference dimensions, exact counts, and preserved spaces", () => {
             var maze = new MazeMap(Definition()); Assert(maze.Definition.width == 28 && maze.Definition.height == 31);
             Assert(maze.Hearts.Count == 244 && maze.PowerHearts.Count(p => p) == 4);

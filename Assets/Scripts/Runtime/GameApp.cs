@@ -57,6 +57,9 @@ namespace MazeOfEgos.Runtime
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             if (DevelopmentSmoke.Enabled) storage = DevelopmentSmoke.StorageDirectory;
 #endif
+#if DEVELOPMENT_BUILD || UNITY_EDITOR || MAZE_PERFORMANCE
+            if (DevelopmentPerformance.Enabled) storage = DevelopmentPerformance.StorageDirectory;
+#endif
             runPath = Path.Combine(storage, "session-v1.json");
             settingsPath = Path.Combine(storage, "settings-v1.json");
             Settings = ReadSettings();
@@ -141,6 +144,9 @@ namespace MazeOfEgos.Runtime
         {
             if (Session == null || hud == null) return;
             float delta = Mathf.Min(UnityEngine.Time.unscaledDeltaTime, 0.15f);
+#if DEVELOPMENT_BUILD || UNITY_EDITOR || MAZE_PERFORMANCE
+            Vector2 automation = DevelopmentPerformance.Enabled ? DevelopmentPerformance.ReadMovement(Session, delta) : Vector2.zero;
+#endif
             if (input.Pause.WasPressedThisFrame()) TogglePause();
             if (!inMenu && !hud.SettingsOpen && Session.Phase == SessionPhase.Playing)
             {
@@ -149,6 +155,9 @@ namespace MazeOfEgos.Runtime
                 Session.Yaw = (Session.Yaw + look.x + 360) % 360;
                 Session.Pitch = Geometry.Clamp(Session.Pitch + look.y, -20, 20);
                 Vector2 move = hud.Joystick.Movement + input.Move.ReadValue<Vector2>();
+#if DEVELOPMENT_BUILD || UNITY_EDITOR || MAZE_PERFORMANCE
+                if (DevelopmentPerformance.Enabled) move = automation;
+#endif
                 Session.SetMovement(new Point2(move.x, move.y));
                 if (input.Use.WasPressedThisFrame()) UseItem();
             }
@@ -171,6 +180,9 @@ namespace MazeOfEgos.Runtime
             previousPlayer = Session.Player;
             for (int i = 0; i < 4; i++) previousGhosts[i] = Session.Pursuers[i].Position(Session.Maze);
         }
+#if DEVELOPMENT_BUILD || UNITY_EDITOR || MAZE_PERFORMANCE
+        internal void ProcessAutomationEvents() => HandleEvents();
+#endif
         private void HandleEvents()
         {
             foreach (GameEvent e in Session.Events)
@@ -223,7 +235,13 @@ namespace MazeOfEgos.Runtime
                 catch (IOException e) { saveFailure = e.Message; }
         }
         private void OnApplicationPause(bool paused) { if (paused) Checkpoint(); }
-        private void OnApplicationFocus(bool focus) { if (!focus) Checkpoint(); }
+        private void OnApplicationFocus(bool focus)
+        {
+#if DEVELOPMENT_BUILD || UNITY_EDITOR || MAZE_PERFORMANCE
+            if (DevelopmentPerformance.Enabled && !Application.isMobilePlatform) return;
+#endif
+            if (!focus) Checkpoint();
+        }
         private void Checkpoint()
         {
             if (Session == null || Settings == null) return;

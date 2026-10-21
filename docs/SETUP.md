@@ -124,6 +124,12 @@ Den gemmer særskilte testdata og lukker processen efter kontrollen.
 Start derefter appen normalt fra hjemmeskærmen for manuel afprøvning.
 De første dokumenterede iPhone-skærmbilleder findes under `docs/verification/`.
 
+## Performance og lang afprøvning
+
+Se [performancevejledningen](PERFORMANCE.md) for den særskilte Release-build,
+automatisk gennemspilning, isolerede testdata og eksport af JSON/CSV.
+En kort Mac-kørsel erstatter ikke den planlagte 15-minuttersmåling på iPhone.
+
 ## Hvis arbejdet afbrydes
 
 - Læs status og næste skridt i `IMPLEMENTATION_PLAN.md`.

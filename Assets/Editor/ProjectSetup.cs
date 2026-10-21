@@ -37,7 +37,7 @@ namespace MazeOfEgos.Editor
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS, "dk.mazeofegos.game");
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.iOS, ScriptingImplementation.IL2CPP);
             PlayerSettings.iOS.targetOSVersionString = "17.0";
-            PlayerSettings.iOS.buildNumber = "3";
+            PlayerSettings.iOS.buildNumber = "4";
             PlayerSettings.iOS.appleEnableAutomaticSigning = true;
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
             PlayerSettings.allowedAutorotateToLandscapeLeft = PlayerSettings.allowedAutorotateToLandscapeRight = true;
@@ -96,11 +96,15 @@ namespace MazeOfEgos.Editor
         public static void BuildMac() => Build(BuildTarget.StandaloneOSX, "Builds/macOS/Maze of Egos.app");
         [MenuItem("Tools/Maze of Egos/Build Windows prototype")]
         public static void BuildWindows() => Build(BuildTarget.StandaloneWindows64, "Builds/Windows/Maze of Egos.exe");
-        private static void Build(BuildTarget target, string output)
+        public static void BuildIOSPerformance() => Build(BuildTarget.iOS, "Builds/iOS-Performance", true);
+        public static void BuildMacPerformance() => Build(BuildTarget.StandaloneOSX, "Builds/macOS-Performance/Maze of Egos.app", true);
+        private static void Build(BuildTarget target, string output, bool performance = false)
         {
             Configure(); Validate(); Directory.CreateDirectory(Path.GetDirectoryName(output));
             BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
-                scenes = new[] { Scene }, locationPathName = output, target = target, options = BuildOptions.Development });
+                scenes = new[] { Scene }, locationPathName = output, target = target,
+                options = performance ? BuildOptions.None : BuildOptions.Development,
+                extraScriptingDefines = performance ? new[] { "MAZE_PERFORMANCE" } : Array.Empty<string>() });
             if (report.summary.result != BuildResult.Succeeded)
                 throw new InvalidOperationException("Build failed: " + report.summary.result + ", errors: " + report.summary.totalErrors);
             Debug.Log("BUILD SUCCEEDED: " + Path.GetFullPath(output));

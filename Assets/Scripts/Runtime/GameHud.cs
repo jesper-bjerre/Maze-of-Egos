@@ -26,6 +26,9 @@ namespace MazeOfEgos.Runtime
         private float toastUntil, scareUntil;
         private Rect lastSafeArea;
         private int lastScreenWidth, lastScreenHeight;
+        private long shownScore = -1, shownRecord = -1;
+        private int shownLevel = -1, shownChances = -1, shownHearts = -1, shownPower = -1, shownBoost = -1, shownCountdown = -1;
+        private SessionPhase shownPhase = (SessionPhase)(-1);
         private readonly Color ink = new Color(0.95f, 0.94f, 0.86f);
         private readonly Color panelColor = new Color(0.055f, 0.10f, 0.12f, 1);
 
@@ -162,23 +165,38 @@ namespace MazeOfEgos.Runtime
             toast.gameObject.SetActive(!settings.activeSelf);
             controls.SetActive(!inMenu && !isPaused && !gameOver && !settings.activeSelf);
             results.SetActive(gameOver);
-            resultText.text = "SLUT FOR NU\nPoint: " + session.Score.ToString("N0") + " · Level " + session.Level + "\nRekord: " + app.Settings.highScore.ToString("N0");
-            record.text = "Rekord: " + app.Settings.highScore.ToString("N0"); resumeButton.interactable = app.HasSavedGame;
+            bool scoreChanged = shownScore != session.Score || shownLevel != session.Level;
+            bool recordChanged = shownRecord != app.Settings.highScore;
+            if (scoreChanged || recordChanged)
+                resultText.text = "SLUT FOR NU\nPoint: " + session.Score.ToString("N0") + " · Level " + session.Level + "\nRekord: " + app.Settings.highScore.ToString("N0");
+            if (recordChanged) { record.text = "Rekord: " + app.Settings.highScore.ToString("N0"); shownRecord = app.Settings.highScore; }
+            resumeButton.interactable = app.HasSavedGame;
             if (UnityEngine.Time.unscaledTime > toastUntil) toast.text = "";
             float flash = Mathf.Clamp01((scareUntil - UnityEngine.Time.unscaledTime) / 0.25f);
             scare.color = new Color(1, 0.81f, 0.3f, flash * 0.12f);
-            stats.text = "POINT " + session.Score.ToString("N0") + "\nLEVEL " + session.Level;
-            hearts.text = "Chancer × " + session.Chances + "\nHjerter tilbage: " + session.RemainingHearts;
+            if (scoreChanged) stats.text = "POINT " + session.Score.ToString("N0") + "\nLEVEL " + session.Level;
+            if (shownChances != session.Chances || shownHearts != session.RemainingHearts)
+            { hearts.text = "Chancer × " + session.Chances + "\nHjerter tilbage: " + session.RemainingHearts; shownChances = session.Chances; shownHearts = session.RemainingHearts; }
             itemText.text = session.Inventory == ItemKind.None ? "GENSTAND" : session.Inventory == ItemKind.BananaPeel ? "BANAN" : session.Inventory == ItemKind.OilSlick ? "OLIE" : "BOOST";
             itemIcon.Artwork = session.Inventory == ItemKind.BananaPeel ? TouchArtwork.Shape.Banana : session.Inventory == ItemKind.OilSlick ? TouchArtwork.Shape.Oil : session.Inventory == ItemKind.SpeedBoost ? TouchArtwork.Shape.Boost : TouchArtwork.Shape.Empty;
             itemIcon.color = session.Inventory == ItemKind.None ? new Color(1, 1, 1, 0.25f) : session.Inventory == ItemKind.BananaPeel ? new Color(1, 0.83f, 0.25f) : session.Inventory == ItemKind.OilSlick ? new Color(0.76f, 0.68f, 0.93f) : new Color(0.51f, 0.95f, 0.82f);
             itemButton.interactable = session.Phase == SessionPhase.Playing && session.Inventory != ItemKind.None;
-            effects.text = session.Time < session.PowerUntil ? "KRAFTHJERTE  " + (session.PowerUntil - session.Time).ToString("F1") + " s" : "";
-            if (session.Time < session.BoostUntil) effects.text += "   BOOST " + (session.BoostUntil - session.Time).ToString("F1") + " s";
-            center.text = session.Phase == SessionPhase.Countdown ? "Saml alle hjerter\n" + Mathf.CeilToInt((float)session.PhaseRemaining) :
+            int powerTenths = Mathf.Max(0, Mathf.CeilToInt((float)(session.PowerUntil - session.Time) * 10));
+            int boostTenths = Mathf.Max(0, Mathf.CeilToInt((float)(session.BoostUntil - session.Time) * 10));
+            if (shownPower != powerTenths || shownBoost != boostTenths)
+            {
+                effects.text = (powerTenths > 0 ? "KRAFTHJERTE  " + (powerTenths / 10f).ToString("F1") + " s" : "") +
+                    (boostTenths > 0 ? "   BOOST " + (boostTenths / 10f).ToString("F1") + " s" : "");
+                shownPower = powerTenths; shownBoost = boostTenths;
+            }
+            int countdown = Mathf.CeilToInt((float)session.PhaseRemaining);
+            if (shownPhase != session.Phase || (session.Phase == SessionPhase.Countdown && shownCountdown != countdown) ||
+                (session.Phase == SessionPhase.GameOver && scoreChanged))
+                center.text = session.Phase == SessionPhase.Countdown ? "Saml alle hjerter\n" + countdown :
                 session.Phase == SessionPhase.Caught ? "Fanget! Prøv igen" : session.Phase == SessionPhase.LevelClear ? "Alle hjerter samlet!" :
                 session.Phase == SessionPhase.GameOver ? "SLUT FOR NU\nPoint: " + session.Score + "\nPause/menu: ESC eller Ⅱ" : "";
-            danger.text = "";
+            shownScore = session.Score; shownLevel = session.Level; shownPhase = session.Phase; shownCountdown = countdown;
+            string dangerText = "";
             if (session.Phase == SessionPhase.Playing)
             {
                 double nearest = 4.5; Point2 offset = new Point2();
@@ -191,9 +209,10 @@ namespace MazeOfEgos.Runtime
                 {
                     double side = Point2.Dot(offset.Normalized, Point2.Right(session.Yaw));
                     double ahead = Point2.Dot(offset.Normalized, Point2.Forward(session.Yaw));
-                    danger.text = side < -0.4 ? "‹ Fare i nærheden" : side > 0.4 ? "Fare i nærheden ›" : ahead < 0 ? "Fare bag dig" : "Fare i nærheden";
+                    dangerText = side < -0.4 ? "‹ Fare i nærheden" : side > 0.4 ? "Fare i nærheden ›" : ahead < 0 ? "Fare bag dig" : "Fare i nærheden";
                 }
             }
+            danger.text = dangerText;
         }
         private void RefreshSafeArea()
         {

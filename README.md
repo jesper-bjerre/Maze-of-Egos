@@ -71,3 +71,6 @@ save/resume midt i kast, reduceret bevægelse, vægskift, baseporte, levelskifte
 appen igen. Testdata er isoleret fra spillerens gemte spil. Skærmbilleder gemmes i
 `.artifacts/smoke-mac/`. Se [testresultater og aktuelle begrænsninger](docs/TEST_REPORT.md).
 En automatisk touchtest erstatter ikke manuel afprøvning på en fysisk iPhone.
+
+Til måling af billedtider, hukommelse og længere stabilitet findes en særskilt
+Release-testbuild. Se [performance og gentagelse](docs/PERFORMANCE.md).

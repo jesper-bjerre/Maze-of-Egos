@@ -59,7 +59,7 @@ def managed_root(editor):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["configure", "validate", "build-mac", "build-windows", "build-ios", "smoke-mac", "compile-check", "serialization-check"])
+    parser.add_argument("command", choices=["configure", "validate", "build-mac", "build-windows", "build-ios", "build-mac-performance", "build-ios-performance", "smoke-mac", "compile-check", "serialization-check"])
     parser.add_argument("--editor", help="Unity executable or macOS .app")
     args = parser.parse_args()
     if args.command == "smoke-mac":
@@ -74,12 +74,12 @@ def main():
         else:
             command = ["dotnet", "run", "--project", "Tests/MazeOfEgos.SerializationChecks.csproj", f"-p:UnityEditorRoot={managed}"]
         return subprocess.call(command, cwd=ROOT)
-    methods = {"configure": "Configure", "validate": "ConfigureAndValidate", "build-mac": "BuildMac", "build-windows": "BuildWindows", "build-ios": "BuildIOS"}
+    methods = {"configure": "Configure", "validate": "ConfigureAndValidate", "build-mac": "BuildMac", "build-windows": "BuildWindows", "build-ios": "BuildIOS", "build-mac-performance": "BuildMacPerformance", "build-ios-performance": "BuildIOSPerformance"}
     logs = ROOT / "Logs"; logs.mkdir(exist_ok=True)
     log = logs / f"unity-{args.command}.log"
     command = [str(editor), "-batchmode", "-nographics", "-quit", "-projectPath", str(ROOT),
                "-executeMethod", "MazeOfEgos.Editor.ProjectSetup." + methods[args.command], "-logFile", str(log)]
-    if args.command == "build-ios":
+    if args.command in ("build-ios", "build-ios-performance"):
         command += ["-buildTarget", "iOS"]
     result = subprocess.call(command, cwd=ROOT)
     print(f"Unity exited with {result}. Log: {log.relative_to(ROOT)}")
