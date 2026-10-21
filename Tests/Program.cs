@@ -186,6 +186,84 @@ internal static class Program
             var s = Fresh(true); Place(s, new Point2(1, 1), 270); var state = s.Snapshot(); state.inventory = ItemKind.BananaPeel;
             Apply(s, state); Assert(!s.UseItem() && s.Inventory == ItemKind.BananaPeel);
         });
+        Run("Banana starts immediately, flies two cells, then lives 20 seconds after landing", () => {
+            var s = Fresh(true); Place(s, new Point2(6, 5), 90); var state = s.Snapshot(); state.inventory = ItemKind.BananaPeel;
+            Apply(s, state); Assert(s.UseItem() && s.Inventory == ItemKind.None && s.Traps.Count == 1);
+            TrapState trap = s.Traps[0]; Equal(trap.position.x, 8); Equal(trap.position.y, 5);
+            Equal(trap.landsAt, GameSession.BananaFlightDuration); Equal(trap.expiresAt - trap.landsAt, 20);
+            Equal(trap.PositionAt(s.Maze, 0.18).x, 7);
+            s.SetMovement(new Point2(0, 1)); s.Tick(); Assert(s.Player.x > 6, "Throw locked player movement");
+            s.SetMovement(new Point2()); Advance(s, 1220); Assert(s.Traps.Count == 1);
+            s.Tick(); Assert(s.Traps.Count == 0);
+        });
+        Run("Banana stops before a wall with clearance for its visible peel", () => {
+            var s = Fresh(true); Place(s, new Point2(11, 1), 90); var state = s.Snapshot(); state.inventory = ItemKind.BananaPeel;
+            Apply(s, state); Assert(s.UseItem()); TrapState trap = s.Traps[0];
+            Assert(trap.position.x > 11 && trap.position.x < 12.3 && s.Maze.CanOccupy(trap.position, GameSession.TrapRadius));
+        });
+        Run("An enemy at the landing point is hit only when the banana lands", () => {
+            var s = Fresh(true); Place(s, new Point2(6, 5), 90); var state = s.Snapshot(); state.inventory = ItemKind.BananaPeel;
+            ActiveAt(state, 0, new Cell(8, 5)); state.pursuers[0].stunUntil = GameSession.BananaFlightDuration;
+            Apply(s, state); Assert(s.UseItem()); Advance(s, 21);
+            Assert(s.Traps.Count == 1 && s.Pursuers[0].slipImmunityUntil == 0);
+            s.Tick(); Assert(s.Traps.Count == 0); Equal(s.Pursuers[0].stunUntil, GameSession.BananaFlightDuration + 1.2);
+        });
+        Run("An enemy crossing before landing does not trigger an airborne banana", () => {
+            var s = Fresh(true); Place(s, new Point2(6, 5), 90); var state = s.Snapshot(); state.inventory = ItemKind.BananaPeel;
+            ActiveAt(state, 0, new Cell(8, 5)); state.pursuers[0].to = new Cell(9, 5); state.pursuers[0].previous = new Cell(7, 5);
+            Apply(s, state); Assert(s.UseItem()); Advance(s, 25);
+            Assert(s.Traps.Count == 1 && s.Pursuers[0].slipImmunityUntil == 0);
+        });
+        Run("Landing within a simulation slice resolves at the true landing time", () => {
+            var s = Fresh(true); Place(s, new Point2(6, 5), 90); var state = s.Snapshot(); state.inventory = ItemKind.BananaPeel;
+            Apply(s, state); s.UseItem(); state = s.Snapshot(); state.time = state.levelTime = 0.359;
+            ActiveAt(state, 0, new Cell(8, 5)); state.pursuers[0].stunUntil = 0.36;
+            Apply(s, state); s.Tick(); Assert(s.Traps.Count == 0); Equal(s.Pursuers[0].stunUntil, 1.56);
+        });
+        Run("An airborne banana freezes through pause, save and resume countdown", () => {
+            var s = Fresh(true); Place(s, new Point2(6, 5), 90); var state = s.Snapshot(); state.inventory = ItemKind.BananaPeel;
+            Apply(s, state); s.UseItem(); Advance(s, 8); s.Pause();
+            string json = JsonSerializer.Serialize(s.Snapshot(), Json); var copy = Fresh(true);
+            copy.Restore(JsonSerializer.Deserialize<SessionSnapshot>(json, Json)); Advance(copy, 60);
+            Equal(copy.Time, s.Time); Equal(copy.Traps[0].FlightProgress(copy.Time), s.Traps[0].FlightProgress(s.Time));
+            copy.Resume(0.5); Advance(copy, 30); Equal(copy.Time, s.Time);
+            s.Resume(0); Advance(s, 20); Advance(copy, 20);
+            Assert(JsonSerializer.Serialize(copy.Snapshot(), Json) == JsonSerializer.Serialize(s.Snapshot(), Json));
+        });
+        Run("Build 2 version 1 saves migrate ground traps without replaying throws", () => {
+            var s = Fresh(true); Place(s, new Point2(6, 5)); var state = s.Snapshot(); state.version = 1; state.nextTrapId = 1;
+            state.traps = new[] { new TrapState { id = 1, kind = ItemKind.BananaPeel, position = new Point2(8, 5), expiresAt = 20 } };
+            Apply(s, state); Assert(s.Snapshot().version == 2 && s.Traps[0].FlightProgress(s.Time) == 1);
+            Equal(s.Traps[0].PositionAt(s.Maze, s.Time).x, 8); Equal(s.Traps[0].expiresAt, 20);
+            Assert(state.version == 1 && state.traps[0].launchPosition.x == 0, "Restore modified source snapshot");
+        });
+        Run("Invalid flight snapshots are rejected without changing the live round", () => {
+            var s = Fresh(true); Place(s, new Point2(6, 5), 90); var state = s.Snapshot(); state.inventory = ItemKind.BananaPeel;
+            Apply(s, state); s.UseItem(); string before = JsonSerializer.Serialize(s.Snapshot(), Json);
+            state = s.Snapshot(); state.traps[0].landsAt = double.NaN; Reject(() => s.Restore(state));
+            state = s.Snapshot(); state.traps[0].launchPosition = new Point2(7, 4); Reject(() => s.Restore(state));
+            state = s.Snapshot(); state.traps[0].kind = ItemKind.OilSlick; Reject(() => s.Restore(state));
+            state = s.Snapshot(); state.traps[0].position = state.traps[0].launchPosition = new Point2(1e300, 14); Reject(() => s.Restore(state));
+            state = s.Snapshot(); state.version = 3; Reject(() => s.Restore(state));
+            Assert(before == JsonSerializer.Serialize(s.Snapshot(), Json));
+        });
+        Run("A throw through a shortcut reserves the passage until its landing trap expires", () => {
+            var s = Fresh(true); Place(s, new Point2(12, 1), 90); var state = s.Snapshot();
+            state.walls[0].phase = WallPhase.Open; state.walls[0].phaseUntil = state.time + 0.05;
+            state.inventory = ItemKind.BananaPeel; Apply(s, state); Assert(s.UseItem());
+            state = s.Snapshot(); state.player = new Point2(11, 1); state.trail = new[] { state.player };
+            Apply(s, state); Advance(s, 24);
+            Assert(s.Walls[0].phase == WallPhase.Open && s.PassageReserved(0));
+            state = s.Snapshot(); state.traps[0].expiresAt = state.time + 0.01; Apply(s, state); s.Tick();
+            Assert(s.Traps.Count == 0 && s.Walls[0].phase == WallPhase.Closing);
+        });
+        Run("Banana trajectory wraps through the tunnel without crossing the maze", () => {
+            var s = Fresh(true); Place(s, new Point2(27, 14), 90); var state = s.Snapshot(); state.inventory = ItemKind.BananaPeel;
+            Apply(s, state); Assert(s.UseItem()); TrapState trap = s.Traps[0];
+            Equal(trap.position.x, 1); Equal(trap.PositionAt(s.Maze, 0.18).x, 0);
+            var copy = Fresh(true); copy.Restore(JsonSerializer.Deserialize<SessionSnapshot>(JsonSerializer.Serialize(s.Snapshot(), Json), Json));
+            Equal(copy.Traps[0].PositionAt(copy.Maze, 0.18).x, 0);
+        });
         Run("A12 banana stuns once and shares slip immunity with oil", () => {
             var s = Fresh(true); Place(s, new Point2(1, 1)); var state = s.Snapshot(); ActiveAt(state, 0, new Cell(6, 5));
             state.traps = new[] { new TrapState { id = 1, kind = ItemKind.BananaPeel, position = new Point2(6, 5), expiresAt = 20 } };

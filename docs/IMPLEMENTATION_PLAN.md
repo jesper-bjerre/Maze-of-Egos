@@ -40,8 +40,13 @@ Referencearkene i [images](images/) bevares som originale kilder.
   skal samles. Ingen udgang, leveltimer eller fast aftalt rundelængde.
 - Krafthjerter giver altid en kraftperiode: `max(2 sekunder, tabelværdien)`.
   På sene levels bruges den sidste definerede sårbare hastighed fra tabellen.
-- Banan kastes i kameraets vandrette retning. Olie lægges på det nylige
-  bevægelsesspor. Boost ændrer fart, ikke kamerahøjde eller FOV.
+- Banan kastes i kameraets vandrette retning. Kastet starter straks og flyver
+  i 0,36 sekund; fælden aktiveres ved landing og lever derefter i 20 sekunder.
+  Styring og brug af nye genstande låses ikke. Pause/baggrund/genoptagelsens
+  nedtælling fryser kastet. Olie lægges på det nylige bevægelsesspor.
+  Boost ændrer fart, ikke kamerahøjde eller FOV.
+- En genvej holdes åben, mens et kast krydser den, eller en levende fælde
+  ligger i væggens felt. Den kan lukke efter træf eller udløb.
 - Første reviewmilepæl er en komplet grundrunde med alle fire AI-roller,
   hjerter, krafttilstand, score, chancer, levelskifte og Game Over.
 - De tre genstande og bevægelige vægge tilføjes efter grundrunden. Den færdige
@@ -137,18 +142,20 @@ Implementering påbegyndt 21. oktober 2026. Planen blev gemt før kodearbejdet.
 | Projekt | Unity 6000.3.26f1, URP, scene, materialer, metadata, package lock og portable scripts | Native import/validering, Mac-build, iOS-eksport, signeret Xcode-build, installation og automatisk afprøvning på iPhone 13 lykkedes |
 | Bane/styring | Dokumentets JSON, fri kollisionsbevægelse, tunnel, touchjoystick, kameratræk, tastatur/controller | Regeltests samt faktisk Mac/iPhone-player med tre syntetiske touchpunkter består; brugeren har manuelt bekræftet samtidig joystickbevægelse og kameratræk på iPhone 13 |
 | Grundrunde | Fire AI-roller, base/retur, hjerter, kraft, score, chancer, fangst, levels og Game Over | Regeltests og traversal af 244 hjerter består; native sidste-hjerte, levelskifte, Game Over og genstart består på Mac/iPhone med kontrollerede snapshots |
-| Genstande/vægge | Ét inventarfelt, banan, olie, boost, tydelige fælder, varsling, vægcyklus og sikre passager | Regeltests samt brug/visning af alle genstande og varsling/åbning/reservation/lukning består i Mac/iPhone-app |
-| Lagring | Atomisk snapshot/settings, backup, validering, profil/RNG/trail og pauset genoptagelse | .NET/Newtonsoft-tests og faktisk Mac/iPhone save/resume består |
+| Genstande/vægge | Ét inventarfelt, banankast med bue/håndbevægelse, olie, boost, tydelige fælder, varsling, vægcyklus og sikre passager | Regeltests samt brug/visning af alle genstande og varsling/åbning/reservation/lukning består i Mac/iPhone-app |
+| Lagring | Atomisk snapshot/settings, backup, validering, profil/RNG/trail, kasttilstand og pauset genoptagelse; snapshot v1 migreres til v2 | .NET/Newtonsoft-tests og faktisk Mac/iPhone save/resume består |
 | Præsentation | Prototypemodeller, volumetriske hjerter, mekanisk have, HUD/menu, egne synteselyde og indstillinger | Mac/iPhone-menu, gameplay og indstillinger er renderet og skærmbilleder visuelt kontrolleret; slutkvalitet/performance udestår |
 | Karakterreferencer | Fem uændrede runtimekopier, portrætter og SHA-256-manifest | Kopierne er kontrolleret byte-for-byte; endelige 3D-assets mangler |
 
-**Kontroller:** 40 regeltests bestået, separat Unity C#-kompilering med 0 fejl/
+**Kontroller:** 50 regeltests bestået, separat Unity C#-kompilering med 0 fejl/
 advarsler, Newtonsoft save/resume-test, repositoryvalidering og native Mac-
 runtimekontrol bestået. iOS-eksport samt signeret Debug-build/installation på
 iPhone 13 med iOS 26.6.2 er gennemført. Den samme automatiske runtimekontrol
 består på den fysiske iPhone, og faktiske skærmbilleder er kontrolleret.
-Build 2 er efterfølgende kontrolleret med det udvidede scene-/inputforløb,
-inklusive begge layouts, genstande, vægge, porte og centrale spilfaser.
+Build 2 er kontrolleret med det udvidede scene-/inputforløb, inklusive begge
+layouts, genstande, vægge, porte og centrale spilfaser. Build 3 består også på
+Mac og fysisk iPhone, inklusive banankast, hånd, pause/gem/genoptagelse midt i
+luften og reduceret bevægelse. Der gemmes nu 13 faktiske skærmbilleder pr. kontrol.
 Se [testresultater](TEST_REPORT.md) for kommandoer og grænserne for denne evidens.
 
 **Værktøjer:** Den tidligere Unity-licensblokering er løst via Unity Hub.
@@ -157,11 +164,11 @@ er tilgængelige. Blender er ikke installeret. Computer-use er blokeret af en
 ChatGPT-klient/server-versionsforskel; den grafiske Mac-kontrol bruger derfor
 en automatisk udviklingsbuild og faktiske skærmbilleder.
 
-**iPhone-status:** Version 0.1.0 (2) er installeret og startet normalt efter
+**iPhone-status:** Version 0.1.0 (3) er installeret og startet normalt efter
 bestået udvidet automatisk kontrol. Native IL2CPP-stripping er rettet via `Assets/link.xml`.
-Aktuelle skærmbilleder og testresultat ligger lokalt i `.artifacts/smoke-iphone-build2/`.
-Seks uændrede build 2-skærmbilleder er også gemt under `docs/verification/`;
-de tre oprindelige build 1-billeder er bevaret.
+Aktuelle skærmbilleder og testresultat ligger lokalt i `.artifacts/smoke-iphone-build3/`.
+Tre uændrede build 3-skærmbilleder er også gemt under `docs/verification/`;
+de seks build 2- og tre oprindelige build 1-billeder er bevaret.
 Brugeren har 21. oktober 2026 bekræftet, at joystickbevægelse og kameratræk
 fungerer samtidigt med rigtige fingre på iPhone 13. Manuel brug af genstand
 som tredje touch samt de øvrige spil- og enhedskontroller er fortsat udestående.
@@ -169,27 +176,39 @@ som tredje touch samt de øvrige spil- og enhedskontroller er fortsat udeståend
 **Næste skridt:** Afprøv manuelt genstand samtidig med bevægelse/kamera, begge landscape-retninger og faktisk spil
 mod AI. Kør `python3 Tools/unity.py smoke-mac` for reproducerbar Mac-kontrol.
 Der må ikke erklæres fuld M1–M4-accept, før de relevante runtimekontroller er
-gennemført. Senere følger iPad, performance og den udestående karakterproduktion.
+gennemført. Næste kodearbejde er performanceinstrumentering og længere stabilitetskontrol.
+Derefter følger iPad-afprøvning og den udestående karakterproduktion; den gratis
+karakterpilot kræver fortsat adgang til en tjeneste med gratis generering/eksport.
 
-**Aktuel arbejdsblok — build 2:** Rundt og diskret joystick med større
-berøringsområde, genstandssymboler, spejlet touchkontrol, tydelige banan-/oliefælder,
-signaler ved de bevægelige vægge og synlige porte til forfølgernes base.
-Ændringerne er implementeret og automatisk afprøvet på Mac og fysisk iPhone 13.
-Den grafiske kontrol omfatter nu også levelskifte, Game Over og genstart.
-Build 1-resultater og manuel accept er fortsat adskilt fra den nye validering.
+**Aktuel arbejdsblok — build 3:** Bananen flyver i en synlig bue og lander som
+fælde. En midlertidig Zelenskyj-hånd med olivengrønt ærme vises under kastet og
+spejles med håndlayoutet. Reduceret bevægelse slår snurret og håndsvinget fra og
+giver en lavere bue. Kameraets højde og FOV ændres ikke.
+
+Snapshotformatet er nu v2. Build 1/2's v1-spil kan fortsættes; deres bananer
+bevares som allerede landede fælder med oprindelig udløbstid. Filnavnet
+`session-v1.json` bevares for at finde eksisterende spil; indholdets `version`
+bestemmer formatet. V2-spil kræver build 3 eller nyere. Nye feltdata valideres
+før gendannelse og kan ikke ændre en aktiv session ved afvisning.
+
+50 regeltests, faktisk Newtonsoft-serialisering, repositoryvalidering og C#-
+kompilering med 0 fejl/advarsler består. Native Mac-build/runtime, iOS-eksport,
+signeret Xcode Debug-build og samme runtimekontrol på fysisk iPhone 13 består.
+Appen er efterfølgende startet normalt uden testflag. Se testresultaterne.
 
 **Udestående grafik:** Gratis AI-karakterpilot, endelige modeller, rigs og
 animationer er ikke udført. Følg [karakterproduktionen](CHARACTER_PRODUCTION.md).
 Primitive fuldkropsmodeller er prototyper og opfylder ikke M5.
 
-**Bevidste prototypeforenklinger:** Bananen placeres straks på den beregnede
-landingsposition; en kastbue/håndanimation mangler. Banan-/oliefælder har nu
-særskilt geometri; forfølgernes reaktioner har fortsat enkel prototypeanimation. Belysningen bruger ambientlys
+**Bevidste prototypeforenklinger:** Hånden og forfølgernes reaktioner bruger
+fortsat enkel prototypegeometri/-animation. De udgør ikke de endelige riggede
+karakterer. Banan-/oliefælder har særskilt geometri og bananen en faktisk kastbue. Belysningen bruger ambientlys
 og én dynamisk sol; egentlig lysbagning/performanceoptagelse mangler. Haptik er
 den simple platformsvibration, ikke et færdigafstemt haptikdesign.
 
-**Versionsstyring:** Kildekode, dokumenter og referenceark er gemt på disken,
-men der er ikke udført commit eller push i denne arbejdsblok. For overdragelse
+**Versionsstyring:** Build 2 findes i repoets commit `fc491e9` ved starten af
+denne arbejdsblok. Build 3-ændringerne gemmes på disken; der er ikke udført
+commit eller push i denne arbejdsblok. For overdragelse
 via kloning skal ændringerne også committes og synkroniseres. Lokale downloads,
 licenser, caches og builds er bevidst ignoreret.
 

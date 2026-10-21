@@ -33,7 +33,11 @@ namespace MazeOfEgos.Core
         public int id;
         public ItemKind kind;
         public Point2 position;
-        public double expiresAt;
+        public Point2 launchPosition;
+        // Zero flight times describe a ground trap, including saves from build 1/2.
+        public double launchedAt, landsAt, expiresAt;
+        public double FlightProgress(double time) => landsAt > launchedAt ? Geometry.Clamp((time - launchedAt) / (landsAt - launchedAt), 0, 1) : 1;
+        public Point2 PositionAt(MazeMap maze, double time) => maze.Wrap(Point2.Lerp(launchPosition, maze.Near(position, launchPosition), FlightProgress(time)));
         public TrapState Copy() => (TrapState)MemberwiseClone();
     }
     [Serializable]
@@ -53,7 +57,7 @@ namespace MazeOfEgos.Core
     [Serializable]
     public sealed class SessionSnapshot
     {
-        public int version = 1;
+        public int version = 2;
         public string mazeId, mazeFingerprint;
         public RuleProfile rules;
         public SessionPhase phase, resumePhase;

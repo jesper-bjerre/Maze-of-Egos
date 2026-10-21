@@ -17,6 +17,7 @@ namespace MazeOfEgos.Runtime
         private readonly GameObject[] bananaViews = new GameObject[4], oilViews = new GameObject[4];
         private readonly Material[] shortcutSignals;
         private readonly Transform[] gates;
+        private readonly Transform throwingHand;
         private readonly Material banana, oil, frightened, returnMaterial;
         private readonly Mesh heartMesh;
         private readonly Font labelFont;
@@ -145,11 +146,13 @@ namespace MazeOfEgos.Runtime
             }
             banana = SceneMeshes.Material("Banana", new Color(1, 0.8f, 0.12f), 0, 0.5f);
             banana.SetFloat("_Cull", 0);
+            banana.EnableKeyword("_EMISSION"); banana.SetColor("_EmissionColor", new Color(0.12f, 0.08f, 0.005f));
             oil = SceneMeshes.Material("Cartoon oil", new Color(0.14f, 0.09f, 0.24f), 0.35f, 0.95f);
             frightened = SceneMeshes.Material("Power surprise", new Color(0.40f, 0.57f, 0.90f), 0, 0.45f);
             returnMaterial = SceneMeshes.Material("Pause bubble", new Color(0.66f, 0.87f, 0.96f), 0.15f, 0.9f);
             Color[] suitColors = { new Color(0.15f, 0.19f, 0.24f), new Color(0.16f, 0.20f, 0.29f), new Color(0.14f, 0.16f, 0.19f), new Color(0.13f, 0.23f, 0.40f) };
             Mesh peelMesh = SceneMeshes.BananaPeel();
+            throwingHand = BuildThrowingHand();
             for (int i = 0; i < 4; i++)
             {
                 clothes[i] = SceneMeshes.Material("Suit " + i, suitColors[i]);
@@ -162,6 +165,26 @@ namespace MazeOfEgos.Runtime
                         new Vector3((blob - 1) * 0.20f, 0.025f, blob == 1 ? 0.10f : -0.08f), new Vector3(0.62f, 0.045f, 0.54f));
                 trapRoots[i].gameObject.SetActive(false);
             }
+        }
+
+        private Transform BuildThrowingHand()
+        {
+            Transform hand = new GameObject("Zelenskyj throwing hand (prototype)").transform;
+            hand.SetParent(Camera.transform, false);
+            Material sleeve = SceneMeshes.Material("Hero olive sleeve", new Color(0.29f, 0.34f, 0.21f));
+            Material skin = SceneMeshes.Material("Hero hand", new Color(0.85f, 0.66f, 0.49f), 0, 0.3f);
+            Transform arm = SceneMeshes.Primitive("Olive sleeve", hand, PrimitiveType.Capsule, sleeve,
+                new Vector3(0, -0.16f, -0.13f), new Vector3(0.105f, 0.19f, 0.105f));
+            arm.localRotation = Quaternion.Euler(45, 0, 0);
+            SceneMeshes.MeshObject("Palm", hand, SceneMeshes.RoundedBox(new Vector3(0.10f, 0.065f, 0.13f), 0.02f),
+                skin, Vector3.zero, Vector3.one);
+            for (int finger = 0; finger < 4; finger++)
+                SceneMeshes.Primitive("Finger", hand, PrimitiveType.Capsule, skin,
+                    new Vector3((finger - 1.5f) * 0.024f, 0.005f, 0.072f), new Vector3(0.026f, 0.038f, 0.027f)).localRotation = Quaternion.Euler(70, 0, 0);
+            SceneMeshes.Primitive("Thumb", hand, PrimitiveType.Sphere, skin, new Vector3(-0.06f, 0, 0.015f), new Vector3(0.05f, 0.05f, 0.08f));
+            foreach (Renderer renderer in hand.GetComponentsInChildren<Renderer>())
+            { renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false; }
+            hand.gameObject.SetActive(false); return hand;
         }
 
         private Avatar BuildAvatar(int index)
@@ -218,7 +241,7 @@ namespace MazeOfEgos.Runtime
         }
         public void ResetEncounters() { Array.Clear(seen, 0, seen.Length); nextScare = 0; }
 
-        public void Render(GameSession session, Point2 previousPlayer, Point2[] previousGhosts, float alpha)
+        public void Render(GameSession session, Point2 previousPlayer, Point2[] previousGhosts, float alpha, bool showHands)
         {
             // Dynamic font atlases may be replaced when UI glyphs are requested.
             labelMaterial.mainTexture = labelFont.material.mainTexture;
@@ -286,12 +309,33 @@ namespace MazeOfEgos.Runtime
                 }
                 seen[i] = visible;
             }
+            TrapState thrown = null;
             for (int i = 0; i < trapRoots.Length; i++)
             {
                 bool active = i < session.Traps.Count; trapRoots[i].gameObject.SetActive(active); if (!active) continue;
-                TrapState trap = session.Traps[i]; trapRoots[i].position = World(trap.position);
+                TrapState trap = session.Traps[i];
                 bool isBanana = trap.kind == ItemKind.BananaPeel;
+                float progress = (float)trap.FlightProgress(session.Time);
+                bool airborne = isBanana && progress < 1;
+                Point2 point = maze.Near(trap.PositionAt(maze, session.Time), cameraPosition);
+                // A low arc in reduced-motion mode; neither path moves the camera.
+                float height = airborne ? (1 - progress) * 1.10f + 4 * progress * (1 - progress) * (app.Settings.reducedMotion ? 0.12f : 0.75f) : 0;
+                trapRoots[i].position = World(point, height);
+                trapRoots[i].rotation = airborne && !app.Settings.reducedMotion ? Quaternion.Euler(progress * 330, progress * 180, 0) : Quaternion.identity;
                 bananaViews[i].SetActive(isBanana); oilViews[i].SetActive(!isBanana);
+                if (airborne && (thrown == null || trap.id > thrown.id)) thrown = trap;
+            }
+            throwingHand.gameObject.SetActive(showHands && thrown != null && session.Phase != SessionPhase.Caught &&
+                session.Phase != SessionPhase.GameOver && session.Phase != SessionPhase.LevelClear);
+            if (thrown != null)
+            {
+                float progress = (float)thrown.FlightProgress(session.Time);
+                float gesture = app.Settings.reducedMotion ? 0 : Mathf.Sin(progress * Mathf.PI);
+                // Anchor inside the lower frame at every supported FOV/aspect ratio.
+                float side = app.Settings.leftHanded ? -1 : 1;
+                throwingHand.position = Camera.ViewportToWorldPoint(new Vector3(0.5f + side * 0.13f, 0.10f + gesture * 0.08f, 0.65f + gesture * 0.12f));
+                throwingHand.localRotation = Quaternion.Euler(-gesture * 20, -side * 10, side * gesture * 10);
+                throwingHand.localScale = new Vector3(side, 1, 1);
             }
         }
         private void RenderAvatar(Avatar avatar, GameSession session, int index, Point2 position, float time)

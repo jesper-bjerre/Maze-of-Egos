@@ -30,6 +30,10 @@ banan, olie og boost. Venstrehåndslayout kan vælges i Indstillinger.
 Se [valget af touchstyring](docs/INPUT_DECISION.md) for vurderingen af Apples
 native controllere og vores samlede Unity-inputvej.
 
+Bananen har en kort kastbue og håndbevægelse. Den aktiveres ved landing og
+lever derefter i 20 sekunder. Pause og gemt spil bevarer et igangværende kast;
+reduceret bevægelse dæmper animationen.
+
 Figurerne i 3D er **midlertidige fuldkropsmodeller**. De originale karakterark
 bruges til menuportrætter; endelige modeller, rigging og animationer er udestående.
 
@@ -63,7 +67,7 @@ Support. Resultater ligger i `Builds/`; logfiler ligger i `Logs/`.
 
 `smoke-mac` starter den grafiske udviklingsbuild, afprøver menu, tre samtidige
 syntetiske touchpunkter i begge layouts, genstande, pause, indstillinger,
-save/resume, vægskift, baseporte, levelskifte, Game Over og genstart og lukker
+save/resume midt i kast, reduceret bevægelse, vægskift, baseporte, levelskifte, Game Over og genstart og lukker
 appen igen. Testdata er isoleret fra spillerens gemte spil. Skærmbilleder gemmes i
 `.artifacts/smoke-mac/`. Se [testresultater og aktuelle begrænsninger](docs/TEST_REPORT.md).
 En automatisk touchtest erstatter ikke manuel afprøvning på en fysisk iPhone.

@@ -60,7 +60,7 @@ namespace MazeOfEgos.Runtime
                 if (!more) break;
                 yield return next;
             }
-            File.WriteAllText(Path.Combine(output, "result.txt"), "PASS native rendering, portraits, menu, three-touch controls in both layouts, release, pause, settings, save/resume, banana/oil visuals, shortcut signals/opening/reservation/closure, pursuer gates, level transition, Game Over and replay.\nSynthetic touch and controlled scene fixtures; manual device testing, full rounds against AI and performance remain separate.\n");
+            File.WriteAllText(Path.Combine(output, "result.txt"), "PASS native rendering, portraits, menu, three-touch controls in both layouts, release, pause, settings, save/resume, banana flight/hand/landing, mid-flight save/resume, reduced motion, banana/oil visuals, shortcut signals/opening/reservation/closure, pursuer gates, level transition, Game Over and replay.\nSynthetic touch and controlled scene fixtures; manual device testing, full rounds against AI and performance remain separate.\n");
             Debug.Log("RUNTIME SMOKE PASSED"); Application.Quit(0);
         }
         private IEnumerator Run()
@@ -178,6 +178,54 @@ namespace MazeOfEgos.Runtime
             Require(joystick.Movement == Vector2.zero, "Mirrored joystick did not stop on release.");
             yield return new WaitForEndOfFrame(); Capture("04-left-handed.png");
 
+            // The simulation clock drives the flight and hand as well as the trap.
+            IEnumerator handednessSteps = ChangeHandedness(app, false);
+            while (handednessSteps.MoveNext()) yield return handednessSteps.Current;
+            InstallFixture(app, ItemKind.BananaPeel, new Point2(6, 5), 90);
+            yield return null;
+            app.UseItem(); TrapState flight = app.Session.Traps[0];
+            deadline = Time.realtimeSinceStartup + 4;
+            while (flight.FlightProgress(app.Session.Time) < 0.33 && Time.realtimeSinceStartup < deadline) yield return null;
+            Require(app.Session.Time < flight.landsAt, "Banana flight was not visible before landing.");
+            yield return new WaitForEndOfFrame(); Capture("11-banana-flight.png");
+            Transform flyingMesh = GameObject.Find("Banana peel").transform.parent;
+            Transform hand = GameObject.Find("Zelenskyj throwing hand (prototype)").transform;
+            Require(flyingMesh.position.y > 0.4f && hand, "Flight/hand geometry was not visible.");
+            Camera firstPerson = hand.GetComponentInParent<Camera>(); float fieldOfView = firstPerson.fieldOfView;
+            Require(firstPerson.WorldToViewportPoint(hand.position).x > 0.5f, "Standard layout used the wrong throwing hand.");
+            app.Session.Pause(); double flightPausedAt = app.Session.Time; Vector3 frozenMesh = flyingMesh.position, frozenHand = hand.position;
+            yield return new WaitForSecondsRealtime(0.2f);
+            Require(app.Session.Time == flightPausedAt && Vector3.Distance(flyingMesh.position, frozenMesh) < 0.001f &&
+                Vector3.Distance(hand.position, frozenHand) < 0.001f, "Paused throw or hand continued moving.");
+            app.GoToMenu(); app.ContinueSaved();
+            Require(app.Session.Phase == SessionPhase.Paused && app.Session.Time == flightPausedAt &&
+                app.Session.Traps.Count == 1 && app.Session.Traps[0].landsAt == flight.landsAt, "Mid-flight save/resume lost the throw.");
+            Require(File.ReadAllText(Path.Combine(StorageDirectory, "session-v1.json")).Contains("landsAt"), "Flight was not persisted to disk.");
+            app.TogglePause();
+            yield return new WaitForSecondsRealtime(0.3f);
+            Require(app.Session.Time == flightPausedAt, "Resume countdown consumed banana flight time.");
+            deadline = Time.realtimeSinceStartup + 5;
+            while ((app.Session.Phase != SessionPhase.Playing || app.Session.Time < flight.landsAt + 0.1) && Time.realtimeSinceStartup < deadline) yield return null;
+            Require(app.Session.Traps.Count == 1 && Math.Abs(flyingMesh.position.y) < 0.001 &&
+                !GameObject.Find("Zelenskyj throwing hand (prototype)"), "Banana did not settle on the floor after resume.");
+            Require(Math.Abs(firstPerson.fieldOfView - fieldOfView) < 0.001, "Throw changed the camera FOV.");
+            yield return new WaitForEndOfFrame(); Capture("12-banana-landed.png");
+
+            handednessSteps = ChangeHandedness(app, true);
+            while (handednessSteps.MoveNext()) yield return handednessSteps.Current;
+            app.Settings.reducedMotion = true;
+            InstallFixture(app, ItemKind.BananaPeel, new Point2(6, 5), 90);
+            yield return null;
+            app.UseItem(); flight = app.Session.Traps[0];
+            deadline = Time.realtimeSinceStartup + 4;
+            while (flight.FlightProgress(app.Session.Time) < 0.33 && Time.realtimeSinceStartup < deadline) yield return null;
+            yield return new WaitForEndOfFrame(); Capture("13-banana-reduced-motion.png");
+            flyingMesh = GameObject.Find("Banana peel").transform.parent;
+            hand = GameObject.Find("Zelenskyj throwing hand (prototype)").transform;
+            Require(app.Session.Time < flight.landsAt && Quaternion.Angle(flyingMesh.rotation, Quaternion.identity) < 0.01f &&
+                firstPerson.WorldToViewportPoint(hand.position).x < 0.5f, "Reduced-motion throw spun or used the wrong hand.");
+            app.Settings.reducedMotion = false;
+
             // Exercise the oil button and check the actual pooled representations.
             InstallFixture(app, ItemKind.OilSlick, new Point2(6, 5), 90);
             yield return new WaitForSecondsRealtime(0.1f); use = ButtonPosition("Use item");
@@ -265,7 +313,7 @@ namespace MazeOfEgos.Runtime
             Require(app.Session.Phase == SessionPhase.Playing && app.Session.Level == 1 && app.Session.Score == 0 && app.Session.Chances == 3 && app.Session.RemainingHearts == 244,
                 "Replay did not reset the game.");
             yield return new WaitForSecondsRealtime(0.3f);
-            foreach (string name in new[] { "01-menu.png", "02-gameplay.png", "03-settings.png", "04-left-handed.png", "05-items.png", "06-shortcut-warning.png", "07-shortcut-open.png", "08-base.png", "09-level-clear.png", "10-game-over.png" })
+            foreach (string name in new[] { "01-menu.png", "02-gameplay.png", "03-settings.png", "04-left-handed.png", "05-items.png", "06-shortcut-warning.png", "07-shortcut-open.png", "08-base.png", "09-level-clear.png", "10-game-over.png", "11-banana-flight.png", "12-banana-landed.png", "13-banana-reduced-motion.png" })
                 Require(File.Exists(Path.Combine(output, name)), "Screenshot was not written: " + name);
             InputSystem.RemoveDevice(screen);
         }
@@ -284,6 +332,21 @@ namespace MazeOfEgos.Runtime
         private void Touch(int id, TouchPhase phase, Vector2 position)
         {
             InputSystem.QueueStateEvent(screen, new TouchState { touchId = id, phase = phase, position = position, pressure = 1 });
+        }
+        private IEnumerator ChangeHandedness(GameApp app, bool left)
+        {
+            if (app.Settings.leftHanded == left) yield break;
+            app.TogglePause();
+            yield return new WaitForSecondsRealtime(0.1f); // HUD constructs the pause controls on its next update.
+            foreach (string label in new[] { "INDSTILLINGER", "Venstrehåndslayout:", "TILBAGE" })
+            {
+                Vector2 button = label.EndsWith(":", StringComparison.Ordinal) ? ButtonPosition("", label) : ButtonPosition(label);
+                Touch(200, TouchPhase.Began, button);
+                yield return new WaitForSecondsRealtime(0.1f); Touch(200, TouchPhase.Ended, button);
+                yield return new WaitForSecondsRealtime(0.1f);
+            }
+            Require(app.Settings.leftHanded == left, "Handedness did not change through the settings UI.");
+            app.TogglePause(); // Also dismiss the restored-game toast as a real resume does.
         }
         private static Vector2 ButtonPosition(string name, string textPrefix = null)
         {

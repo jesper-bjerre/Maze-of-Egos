@@ -167,6 +167,57 @@ Appen er derefter åbnet normalt uden testvariablen; opstart er bekræftet af
 `devicectl`. Normale spildata er bevaret. Manuel accept af de nye kontrolflader,
 begge skærmretninger, iPad og længere spil mod AI er fortsat udestående.
 
+## Build 3 — banankast, håndbevægelse og gendannelse midt i kast
+
+Bananen starter ved ét tryk, flyver i 0,36 sekund langs kameraets vandrette
+retning og bliver først en aktiv fælde ved landing. Levetiden på 20 sekunder
+regnes fra landingen. Kamera og bevægelse kan fortsat styres under kastet.
+Kastet stopper før væggen med plads til skrællens synlige størrelse; tunnellens
+wrap bruges også af animationen. Genveje reserveres langs den resterende
+kastebane og af levende fælder i væggens felt, så væggen ikke skjuler dem.
+
+En midlertidig hånd med olivengrønt ærme vises i den nederste del af billedet og
+spejles i venstrehåndslayout. Den ændrer ikke kamerahøjde eller FOV. Reduceret
+bevægelse giver lavere bue, ingen snurren og intet håndsving. Hånden er fortsat
+prototypegeometri og tæller ikke som en færdig rigget karakter.
+
+Snapshot v2 gemmer kastets startsted og tidsstempler. V1-snapshots fra build 1/2
+migreres med fælderne som allerede landede; udløbstider, point og runden bevares.
+Det eksisterende filnavn bevares for at finde gamle spil. En build 3-fil kræver
+build 3 eller nyere. Pause, baggrund og genoptagelsens nedtælling fryser
+simulationstid, kastebue og hånd. Ugyldige kastdata afvises før sessionen ændres.
+Genoptagelsens hjælpetekst fjernes nu, når spilleren faktisk trykker Fortsæt.
+
+**Bestået:** 50 regeltests (40 eksisterende + 10 nye), faktisk Unity/Newtonsoft-
+serialisering af et igangværende kast, deterministisk landing efter gendannelse
+og migration af ældre JSON uden de nye felter. C#-kompilering med 0 fejl/
+advarsler, repositoryvalidering, native import/indholdsvalidering og den endelige
+grafiske Mac-kontrol består. Den udvidede grafiske kontrol omfatter nu yderligere kast,
+visning af hånd, pause, gem/fortsæt midt i luften, landing, konstant FOV og
+reduceret bevægelse i det modsatte håndlayout. Den skifter layouts via de rigtige
+indstillingsknapper. I alt gemmes 13 skærmbilleder.
+
+**Fysisk iPhone:** iOS-eksport, signeret Xcode Debug-build og installation af
+version 0.1.0 (3), minimum iOS 17.0, er gennemført. Hele det udvidede forløb
+består på samme fysiske iPhone 13: både `RUNTIME SMOKE PASSED` i den friske log
+og `PASS` i testresultatet er kontrolleret. Der er ingen runtime-exceptions eller
+manglende komponenttyper. Den tidligere noterede meddelelse om én persistent
+allocation ved procesafslutning er fortsat til stede; længere performancearbejde
+udestår.
+
+Log: `Logs/iphone-smoke-build3.log`. Resultat og 13 faktiske framebuffer-PNG'er:
+`.artifacts/smoke-iphone-build3/`. Følgende tre billeder er kontrolleret visuelt
+og kopieret uændret, 2532 × 1170 pixels, til repoet:
+[kast med højre hånd](verification/2026-10-21-build3-iphone13-banana-flight.png),
+[landet skræl](verification/2026-10-21-build3-iphone13-banana-landed.png) og
+[reduceret bevægelse med venstre hånd](verification/2026-10-21-build3-iphone13-reduced-motion.png).
+
+Appen er derefter startet normalt uden testmiljøvariablen, bekræftet af
+`devicectl` i `Logs/iphone-build3-normal-launch.json`. Testdata bruger fortsat
+et særskilt midlertidigt lager; normale spildata er bevaret. De nye kastforløb
+opsættes kontrolleret, og touchhændelserne er syntetiske. Tidligere manuelle,
+iPad-, fuld-runde- og performance-forbehold gælder derfor fortsat.
+
 ## Gentagelse og næste trin
 
 ```sh

@@ -122,7 +122,7 @@ namespace MazeOfEgos.Runtime
             if (hud.SettingsOpen) { hud.CloseSettings(); return; }
             if (inMenu) return;
             if (Session.Phase == SessionPhase.GameOver) { GoToMenu(); return; }
-            if (Session.Phase == SessionPhase.Paused) Session.Resume();
+            if (Session.Phase == SessionPhase.Paused) { Session.Resume(); hud.Notify("", 0); }
             else { Session.Pause(); SaveRun(); }
             hud.Joystick.Clear(); hud.Look.Clear(); accumulator = 0; CopyPrevious();
         }
@@ -161,7 +161,7 @@ namespace MazeOfEgos.Runtime
                     CopyPrevious(); Session.Tick(); HandleEvents(); accumulator -= GameSession.FixedDelta;
                 }
             }
-            view.Render(Session, previousPlayer, previousGhosts, Mathf.Clamp01((float)(accumulator / GameSession.FixedDelta)));
+            view.Render(Session, previousPlayer, previousGhosts, Mathf.Clamp01((float)(accumulator / GameSession.FixedDelta)), !inMenu);
             audioView.Update(Session, inMenu || Session.Phase != SessionPhase.Playing);
             hud.Update(Session, inMenu);
             if (saveFailure != null) { hud.Notify("Kunne ikke gemme: " + saveFailure, 6); saveFailure = null; }

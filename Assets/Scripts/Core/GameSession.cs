@@ -6,6 +6,8 @@ namespace MazeOfEgos.Core
     public sealed class GameSession
     {
         public const double FixedDelta = 1.0 / 60;
+        public const double BananaFlightDuration = 0.36;
+        public const double TrapRadius = 0.18;
         public readonly MazeMap Maze;
         public RuleProfile Rules { get; private set; }
         public SessionPhase Phase { get; private set; }
@@ -117,6 +119,7 @@ namespace MazeOfEgos.Core
             {
                 PhaseRemaining = Math.Max(0, PhaseRemaining - delta);
                 if (PhaseRemaining > 1e-8) return;
+                PhaseRemaining = 0;
                 if (Phase == SessionPhase.Countdown) Phase = SessionPhase.Playing;
                 else if (Phase == SessionPhase.Caught)
                 {
@@ -212,9 +215,15 @@ namespace MazeOfEgos.Core
                 if (Time >= p.slipImmunityUntil)
                     for (int j = 0; j < Traps.Count; j++)
                     {
-                        Point2 trap = Maze.Near(Traps[j].position, oldGhost);
-                        t = Geometry.ContactTime(oldGhost, endGhost, trap, trap, 0.30);
-                        if (!double.IsPositiveInfinity(t)) contacts.Add(new Contact { time = t, kind = 2, index = i, other = Traps[j].id });
+                        TrapState trapState = Traps[j];
+                        if (trapState.landsAt > endTime) continue;
+                        // Sweep only the part of this slice after landing, including an enemy
+                        // already overlapping the landing point at that exact instant.
+                        double armedFraction = Geometry.Clamp((trapState.landsAt - (endTime - delta)) / delta, 0, 1);
+                        Point2 trap = Maze.Near(trapState.position, oldGhost);
+                        t = Geometry.ContactTime(Point2.Lerp(oldGhost, endGhost, armedFraction), endGhost, trap, trap, 0.30);
+                        if (!double.IsPositiveInfinity(t)) contacts.Add(new Contact {
+                            time = armedFraction + t * (1 - armedFraction), kind = 2, index = i, other = trapState.id });
                     }
             }
             contacts.Sort(ContactComparer.Instance);
@@ -380,7 +389,7 @@ namespace MazeOfEgos.Core
                     for (double distance = 0.1; distance <= 2 + 1e-8; distance += 0.1)
                     {
                         Point2 candidate = Maze.Wrap(Player + direction * distance);
-                        if (!Maze.CanOccupy(candidate, 0.10)) break;
+                        if (!Maze.CanOccupy(candidate, TrapRadius)) break;
                         location = candidate;
                     }
                     if ((Maze.Near(location, Player) - Player).Length < 0.25) return false;
@@ -398,9 +407,13 @@ namespace MazeOfEgos.Core
                         }
                         traveled += length; previous = next;
                     }
-                    if (!found || !Maze.CanOccupy(location, 0.10)) return false;
+                    if (!found || !Maze.CanOccupy(location, TrapRadius)) return false;
                 }
-                Traps.Add(new TrapState { id = ++nextTrapId, kind = kind, position = location, expiresAt = Time + (kind == ItemKind.BananaPeel ? 20 : 15) });
+                double landing = kind == ItemKind.BananaPeel ? Time + BananaFlightDuration : Time;
+                Traps.Add(new TrapState { id = ++nextTrapId, kind = kind, position = location,
+                    launchPosition = kind == ItemKind.BananaPeel ? Player : location,
+                    launchedAt = kind == ItemKind.BananaPeel ? Time : 0, landsAt = kind == ItemKind.BananaPeel ? landing : 0,
+                    expiresAt = landing + (kind == ItemKind.BananaPeel ? 20 : 15) });
             }
             Inventory = ItemKind.None; Events.Add(new GameEvent(EventKind.ItemUsed)); return true;
         }
@@ -410,7 +423,7 @@ namespace MazeOfEgos.Core
             if (p.life != PursuerLife.Active || Time < p.slipImmunityUntil) return;
             for (int i = 0; i < Traps.Count; i++) if (Traps[i].id == trapId)
             {
-                if (Time >= Traps[i].expiresAt) return;
+                if (Time < Traps[i].landsAt || Time >= Traps[i].expiresAt) return;
                 if (Traps[i].kind == ItemKind.BananaPeel) p.stunUntil = Time + 1.2;
                 else p.oilUntil = Time + 2.5;
                 p.slipImmunityUntil = Time + 3; Traps.RemoveAt(i);
@@ -459,6 +472,18 @@ namespace MazeOfEgos.Core
             foreach (int[] pair in Maze.Definition.shortcutCandidates[index].wallCells)
             {
                 Cell c = MazeMap.FromPair(pair);
+                foreach (TrapState trap in Traps)
+                {
+                    if (Time >= trap.expiresAt) continue;
+                    Point2 start = trap.PositionAt(Maze, Time), end = Maze.Near(trap.position, start);
+                    int steps = Math.Max(1, (int)Math.Ceiling((end - start).Length / 0.05));
+                    for (int step = 0; step <= steps; step++)
+                    {
+                        Point2 point = Point2.Lerp(start, end, (double)step / steps);
+                        if (Math.Abs(point.x - c.x) < 0.5 + MazeMap.WallPadding + TrapRadius &&
+                            Math.Abs(point.y - c.y) < 0.5 + MazeMap.WallPadding + TrapRadius) return true;
+                    }
+                }
                 if (Math.Abs(Player.x - c.x) < 0.5 + MazeMap.PlayerRadius + 0.2 && Math.Abs(Player.y - c.y) < 0.5 + MazeMap.PlayerRadius + 0.2) return true;
                 foreach (PursuerState p in Pursuers)
                 {
@@ -490,13 +515,13 @@ namespace MazeOfEgos.Core
         }
         public void Restore(SessionSnapshot state)
         {
-            if (state == null || state.version != 1 || state.mazeId != Maze.Definition.id || state.mazeFingerprint != Maze.Fingerprint ||
+            if (state == null || (state.version != 1 && state.version != 2) || state.mazeId != Maze.Definition.id || state.mazeFingerprint != Maze.Fingerprint ||
                 state.rules == null || state.collected == null || state.collected.Length != Collected.Length ||
                 state.itemAvailable == null || state.itemAvailable.Length != ItemAvailable.Length ||
                 state.pursuers == null || state.pursuers.Length != 4 || state.walls == null || state.walls.Length != Walls.Length ||
                 state.traps == null || state.traps.Length > 4 || state.trail == null || state.trail.Length == 0 || state.trail.Length > 128 ||
                 state.level < 1 || state.chances < 0 || state.chances > 4 || state.score < 0 ||
-                !state.player.IsFinite || !FiniteNonnegative(state.time) || !FiniteNonnegative(state.levelTime) ||
+                !WithinMazeFrame(state.player) || !FiniteNonnegative(state.time) || !FiniteNonnegative(state.levelTime) ||
                 !FiniteNonnegative(state.phaseRemaining) || !FiniteNonnegative(state.savedPhaseRemaining) ||
                 !FiniteNonnegative(state.powerUntil) || !FiniteNonnegative(state.boostUntil) || !FiniteNonnegative(state.nextWallAttempt) ||
                 double.IsNaN(state.yaw) || double.IsInfinity(state.yaw) || Math.Abs(state.pitch) > 20 ||
@@ -521,13 +546,29 @@ namespace MazeOfEgos.Core
                     !FiniteNonnegative(state.walls[i].phaseUntil) || !FiniteNonnegative(state.walls[i].cooldownUntil))
                     throw new ArgumentException("Snapshot wall data is invalid.");
             foreach (TrapState trap in state.traps)
-                if (trap == null || !trap.position.IsFinite || !FiniteNonnegative(trap.expiresAt) || trap.id < 1 || trap.id > state.nextTrapId ||
+                if (trap == null || !WithinMazeFrame(trap.position) || !FiniteNonnegative(trap.expiresAt) || trap.id < 1 || trap.id > state.nextTrapId ||
                     (trap.kind != ItemKind.BananaPeel && trap.kind != ItemKind.OilSlick)) throw new ArgumentException("Invalid trap.");
-            foreach (Point2 point in state.trail) if (!point.IsFinite) throw new ArgumentException("Invalid movement trail.");
+            if (state.version == 2) foreach (TrapState trap in state.traps)
+                if (!WithinMazeFrame(trap.launchPosition) || !FiniteNonnegative(trap.launchedAt) || !FiniteNonnegative(trap.landsAt) ||
+                    (trap.landsAt == 0 && trap.launchedAt != 0) ||
+                    (trap.landsAt > 0 && (trap.kind != ItemKind.BananaPeel || trap.launchedAt > state.time ||
+                        Math.Abs(trap.landsAt - trap.launchedAt - BananaFlightDuration) > 1e-8 || trap.expiresAt < trap.landsAt ||
+                        (Maze.Near(trap.position, trap.launchPosition) - trap.launchPosition).Length > 2 + 1e-8)))
+                    throw new ArgumentException("Invalid banana flight.");
+            foreach (Point2 point in state.trail) if (!WithinMazeFrame(point)) throw new ArgumentException("Invalid movement trail.");
             // Validate topology on a temporary map so rejected data cannot mutate a running game.
             var restoredMap = new MazeMap(Maze.Definition);
             for (int i = 0; i < state.walls.Length; i++) restoredMap.SetShortcut(i, state.walls[i].phase == WallPhase.Open);
             if (!restoredMap.CanOccupy(state.player)) throw new ArgumentException("Snapshot player is inside a wall.");
+            if (state.version == 2) foreach (TrapState trap in state.traps)
+                if (trap.landsAt > state.time)
+                {
+                    Point2 start = trap.PositionAt(restoredMap, state.time), end = restoredMap.Near(trap.position, start);
+                    int steps = Math.Max(1, (int)Math.Ceiling((end - start).Length / 0.05));
+                    for (int step = 0; step <= steps; step++)
+                        if (!restoredMap.CanOccupy(Point2.Lerp(start, end, (double)step / steps), TrapRadius))
+                            throw new ArgumentException("Snapshot banana flight intersects a wall.");
+                }
             foreach (PursuerState pursuer in state.pursuers)
             {
                 bool house = pursuer.life != PursuerLife.Active;
@@ -544,12 +585,19 @@ namespace MazeOfEgos.Core
             itemRandom.state = state.itemRandom; aiRandom.state = state.aiRandom; wallRandom.state = state.wallRandom;
             Inventory = state.inventory; Collected = (bool[])state.collected.Clone(); ItemAvailable = (bool[])state.itemAvailable.Clone();
             for (int i = 0; i < 4; i++) Pursuers[i] = state.pursuers[i].Copy();
-            Traps.Clear(); foreach (TrapState trap in state.traps) Traps.Add(trap.Copy());
+            Traps.Clear(); foreach (TrapState trap in state.traps)
+            {
+                TrapState copy = trap.Copy();
+                if (state.version == 1) { copy.launchPosition = copy.position; copy.launchedAt = copy.landsAt = 0; }
+                Traps.Add(copy);
+            }
             trail.Clear(); trail.AddRange(state.trail); moveInput = new Point2();
             resumePhase = state.phase == SessionPhase.Paused ? state.resumePhase : state.phase;
             savedPhaseRemaining = state.phase == SessionPhase.Paused ? state.savedPhaseRemaining : state.phaseRemaining;
             Phase = SessionPhase.Paused; Events.Clear();
         }
         private static bool FiniteNonnegative(double value) => !double.IsNaN(value) && !double.IsInfinity(value) && value >= 0;
+        private bool WithinMazeFrame(Point2 point) => point.IsFinite && point.x >= -0.5 && point.x < Maze.Definition.width - 0.5 &&
+            point.y >= 0 && point.y < Maze.Definition.height;
     }
 }

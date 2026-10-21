@@ -79,17 +79,22 @@ bruger editorens Newtonsoft-bibliotek til et faktisk save/resume-rundløb.
 `smoke-mac` kræver den grafiske macOS-udviklingsbuild. Den starter appen med et
 udtrykkeligt testflag, sender syntetiske touchhændelser gennem Input System og
 kontrollerer menu, bevægelse/kamera/genstand samtidigt i begge layouts, slip,
-pause, indstillinger, lagring/genoptagelse, genstande, sikre vægskift, baseporte,
+pause, indstillinger, lagring/genoptagelse (også midt i banankast), reduceret
+bevægelse, genstande, sikre vægskift, baseporte,
 levelskifte, Game Over og genstart. Flere forløb opsættes med kontrollerede
 snapshots; testen er ikke en normal hel spilrunde mod AI.
 Testdata gemmes i en særskilt midlertidig mappe; brugerens
-gemte spil ændres ikke. Resultat og ti faktiske skærmbilleder ligger i
+gemte spil ændres ikke. Resultat og 13 faktiske skærmbilleder ligger i
 `.artifacts/smoke-mac/`; runtime-loggen ligger i `Logs/runtime-smoke-mac.log`.
 Testkoden er kun med i editor- og udviklingsbuilds og kører kun med testflaget.
 
 Grundprofilen kan afprøves ved at sætte de tre uafhængige flag i
 `Assets/Resources/Data/rules.json` til false. Hovedoplevelsen har alle tre true.
-Et gemt spil bevarer sin egen regelprofil ved genoptagelse.
+Et gemt spil bevarer sin egen regelprofil ved genoptagelse. Fra build 3 er
+snapshotindholdets version 2; tidligere version 1 migreres ved indlæsning.
+Filnavnet `session-v1.json` bevares med vilje, så eksisterende spil findes.
+Version 2 kan ikke åbnes i ældre builds. Kastets position og tider gemmes
+sammen med resten af runden; pause og nedtælling forbruger ingen kasttid.
 
 ## Bygning til iPhone
 
@@ -114,7 +119,7 @@ xcrun devicectl device copy from --device "DIN_IPHONE" --domain-type appDataCont
 
 Kontrollér både **RUNTIME SMOKE PASSED** i loggen og `PASS` i det hentede
 `result.txt`; iOS kan afslutte processen med kode 0 også ved en testfejl.
-Testen sender syntetiske touchhændelser og gemmer ti faktiske framebuffer-PNG'er.
+Testen sender syntetiske touchhændelser og gemmer 13 faktiske framebuffer-PNG'er.
 Den gemmer særskilte testdata og lukker processen efter kontrollen.
 Start derefter appen normalt fra hjemmeskærmen for manuel afprøvning.
 De første dokumenterede iPhone-skærmbilleder findes under `docs/verification/`.
