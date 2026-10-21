@@ -1,0 +1,10 @@
+<linker>
+  <!-- CreatePrimitive adds these native components internally before we remove them.
+       Keep the types available when IL2CPP strips unused scene components. -->
+  <assembly fullname="UnityEngine.PhysicsModule">
+    <type fullname="UnityEngine.BoxCollider" preserve="all" />
+    <type fullname="UnityEngine.SphereCollider" preserve="all" />
+    <type fullname="UnityEngine.CapsuleCollider" preserve="all" />
+    <type fullname="UnityEngine.MeshCollider" preserve="all" />
+  </assembly>
+</linker>

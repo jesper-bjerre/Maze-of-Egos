@@ -1,0 +1,37 @@
+[
+  {
+    "id": "zelenskyy",
+    "source": "docs/images/Zelenskyy character reference sheet.png",
+    "runtimeCopy": "Assets/Resources/Characters/zelenskyy.png",
+    "sha256": "c39aafd625b0cbb7b1a50df5521ef0fbbae24b2224fca42ba3a5456f1ccb4034",
+    "usage": "Unmodified reference-sheet texture; menu/HUD portrait uses a UV crop. Final rigged 3D character remains outstanding."
+  },
+  {
+    "id": "putin",
+    "source": "docs/images/Putin character reference sheet.png",
+    "runtimeCopy": "Assets/Resources/Characters/putin.png",
+    "sha256": "662965da0318e21e7deab41e983ae6ffb7b9067fedcdd468103ead1a33eb97b5",
+    "usage": "Unmodified reference-sheet texture; menu/HUD portrait uses a UV crop. Final rigged 3D character remains outstanding."
+  },
+  {
+    "id": "xi",
+    "source": "docs/images/Xi Jinping character reference sheet.png",
+    "runtimeCopy": "Assets/Resources/Characters/xi.png",
+    "sha256": "fa4171f9ad920507f2dfd143239d42f3b782f26fc96eda4a5dd5e4e9cb00e966",
+    "usage": "Unmodified reference-sheet texture; menu/HUD portrait uses a UV crop. Final rigged 3D character remains outstanding."
+  },
+  {
+    "id": "kim",
+    "source": "docs/images/Kim Jong-un character reference sheet.png",
+    "runtimeCopy": "Assets/Resources/Characters/kim.png",
+    "sha256": "5a509a08a9228290205d442786f33d57f2898be2f23708fce45a391e42a9698d",
+    "usage": "Unmodified reference-sheet texture; menu/HUD portrait uses a UV crop. Final rigged 3D character remains outstanding."
+  },
+  {
+    "id": "trump",
+    "source": "docs/images/Donald Trump character reference sheet.png",
+    "runtimeCopy": "Assets/Resources/Characters/trump.png",
+    "sha256": "bed3f0dad3db0463ca807474dd1e0a4c16b36542d9758d4c62cc02092d0f1b84",
+    "usage": "Unmodified reference-sheet texture; menu/HUD portrait uses a UV crop. Final rigged 3D character remains outstanding."
+  }
+]

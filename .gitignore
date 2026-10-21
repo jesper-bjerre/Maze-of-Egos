@@ -1,0 +1,29 @@
+# Unity generated state and local tooling
+/Library/
+/Temp/
+/Obj/
+/Logs/
+/UserSettings/
+/Build/
+/Builds/
+/.tools/
+/.artifacts/
+/.vs/
+/.idea/
+*.csproj.user
+*.sln
+*.slnx
+*.pidb
+*.pdb
+*.mdb
+*.apk
+*.aab
+*.ipa
+.DS_Store
+**/bin/
+**/obj/
+# Local signing and credentials
+*.p12
+*.mobileprovision
+.env
+.env.*

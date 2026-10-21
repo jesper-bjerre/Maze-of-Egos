@@ -1,0 +1,6 @@
+{
+  "name": "MazeOfEgos.Core",
+  "rootNamespace": "MazeOfEgos.Core",
+  "noEngineReferences": true,
+  "autoReferenced": true
+}

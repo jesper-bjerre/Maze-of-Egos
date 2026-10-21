@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DefineConstants>UNITY_EDITOR;UNITY_EDITOR_OSX</DefineConstants>
+    <UnityTemplateCache>$(UnityEditorRoot)/Resources/PackageManager/ProjectTemplates/libcache/com.unity.template.3d-cross-platform-17.0.14/ScriptAssemblies</UnityTemplateCache>
+  </PropertyGroup>
+  <Target Name="RequireEditor" BeforeTargets="ResolveReferences">
+    <Error Condition="!Exists('$(UnityEditorRoot)/Resources/Scripting/Managed/UnityEngine/UnityEngine.CoreModule.dll')" Text="Set UnityEditorRoot to the Unity 6000.3.26f1 application's Contents directory." />
+  </Target>
+  <ItemGroup>
+    <Compile Include="../Assets/Scripts/**/*.cs" />
+    <Compile Include="../Assets/Editor/**/*.cs" />
+    <Reference Include="$(UnityEditorRoot)/Resources/Scripting/Managed/UnityEngine/*.dll" />
+    <Reference Include="$(UnityEditorRoot)/Resources/Scripting/Managed/Newtonsoft.Json.dll" />
+    <Reference Include="$(UnityTemplateCache)/Unity.InputSystem.dll" />
+    <Reference Include="$(UnityTemplateCache)/UnityEngine.UI.dll" />
+    <Reference Include="$(UnityTemplateCache)/Unity.RenderPipelines.Universal.Runtime.dll" />
+    <Reference Include="$(UnityTemplateCache)/Unity.RenderPipelines.Core.Runtime.dll" />
+    <Reference Include="$(UnityTemplateCache)/Unity.RenderPipelines.Core.Runtime.Shared.dll" />
+    <Reference Include="$(UnityTemplateCache)/Unity.RenderPipelines.Universal.Config.Runtime.dll" />
+    <Reference Include="$(UnityTemplateCache)/Unity.Collections.dll" />
+    <Reference Include="$(UnityTemplateCache)/Unity.Mathematics.dll" />
+  </ItemGroup>
+</Project>
