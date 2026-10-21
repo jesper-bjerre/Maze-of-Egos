@@ -86,7 +86,8 @@ snapshots; testen er ikke en normal hel spilrunde mod AI.
 Testdata gemmes i en særskilt midlertidig mappe; brugerens
 gemte spil ændres ikke. Putin-piloten kontrolleres også for skeletbevægelse,
 frosset pause, retning/skala, glid, reduceret bevægelse, power og retur.
-Resultat og 17 faktiske skærmbilleder ligger i
+Fodhøjde under jagt samt profil og bagfra kontrolleres også. Resultat,
+`character-check.json` og 19 faktiske skærmbilleder ligger i
 `.artifacts/smoke-mac/`; runtime-loggen ligger i `Logs/runtime-smoke-mac.log`.
 Testkoden er kun med i editor- og udviklingsbuilds og kører kun med testflaget.
 
@@ -121,7 +122,7 @@ xcrun devicectl device copy from --device "DIN_IPHONE" --domain-type appDataCont
 
 Kontrollér både **RUNTIME SMOKE PASSED** i loggen og `PASS` i det hentede
 `result.txt`; iOS kan afslutte processen med kode 0 også ved en testfejl.
-Testen sender syntetiske touchhændelser og gemmer 17 faktiske framebuffer-PNG'er.
+Testen sender syntetiske touchhændelser og gemmer 19 faktiske framebuffer-PNG'er.
 Den gemmer særskilte testdata og lukker processen efter kontrollen.
 Start derefter appen normalt fra hjemmeskærmen for manuel afprøvning.
 De første dokumenterede iPhone-skærmbilleder findes under `docs/verification/`.

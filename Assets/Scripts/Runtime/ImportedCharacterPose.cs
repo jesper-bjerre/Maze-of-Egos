@@ -12,6 +12,9 @@ namespace MazeOfEgos.Runtime
         private readonly SkinnedMeshRenderer skin;
         private readonly MaterialPropertyBlock frightened = new MaterialPropertyBlock();
         private readonly bool[] jacket;
+        private static readonly string[] ClipNames = { "Idle", "Chase", "Surprise", "Slip", "Return" };
+        private readonly AnimationState[] clips = new AnimationState[5];
+        private readonly GaitClock gait = new GaitClock();
         private bool wasFrightened;
         private double surpriseStarted = double.NegativeInfinity;
         public string CurrentClip { get; private set; }
@@ -28,14 +31,18 @@ namespace MazeOfEgos.Runtime
             animation.playAutomatically = false; animation.Stop(); animation.cullingType = AnimationCullingType.AlwaysAnimate;
             foreach (AnimationClip clip in Resources.LoadAll<AnimationClip>("CharacterModels/putin"))
                 if (!clip.name.StartsWith("__", StringComparison.Ordinal) && animation[clip.name] == null) animation.AddClip(clip, clip.name);
-            foreach (string name in new[] { "Idle", "Chase", "Surprise", "Slip", "Return" })
-                if (animation[name] == null) throw new InvalidOperationException("Character missing animation " + name);
+            for (int i = 0; i < clips.Length; i++)
+            {
+                clips[i] = animation[ClipNames[i]];
+                if (clips[i] == null) throw new InvalidOperationException("Character missing animation " + ClipNames[i]);
+                clips[i].speed = 0;
+            }
             skin = instance.GetComponentInChildren<SkinnedMeshRenderer>();
             jacket = new bool[skin.sharedMaterials.Length];
             for (int i = 0; i < jacket.Length; i++) jacket[i] = skin.sharedMaterials[i].name == "Putin-SuitNavy" || skin.sharedMaterials[i].name == "Putin-SuitLapel";
             frightened.SetColor("_BaseColor", new Color(.40f, .57f, .90f));
         }
-        public void Reset() { wasFrightened = false; surpriseStarted = double.NegativeInfinity; }
+        public void Reset() { wasFrightened = false; surpriseStarted = double.NegativeInfinity; gait.Reset(); }
         public void Surprise(double time) => surpriseStarted = time;
         public void Render(GameSession session, PursuerState state, bool reducedMotion)
         {
@@ -43,22 +50,26 @@ namespace MazeOfEgos.Runtime
             if (vulnerable && !wasFrightened) Surprise(session.Time);
             wasFrightened = vulnerable;
             bool slip = session.Time < state.stunUntil || session.Time < state.oilUntil;
-            string clip = state.life == PursuerLife.Returning ? "Return" : slip ? "Slip" :
-                !reducedMotion && session.Time - surpriseStarted < .8 ? "Surprise" :
-                session.PursuerSpeed(state) > 0 && (state.life == PursuerLife.Active || state.life == PursuerLife.Exiting) ? "Chase" : "Idle";
+            double speed = session.PursuerSpeed(state);
+            bool walking = state.life == PursuerLife.Active || state.life == PursuerLife.Exiting;
+            gait.Update(session.Time, walking ? speed * MazeMap.GridMeters : 0);
+            int clip = state.life == PursuerLife.Returning ? 4 : slip ? 3 :
+                walking && !reducedMotion && session.Time - surpriseStarted < .8 ? 2 : walking && speed > 0 ? 1 : 0;
             // A held, legible slip pose replaces wobble when reduced motion is enabled.
-            float time = clip == "Surprise" ? (float)(session.Time - surpriseStarted) :
-                clip == "Slip" && reducedMotion ? .3f : (float)session.Time;
+            float time = clip == 2 ? (float)(session.Time - surpriseStarted) :
+                clip == 1 ? (float)(gait.Cycles % 1) * clips[1].length :
+                clip == 4 ? (float)(session.Time * 2.6 % 1) * clips[4].length :
+                clip == 3 && reducedMotion ? .3f : (float)session.Time;
             Sample(clip, time);
             for (int i = 0; i < jacket.Length; i++)
                 if (jacket[i]) skin.SetPropertyBlock(vulnerable ? frightened : null, i);
         }
-        private void Sample(string name, float time)
+        private void Sample(int index, float time)
         {
-            foreach (AnimationState other in animation) { other.enabled = false; other.weight = 0; }
-            AnimationState state = animation[name]; state.enabled = true; state.weight = 1; state.speed = 0;
-            state.time = name == "Surprise" ? Mathf.Min(time, state.length) : Mathf.Repeat(time, state.length);
-            animation.Sample(); state.enabled = false; CurrentClip = name;
+            for (int i = 0; i < clips.Length; i++) { clips[i].enabled = false; clips[i].weight = 0; }
+            AnimationState state = clips[index]; state.enabled = true; state.weight = 1;
+            state.time = index == 2 ? Mathf.Min(time, state.length) : Mathf.Repeat(time, state.length);
+            animation.Sample(); state.enabled = false; CurrentClip = ClipNames[index];
         }
     }
 }

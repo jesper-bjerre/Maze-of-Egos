@@ -9,11 +9,11 @@ namespace MazeOfEgos.Editor
     public static class CharacterModelSetup
     {
         private const string ModelPath = "Assets/Resources/CharacterModels/putin.fbx";
-        private static readonly string[] Names = { "SuitNavy", "SuitLapel", "ShirtIvory", "TieBurgundy", "Leather", "Skin", "Hair", "Metal", "FaceReference" };
+        private static readonly string[] Names = { "SuitNavy", "SuitLapel", "ShirtIvory", "TieBurgundy", "Leather", "Skin", "Hair", "Metal", "FaceReference", "HairHighlight" };
         private static readonly Color[] Colors = {
             new Color(.075f,.10f,.15f), new Color(.105f,.135f,.19f), new Color(.91f,.90f,.84f),
-            new Color(.38f,.035f,.055f), new Color(.035f,.028f,.025f), new Color(.72f,.46f,.31f),
-            new Color(.28f,.18f,.10f), new Color(.52f,.35f,.13f), Color.white };
+            new Color(.38f,.035f,.055f), new Color(.035f,.028f,.025f), new Color(.78f,.55f,.40f),
+            new Color(.28f,.18f,.10f), new Color(.52f,.35f,.13f), Color.white, new Color(.38f,.26f,.16f) };
         public static void Configure()
         {
             var importer = AssetImporter.GetAtPath(ModelPath) as ModelImporter;
@@ -46,6 +46,12 @@ namespace MazeOfEgos.Editor
                     AssetDatabase.CreateAsset(material, path);
                 }
                 material.name = "Putin-" + Names[i]; material.color = Colors[i];
+                if (Names[i] == "FaceReference")
+                {
+                    material.shader = Shader.Find("MazeOfEgos/Universal Render Pipeline/CharacterReference");
+                    if (!material.shader) throw new InvalidOperationException("Missing character reference shader.");
+                    material.SetColor("_SkinColor", Colors[5]);
+                }
                 material.SetFloat("_Metallic", Names[i] == "Metal" ? .65f : 0);
                 material.SetFloat("_Smoothness", Names[i] == "Leather" ? .66f : .28f);
                 material.mainTexture = Names[i] == "FaceReference" ? Resources.Load<Texture2D>("Characters/putin") : null;
@@ -62,6 +68,12 @@ namespace MazeOfEgos.Editor
             if (skins.Length != 1 || !skins[0].sharedMesh || skins[0].bones.Length < 17)
                 throw new InvalidOperationException("Pilot needs one skinned mesh and its 17-bone rig.");
             var skin = skins[0];
+            Color[] mask = skin.sharedMesh.colors;
+            if (mask.Length != skin.sharedMesh.vertexCount || !mask.Any(c => c.r > .05f && c.r < .95f))
+                throw new InvalidOperationException("Head reference fade weights were lost during FBX import.");
+            Material face = skin.sharedMaterials.FirstOrDefault(m => m && m.name == "Putin-FaceReference");
+            if (!face || !face.mainTexture || face.shader.name != "MazeOfEgos/Universal Render Pipeline/CharacterReference")
+                throw new InvalidOperationException("Head must retain the original reference and skin-blend shader.");
             if (skin.sharedMesh.triangles.Length / 3 > 20000)
                 throw new InvalidOperationException("Pilot exceeds its 20k triangle budget.");
             if (skin.bounds.size.y < 1.7f || skin.bounds.size.y > 2.3f)

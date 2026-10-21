@@ -10,7 +10,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
-from mathutils import Vector
+from mathutils import Vector, Matrix
 
 ROOT = Path(__file__).resolve().parents[1]
 bpy.context.preferences.filepaths.save_version = 0
@@ -28,8 +28,8 @@ for action in list(bpy.data.actions):
 PALETTE = {
     'SuitNavy': (0.075, 0.10, 0.15, 1), 'SuitLapel': (0.105, 0.135, 0.19, 1),
     'ShirtIvory': (0.91, 0.90, 0.84, 1), 'TieBurgundy': (0.38, 0.035, 0.055, 1),
-    'Leather': (0.035, 0.028, 0.025, 1), 'Skin': (0.72, 0.46, 0.31, 1),
-    'Hair': (0.28, 0.18, 0.10, 1), 'Metal': (0.52, 0.35, 0.13, 1),
+    'Leather': (0.035, 0.028, 0.025, 1), 'Skin': (0.78, 0.55, 0.40, 1),
+    'Hair': (0.28, 0.18, 0.10, 1), 'HairHighlight': (0.38, 0.26, 0.16, 1), 'Metal': (0.52, 0.35, 0.13, 1),
     'FaceReference': (1, 1, 1, 1),
 }
 materials = {}
@@ -138,9 +138,10 @@ def patch(name, vertices, material, bone):
 
 
 # A fitted suit with separate collar, lapels, pockets, tie and buttons.
-vertical_rings('Suit tailored torso', [(.76,.29,.14,0),(.82,.30,.16,-.012),(.98,.29,.17,-.02),
-    (1.14,.28,.15,0),(1.25,.32,.13,0),(1.29,.25,.11,0)], 'SuitNavy', 'Spine')
-ellipsoid('Trouser seat', (0,.01,.77),(.275,.15,.15),'SuitNavy','Hips')
+torso_profiles=[(.76,.29,.14,0),(.82,.30,.16,-.012),(.98,.29,.17,-.02),
+    (1.14,.28,.15,0),(1.25,.32,.13,0),(1.29,.25,.11,0)]
+vertical_rings('Suit tailored torso',torso_profiles,'SuitNavy','Spine')
+vertical_rings('Tailored waist',[(.68,.22,.12,.01),(.74,.27,.15,.01),(.85,.28,.15,0)],'SuitNavy','Hips')
 patch('Shirt', [(-.12,-.137,1.27),(.12,-.137,1.27),(.075,-.191,.94),(-.075,-.191,.94)],'ShirtIvory','Spine')
 for sign in [-1,1]:
     patch('Folded lapel', [(sign*.12,-.155,1.28),(sign*.27,-.14,1.24),(sign*.20,-.192,1.10),
@@ -153,16 +154,22 @@ patch('Long burgundy tie', [(-.02,-.213,1.21),(.02,-.213,1.21),(.045,-.215,.98),
 ellipsoid('Neck',(0,0,1.29),(.10,.085,.12),'Skin','Neck')
 
 for side, sign in [('L',1),('R',-1)]:
-    leg = vertical_rings('Tailored trouser '+side, [(.12,.082,.085,.015),(.22,.092,.09,.012),(.43,.105,.10,0),(.60,.12,.115,0),(.78,.135,.13,0)],'SuitNavy','Thigh.'+side,x=sign*.16)
+    leg = vertical_rings('Tailored trouser '+side, [(.12,.082,.085,.015),(.22,.092,.09,.012),(.34,.10,.098,0),(.39,.103,.10,0),(.43,.105,.10,0),(.47,.108,.104,0),(.52,.113,.11,0),(.64,.125,.12,0),(.78,.135,.13,0)],'SuitNavy','Thigh.'+side,x=sign*.16)
     lower = leg.vertex_groups.new(name='Shin.'+side)
     upper = leg.vertex_groups['Thigh.'+side]
     for vertex in leg.data.vertices:
-        blend = max(0,min(1,(.49-vertex.co.z)/.12))
+        blend = max(0,min(1,(.52-vertex.co.z)/.18))
         upper.add([vertex.index],1-blend,'REPLACE'); lower.add([vertex.index],blend,'REPLACE')
     ellipsoid('Leather shoe '+side,(sign*.16,-.055,.075),(.115,.21,.075),'Leather','Foot.'+side)
-    ellipsoid('Shoe sole '+side,(sign*.16,-.055,.025),(.119,.213,.027),'Leather','Foot.'+side)
-    tube('Upper sleeve '+side,[(sign*.28,0,1.23),(sign*.34,0,1.16),(sign*.41,0,.99)],[.105,.11,.085],'SuitNavy','UpperArm.'+side)
-    tube('Forearm sleeve '+side,[(sign*.41,0,1.01),(sign*.46,-.01,.89),(sign*.49,-.02,.80)],[.086,.077,.067],'SuitNavy','Forearm.'+side)
+    ellipsoid('Shoe sole '+side,(sign*.16,-.055,.027),(.119,.213,.025),'Leather','Foot.'+side)
+    sleeve=tube('Continuous sleeve '+side,[(sign*.28,0,1.23),(sign*.34,0,1.16),
+        (sign*.39,0,1.04),(sign*.41,0,.99),(sign*.43,-.005,.95),(sign*.46,-.01,.89),(sign*.49,-.02,.80)],
+        [.105,.11,.09,.086,.084,.077,.067],'SuitNavy','UpperArm.'+side)
+    forearm=sleeve.vertex_groups.new(name='Forearm.'+side)
+    for vertex in sleeve.data.vertices:
+        weight=max(0,min(1,(1.06-vertex.co.z)/.14));weight=weight*weight*(3-2*weight)
+        sleeve.vertex_groups['UpperArm.'+side].add([vertex.index],1-weight,'REPLACE')
+        forearm.add([vertex.index],weight,'REPLACE')
     tube('Ivory cuff '+side,[(sign*.486,-.02,.817),(sign*.495,-.02,.786)],[.067,.064],'ShirtIvory','Forearm.'+side)
     ellipsoid('Hand palm '+side,(sign*.502,-.02,.75),(.063,.045,.074),'Skin','Hand.'+side)
     for finger in range(4):
@@ -171,53 +178,92 @@ for side, sign in [('L',1),('R',-1)]:
     ellipsoid('Thumb '+side,(sign*.448,-.044,.736),(.025,.029,.05),'Skin','Hand.'+side,12,8)
     for z in [.83,.86]: ellipsoid('Sleeve button '+side,(sign*.50,.043,z),(.011,.008,.011),'Metal','Forearm.'+side,12,8)
 
-# Volumetric skull with cheek, eye-socket and nose relief. The front samples
-# the lower front portrait in the ORIGINAL sheet; no PNG is cropped or edited.
+# Continuous sculpted head. UVs and a vertex mask sample the unchanged sheet;
+# temples fade into the same skin material colour instead of ending at a seam.
 profiles=[(1.31,.065,.075),(1.35,.15,.12),(1.42,.205,.15),(1.52,.235,.18),
-          (1.64,.26,.205),(1.76,.25,.21),(1.85,.22,.18),(1.91,.145,.12),(1.94,.005,.005)]
-head_verts, head_faces, head_uv, face_materials = [], [], [], []
-segments=48
-for row,(z,width,depth) in enumerate(profiles):
+          (1.64,.26,.205),(1.76,.25,.21),(1.85,.22,.18),(1.91,.145,.12),(1.94,.001,.001)]
+portrait_widths=[10,44,72,88,91,85,70,45,3]
+def profile_at(z):
+    for i,((za,wa,da),(zb,wb,db)) in enumerate(zip(profiles,profiles[1:])):
+        if za<=z<=zb:
+            f=(z-za)/(zb-za)
+            return wa+(wb-wa)*f,da+(db-da)*f,portrait_widths[i]+(portrait_widths[i+1]-portrait_widths[i])*f
+    return .001,.001,3
+
+def smooth(a,b,t):
+    t=max(0,min(1,(t-a)/(b-a)));return t*t*(3-2*t)
+
+head_verts,head_faces,head_uv,head_mask=[],[],[],[]
+segments=64
+for row in range(37):
+    z=1.31+(1.94-1.31)*row/36;width,depth,portrait_width=profile_at(z)
     for col in range(segments):
-        theta=2*math.pi*col/segments; x=width*math.sin(theta); front=math.cos(theta)
-        y=-depth*front
+        theta=2*math.pi*col/segments;x=width*math.sin(theta);front=math.cos(theta);y=-depth*front
         if front>0:
-            nose=.115*math.exp(-((x/.05)**2)-((z-1.52)/.09)**2)
-            cheek=.028*math.exp(-((abs(x)-.13)/.065)**2-((z-1.48)/.085)**2)
-            sockets=.015*math.exp(-((abs(x)-.10)/.05)**2-((z-1.65)/.055)**2)
-            y-=(nose+cheek-sockets)*front**3
-        # Follow the portrait's silhouette instead of projecting its background
-        # and jacket onto the temples/chin. The source PNG stays unchanged.
-        portrait_width=[10,44,72,88,91,85,70,45,8][row]
-        head_verts.append((x,y,z)); head_uv.append(((689+x/width*portrait_width)/1536,1-(540+(1.94-z)/.63*284)/1024))
+            bridge=.050*math.exp(-(x/.033)**2-((z-1.55)/.075)**2)
+            tip=.105*math.exp(-(x/.050)**2-((z-1.48)/.040)**2)
+            nostrils=.025*math.exp(-((abs(x)-.047)/.024)**2-((z-1.466)/.023)**2)
+            brow=.022*math.exp(-((abs(x)-.10)/.075)**2-((z-1.64-abs(x)*.09)/.023)**2)
+            cheek=.024*math.exp(-((abs(x)-.13)/.065)**2-((z-1.49)/.070)**2)
+            sockets=.021*math.exp(-((abs(x)-.10)/.048)**2-((z-1.595)/.025)**2)
+            mouth=.018*math.exp(-(x/.095)**2-((z-1.389)/.023)**2)
+            chin=.022*math.exp(-(x/.09)**2-((z-1.338)/.026)**2)
+            y-=(bridge+tip+nostrils+brow+cheek-sockets+mouth+chin)*front**5
+        head_verts.append((x,y,z))
+        head_uv.append(((689+x/width*portrait_width)/1536,1-(540+(1.94-z)/.63*284)/1024))
+        head_mask.append(smooth(.08,.68,front)*smooth(1.31,1.345,z))
         if row:
             a=(row-1)*segments+col;b=(row-1)*segments+(col+1)%segments
             head_faces.append((a,b,row*segments+(col+1)%segments,row*segments+col))
-            mid=theta+math.pi/segments;face_materials.append(1 if math.cos(mid)>.40 else 0)
-head=mesh_object('Sculpted reference head',head_verts,head_faces,'Skin','Head',head_uv)
-head.data.materials.append(materials['FaceReference'])
-for poly,index in zip(head.data.polygons,face_materials):poly.material_index=index
+head=mesh_object('Continuous sculpted reference head',head_verts,head_faces,'FaceReference','Head',head_uv)
+mask=head.data.color_attributes.new(name='ReferenceFade',type='FLOAT_COLOR',domain='POINT')
+for entry,weight in zip(mask.data,head_mask):entry.color=(weight,weight,weight,1)
+# Same material blend in Blender as in the mobile URP shader.
+nodes=materials['FaceReference'].node_tree.nodes;links=materials['FaceReference'].node_tree.links
+attribute=nodes.new('ShaderNodeVertexColor');attribute.layer_name='ReferenceFade'
+blend=nodes.new('ShaderNodeMixRGB');blend.blend_type='MIX'
+blend.inputs[1].default_value=materials['Skin'].node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value
+links.new(attribute.outputs['Color'],blend.inputs[0]);links.new(tex.outputs['Color'],blend.inputs[2])
+links.new(blend.outputs[0],nodes['Principled BSDF'].inputs['Base Color'])
 for sign in [-1,1]:
-    ellipsoid('Ear',(sign*.262,.004,1.61),(.037,.045,.082),'Skin','Head')
-    ellipsoid('Ear fold',(sign*.279,-.025,1.61),(.016,.014,.045),'Skin','Head',12,8)
+    ellipsoid('Ear',(sign*.260,.004,1.61),(.033,.042,.077),'Skin','Head')
+    ellipsoid('Ear fold',(sign*.275,-.025,1.61),(.014,.012,.041),'Skin','Head',12,8)
 
+# Fitted receding hairline and swept surface ridges, no thick helmet silhouette.
 hair_v,hair_f=[],[]
-for row in range(10):
-    t=row/9
-    for col in range(48):
-        theta=2*math.pi*col/48
-        # A high, receding front and a fuller band around the back and temples.
-        limit=.50+1.25*((1-math.cos(theta))/2)**.55
-        phi=t*limit
-        z=1.626+.318*math.cos(phi)
-        for (za,wa,da),(zb,wb,db) in zip(profiles,profiles[1:]):
-            if za<=min(z,1.94)<=zb:
-                f=(min(z,1.94)-za)/(zb-za);width=wa+(wb-wa)*f;depth=da+(db-da)*f;break
-        hair_v.append(((width+.008)*math.sin(theta),-(depth+.008)*math.cos(theta),z+.006))
+def hair_point(theta,t,extra=0):
+    hairline=1.83+.035*math.cos(theta)-.22*((1-math.cos(theta))/2)**.65
+    z=1.94-(1.94-hairline)*t
+    width,depth,_=profile_at(z)
+    ridge=.0025*math.sin(theta*22+t*5)**2
+    return ((width+.004+ridge+extra)*math.sin(theta),-(depth+.004+ridge+extra)*math.cos(theta),z+.004)
+for row in range(17):
+    for col in range(64):
+        hair_v.append(hair_point(2*math.pi*col/64,row/16))
         if row:
-            a=(row-1)*48+col;b=(row-1)*48+(col+1)%48
-            hair_f.append((a,b,row*48+(col+1)%48,row*48+col))
-mesh_object('Receding hair silhouette',hair_v,hair_f,'Hair','Head')
+            a=(row-1)*64+col;b=(row-1)*64+(col+1)%64
+            hair_f.append((a,b,row*64+(col+1)%64,row*64+col))
+mesh_object('Fitted receding hair',hair_v,hair_f,'Hair','Head')
+for strand in range(16):
+    theta=2*math.pi*strand/16
+    points=[hair_point(theta+.20*(1-t),t,.003) for t in [.12,.28,.46,.65,.82,.98]]
+    tube('Swept hair ridge',points,[.003,.005,.005,.004,.003,.0015],'HairHighlight','Head',segments=6)
+
+# Reproject cloth panels onto the jacket before joining. Small triangles follow
+# the curved surface, so the shirt/tie no longer flicker through the jacket.
+for part in parts:
+    if part.name.startswith(('Shirt','Folded lapel','Jacket pocket','White collar','Tie knot','Long burgundy tie')):
+        bm=bmesh.new();bm.from_mesh(part.data)
+        bmesh.ops.triangulate(bm,faces=list(bm.faces))
+        bmesh.ops.subdivide_edges(bm,edges=list(bm.edges),cuts=1,use_grid_fill=True)
+        bm.to_mesh(part.data);bm.free()
+        offset=.014 if part.name.startswith('Shirt') else .021 if part.name.startswith(('Folded lapel','Jacket pocket')) else .031 if part.name.startswith('White collar') else .043
+        for v in part.data.vertices:
+            x,z=v.co.x,v.co.z
+            for (za,wa,da,ya),(zb,wb,db,yb) in zip(torso_profiles,torso_profiles[1:]):
+                if za<=z<=zb:
+                    f=(z-za)/(zb-za);w=wa+(wb-wa)*f;d=da+(db-da)*f;cy=ya+(yb-ya)*f
+                    v.co.y=cy-d*math.sqrt(max(0,1-(x/w)**2))-offset+(.003 if v.normal.y>0 else -.003);break
 
 # Merge into one skinned mesh (material submeshes remain explicit).
 bpy.ops.object.select_all(action='DESELECT')
@@ -234,42 +280,70 @@ facing=bpy.data.objects.new('FacingForward',None);bpy.context.collection.objects
 
 # In-place skeletal clips: gameplay owns all position, heading and timing.
 rig.animation_data_create()
-def set_pose(frame, **rotations):
+def aim_bone(name,head,tail):
+    bone=rig.pose.bones[name];rest=bone.bone
+    rotation=(rest.tail_local-rest.head_local).rotation_difference(tail-head) @ rest.matrix_local.to_quaternion()
+    bone.matrix=Matrix.Translation(head) @ rotation.to_matrix().to_4x4()
+    bpy.context.view_layer.update()
+
+
+def plant_leg(side,target,vertical):
+    # Analytic two-bone solve baked into ordinary FK keys; no Unity IK dependency.
+    upper=rig.data.bones['Thigh.'+side];lower=rig.data.bones['Shin.'+side]
+    hip=upper.head_local+Vector((0,0,vertical));ankle=Vector(target)
+    delta=ankle-hip;distance=delta.length;direction=delta.normalized()
+    assert distance<upper.length+lower.length, ('Unreachable foot target',side,distance)
+    along=(upper.length**2-lower.length**2+distance**2)/(2*distance)
+    height=math.sqrt(max(0,upper.length**2-along**2))
+    pole=Vector((0,-1,0));pole=(pole-direction*pole.dot(direction)).normalized()
+    knee=hip+direction*along+pole*height
+    aim_bone('Thigh.'+side,hip,knee);aim_bone('Shin.'+side,knee,ankle)
+    foot=rig.pose.bones['Foot.'+side]
+    foot.matrix=Matrix.Translation(ankle) @ foot.bone.matrix_local.to_3x3().to_4x4()
+    bpy.context.view_layer.update()
+
+
+def set_pose(frame,rotations,vertical=0,targets=None):
     for bone in rig.pose.bones:
         bone.rotation_mode='XYZ';bone.rotation_euler=(0,0,0);bone.location=(0,0,0)
     for name,values in rotations.items():rig.pose.bones[name].rotation_euler=tuple(math.radians(x) for x in values)
+    # Hips bone local Y is Blender world Z. The old local-Z bob moved fore/aft.
+    rig.pose.bones['Hips'].location.y=vertical
+    bpy.context.view_layer.update()
+    for side,target in (targets or {}).items():plant_leg(side,target,vertical)
     for bone in rig.pose.bones:
         bone.keyframe_insert(data_path='rotation_euler',frame=frame,group=bone.name)
         bone.keyframe_insert(data_path='location',frame=frame,group=bone.name)
 
 
-def action(name, frames, pose):
+def action(name,frames,pose):
     clip=bpy.data.actions.new(name);rig.animation_data.action=clip
     for frame in range(1,frames+1):
-        phase=(frame-1)/(frames-1);values, bob=pose(phase)
-        set_pose(frame,**values)
-        rig.pose.bones['Hips'].location.z=bob
-        rig.pose.bones['Hips'].keyframe_insert(data_path='location',frame=frame,group='Hips')
+        result=pose((frame-1)/(frames-1))
+        set_pose(frame,result[0],result[1],result[2] if len(result)>2 else None)
     clip.use_fake_user=True
     return clip
 
 
 action('Idle',61,lambda t:({'Spine':(math.sin(t*2*math.pi)*1.0,0,0),'Head':(0,math.sin(t*2*math.pi)*1.5,0)},0))
 def chase(t):
-    wave=math.sin(t*2*math.pi);opposite=-wave
-    return {'Thigh.L':(wave*29,0,0),'Thigh.R':(opposite*29,0,0),
-        'Shin.L':(-max(0,-wave)*32,0,0),'Shin.R':(-max(0,wave)*32,0,0),
-        'Foot.L':(-wave*8,0,0),'Foot.R':(wave*8,0,0),
-        'UpperArm.L':(-wave*25,0,-7),'UpperArm.R':(wave*25,0,7),
-        'Forearm.L':(-18,0,0),'Forearm.R':(-18,0,0),'Spine':(5,0,wave*2),'Head':(-3,0,-wave*2)},abs(wave)*.022
-action('Chase',21,chase)
+    wave=math.sin(t*2*math.pi);targets={}
+    for side,sign,offset in [('L',1,0),('R',-1,.5)]:
+        phase=(t+offset)%1
+        y=-.22+.88*phase if phase<.5 else .22-.88*(phase-.5)
+        lift=0 if phase<.5 else .10*max(0,math.sin((phase-.5)*2*math.pi))**1.4
+        targets[side]=(sign*.16,y,.12+lift)
+    return {'UpperArm.L':(-wave*24,0,-5),'UpperArm.R':(wave*24,0,5),
+        'Forearm.L':(-22,0,0),'Forearm.R':(-22,0,0),'Spine':(4,0,wave*1.5),
+        'Head':(-2,0,-wave*1.5)},-.055+.003*math.cos(t*4*math.pi),targets
+action('Chase',41,chase)
 action('Surprise',25,lambda t:({'UpperArm.L':(-30*math.sin(t*math.pi),0,-26*math.sin(t*math.pi)),
     'UpperArm.R':(-30*math.sin(t*math.pi),0,26*math.sin(t*math.pi)),
     'Head':(-12*math.sin(t*math.pi),0,0),'Spine':(-7*math.sin(t*math.pi),0,0)},0))
 action('Slip',37,lambda t:({'UpperArm.L':(-20,0,-42),'UpperArm.R':(-20,0,42),
     'Forearm.L':(-25,0,0),'Forearm.R':(-25,0,0),'Spine':(-10,0,math.sin(t*math.pi*4)*8),
     'Head':(5,0,-math.sin(t*math.pi*4)*10),'Thigh.L':(-12,0,-4),'Thigh.R':(12,0,4)},0))
-action('Return',21,chase)
+action('Return',41,chase)
 rig.animation_data.action=None
 for bone in rig.pose.bones:bone.rotation_euler=(0,0,0);bone.location=(0,0,0)
 scene=bpy.context.scene;scene.render.fps=30;scene.frame_set(1)
@@ -281,7 +355,7 @@ bpy.ops.export_scene.fbx(filepath=str(OUTPUT/'putin.fbx'),use_selection=True,obj
     global_scale=1,apply_unit_scale=True,apply_scale_options='FBX_SCALE_UNITS',axis_forward='-Z',axis_up='Y',
     add_leaf_bones=False,use_armature_deform_only=False,bake_anim=True,bake_anim_use_all_actions=True,
     bake_anim_use_nla_strips=False,bake_anim_force_startend_keying=True,bake_anim_simplify_factor=0,
-    path_mode='STRIP',embed_textures=False)
+    path_mode='STRIP',embed_textures=False,colors_type='LINEAR')
 
 # Editable source plus an actual three-dimensional preview, kept out of Assets.
 world=bpy.data.worlds.new('Studio World');scene.world=world;world.use_nodes=True
@@ -299,18 +373,41 @@ camera_data.type='ORTHO';camera_data.ortho_scale=2.5;scene.camera=camera
 scene.render.engine='CYCLES';scene.cycles.samples=24;scene.cycles.use_denoising=True
 scene.render.resolution_x=900;scene.render.resolution_y=1000;scene.render.resolution_percentage=100
 scene.view_settings.view_transform='AgX'
-scene.render.filepath=str(PREVIEW/'putin-three-quarter.png')
 bpy.ops.wm.save_as_mainfile(filepath=str(EDITABLE/'putin-pilot.blend'))
-bpy.ops.render.render(write_still=True)
+for label,location in [('front',(0,-6,1.6)),('three-quarter',(2.6,-6,2.5)),('profile',(6,0,1.6)),('back',(0,6,1.6))]:
+    camera.location=location;camera.rotation_euler=(Vector((0,0,1))-camera.location).to_track_quat('-Z','Y').to_euler()
+    scene.render.filepath=str(PREVIEW/('putin-'+label+'.png'));bpy.ops.render.render(write_still=True)
+# Verify actual evaluated shoe vertices throughout the baked chase cycle.
+rig.animation_data.action=bpy.data.actions['Chase'];shoe_indices={}
+for side in ['L','R']:
+    group=body.vertex_groups['Foot.'+side].index
+    shoe_indices[side]=[v.index for v in body.data.vertices if any(g.group==group and g.weight>.99 for g in v.groups)]
+contact_errors=[];minimum=100;stance_samples=0
+for frame in range(1,41):
+    scene.frame_set(frame);bpy.context.view_layer.update()
+    evaluated=body.evaluated_get(bpy.context.evaluated_depsgraph_get());mesh=evaluated.to_mesh()
+    for side,offset in [('L',0),('R',.5)]:
+        low=min(mesh.vertices[i].co.z for i in shoe_indices[side]);minimum=min(minimum,low)
+        if ((frame-1)/40+offset)%1<.5:
+            contact_errors.append(abs(low));stance_samples+=1
+    evaluated.to_mesh_clear()
+assert max(contact_errors)<.008,('Foot contact error',max(contact_errors))
+assert minimum>-.008,('Shoe penetrates ground',minimum)
+validation={'stanceSamples':stance_samples,'maxShoeContactErrorMeters':max(contact_errors),'lowestShoeVertexMeters':minimum,
+    'method':'Evaluated skinned shoe vertices on every authored Chase frame; excludes swing foot from contact error.'}
+(PREVIEW/'geometry-check.json').write_text(json.dumps(validation,indent=2)+'\n')
+camera.location=(2.6,-6,2.5);camera.rotation_euler=(Vector((0,0,1))-camera.location).to_track_quat('-Z','Y').to_euler()
+scene.frame_set(8);scene.render.filepath=str(PREVIEW/'putin-chase.png');bpy.ops.render.render(write_still=True)
 triangles=sum(len(p.vertices)-2 for p in body.data.polygons)
-manifest={'id':'putin','stage':'local-rigged-review-pilot','finalArtAccepted':False,'generator':'Tools/build_putin_pilot.py',
+manifest={'id':'putin','stage':'refined-local-rigged-review-pilot','finalArtAccepted':False,'generator':'Tools/build_putin_pilot.py',
     'blenderVersion':bpy.app.version_string,'sourceReference':'docs/images/Putin character reference sheet.png',
-    'sourceSha256':hashlib.sha256(SOURCE.read_bytes()).hexdigest(),'textureUsage':'Unmodified original sheet sampled by mesh UVs; no edited PNG.',
+    'sourceSha256':hashlib.sha256(SOURCE.read_bytes()).hexdigest(),'textureUsage':'Unmodified original sheet sampled by mesh UVs, blended to skin with vertex weights; no edited PNG.',
+    'revision':2,'strideMeters':.88,'geometryValidation':validation,
     'editableSource':'art/characters/putin/putin-pilot.blend','runtimeModel':'Assets/Resources/CharacterModels/putin.fbx',
     'runtimeSha256':hashlib.sha256((OUTPUT/'putin.fbx').read_bytes()).hexdigest(),'vertices':len(body.data.vertices),'triangles':triangles,
     'bones':len(rig.data.bones),'clips':['Idle','Chase','Surprise','Slip','Return'],
     'metersTall':round(max(v.co.z for v in body.data.vertices)-min(v.co.z for v in body.data.vertices),4),
     'licensing':'Locally authored geometry/rig/animation in this repository; user-supplied reference art. Final release rights review remains outstanding.',
-    'limitations':['Review pilot; not final M5 art.','Fixed scowl portrait texture; no facial blend shapes.','Reference projection and side transitions require visual review.']}
+    'limitations':['Review pilot; not final M5 art.','Fixed scowl portrait texture; no facial blend shapes.','Profile texture detail remains limited; further art review required.']}
 (EDITABLE/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 print('PUTIN PILOT BUILT',json.dumps({'vertices':manifest['vertices'],'triangles':triangles,'bones':manifest['bones']}))

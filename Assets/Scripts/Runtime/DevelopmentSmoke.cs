@@ -60,7 +60,7 @@ namespace MazeOfEgos.Runtime
                 if (!more) break;
                 yield return next;
             }
-            File.WriteAllText(Path.Combine(output, "result.txt"), "PASS native rendering, portraits, menu, three-touch controls in both layouts, release, pause, settings, save/resume, banana flight/hand/landing, mid-flight save/resume, reduced motion, banana/oil visuals, shortcut signals/opening/reservation/closure, pursuer gates, rigged Putin chase/pause/slip/power/return, level transition, Game Over and replay.\nSynthetic touch and controlled scene fixtures; manual device testing, full rounds against AI and performance remain separate.\n");
+            File.WriteAllText(Path.Combine(output, "result.txt"), "PASS native rendering, portraits, menu, three-touch controls in both layouts, release, pause, settings, save/resume, banana flight/hand/landing, mid-flight save/resume, reduced motion, banana/oil visuals, shortcut signals/opening/reservation/closure, pursuer gates, rigged Putin chase/ground contact/pause/slip/power/return/profile/back, level transition, Game Over and replay.\nSynthetic touch and controlled scene fixtures; manual device testing, full rounds against AI and performance remain separate.\n");
             Debug.Log("RUNTIME SMOKE PASSED"); Application.Quit(0);
         }
         private IEnumerator Run()
@@ -319,7 +319,7 @@ namespace MazeOfEgos.Runtime
                 "Replay did not reset the game.");
             RequireHud(app.Session);
             yield return new WaitForSecondsRealtime(0.3f);
-            foreach (string name in new[] { "01-menu.png", "02-gameplay.png", "03-settings.png", "04-left-handed.png", "05-items.png", "06-shortcut-warning.png", "07-shortcut-open.png", "08-base.png", "09-level-clear.png", "10-game-over.png", "11-banana-flight.png", "12-banana-landed.png", "13-banana-reduced-motion.png", "14-putin-chase.png", "15-putin-slip.png", "16-putin-power.png", "17-putin-return.png" })
+            foreach (string name in new[] { "01-menu.png", "02-gameplay.png", "03-settings.png", "04-left-handed.png", "05-items.png", "06-shortcut-warning.png", "07-shortcut-open.png", "08-base.png", "09-level-clear.png", "10-game-over.png", "11-banana-flight.png", "12-banana-landed.png", "13-banana-reduced-motion.png", "14-putin-chase.png", "15-putin-slip.png", "16-putin-power.png", "17-putin-return.png", "18-putin-profile.png", "19-putin-back.png" })
                 Require(File.Exists(Path.Combine(output, name)), "Screenshot was not written: " + name);
             InputSystem.RemoveDevice(screen);
         }
@@ -328,8 +328,16 @@ namespace MazeOfEgos.Runtime
             bool originalMotion = app.Settings.reducedMotion; app.Settings.reducedMotion = false;
             InstallFixture(app, ItemKind.None, new Point2(6, 5), 90);
             SessionSnapshot fixture = app.Session.Snapshot();
+            // Clear only the review corridor's hearts so they do not obscure the model.
+            fixture.remainingHearts = 0;
+            for (int i = 0; i < fixture.collected.Length; i++)
+            {
+                Cell cell = app.Session.Maze.Hearts[i];
+                if (cell.y == 5 && cell.x >= 4 && cell.x <= 11) fixture.collected[i] = true;
+                if (!fixture.collected[i]) fixture.remainingHearts++;
+            }
             PursuerState putin = fixture.pursuers[0]; putin.life = PursuerLife.Active;
-            putin.from = new Cell(9, 5); putin.to = new Cell(8, 5); putin.progress = .4;
+            putin.from = new Cell(10, 5); putin.to = new Cell(9, 5); putin.progress = .4;
             putin.releaseAt = putin.stunUntil = putin.oilUntil = 0;
             app.Session.Restore(fixture); app.Session.Resume(0);
             yield return new WaitForSecondsRealtime(.2f);
@@ -347,6 +355,24 @@ namespace MazeOfEgos.Runtime
             yield return new WaitForSecondsRealtime(.14f);
             skin.BakeMesh(baked);
             Require(VertexDifference(before, baked.vertices) > .01f, "Chase clip did not deform the model.");
+            Transform leftFoot = Array.Find(skin.bones, b => b.name == "Foot.L");
+            Transform rightFoot = Array.Find(skin.bones, b => b.name == "Foot.R");
+            Require(leftFoot && rightFoot, "Missing foot bones for ground check.");
+            float contactError = 0; int contactSamples = 0; bool liftedFoot = false;
+            float end = Time.realtimeSinceStartup + .35f;
+            while (Time.realtimeSinceStartup < end)
+            {
+                yield return new WaitForEndOfFrame();
+                if (animation["Chase"].weight < .5f) continue;
+                float left = leftFoot.position.y - avatar.position.y, right = rightFoot.position.y - avatar.position.y;
+                contactError = Mathf.Max(contactError, Mathf.Abs(Mathf.Min(left, right) - .12f));
+                Require(left > .105f && right > .105f, "Imported chase foot penetrated the floor.");
+                liftedFoot |= Mathf.Max(left, right) > .16f; contactSamples++;
+            }
+            Require(contactSamples >= 4 && contactError < .015f && liftedFoot,
+                "Imported gait lost planted/swing foot contact: samples=" + contactSamples + ", error=" + contactError);
+            File.WriteAllText(Path.Combine(output, "character-check.json"), JsonUtility.ToJson(new CharacterCheck {
+                groundSamples = contactSamples, maxAnkleContactErrorMeters = contactError, swingFootObserved = liftedFoot }, true));
             yield return new WaitForEndOfFrame(); Capture("14-putin-chase.png");
             app.Session.Pause();
             yield return null;
@@ -385,7 +411,27 @@ namespace MazeOfEgos.Runtime
             Require(Math.Abs(avatar.localScale.x - .38f) < .001f && avatar.Find("Return bubble").gameObject.activeSelf,
                 "Return did not miniaturise the imported model with its bubble.");
             yield return new WaitForEndOfFrame(); Capture("17-putin-return.png");
+            // Held, controlled idle poses provide comparable native profile/back views.
+            InstallFixture(app, ItemKind.None, new Point2(4, 5), 90);
+            fixture = app.Session.Snapshot(); putin = fixture.pursuers[0];
+            putin.life = PursuerLife.Recovering; putin.recoverUntil = fixture.time + 120;
+            putin.stunUntil = putin.oilUntil = 0;
+            putin.from = new Cell(6, 4); putin.to = new Cell(6, 5); putin.progress = 1;
+            app.Session.Restore(fixture); app.Session.Resume(0);
+            yield return new WaitForSecondsRealtime(.1f);
+            Require(animation["Idle"].weight > .5f, "Recovered character kept its earlier surprise pose.");
+            yield return new WaitForEndOfFrame(); Capture("18-putin-profile.png");
+            fixture = app.Session.Snapshot(); fixture.pursuers[0].from = new Cell(5, 5);
+            app.Session.Restore(fixture); app.Session.Resume(0);
+            yield return new WaitForSecondsRealtime(.1f);
+            yield return new WaitForEndOfFrame(); Capture("19-putin-back.png");
             app.Settings.reducedMotion = originalMotion; Destroy(baked);
+        }
+        [Serializable] private sealed class CharacterCheck
+        {
+            public int groundSamples;
+            public float maxAnkleContactErrorMeters;
+            public bool swingFootObserved;
         }
         private static float VertexDifference(Vector3[] first, Vector3[] second)
         {

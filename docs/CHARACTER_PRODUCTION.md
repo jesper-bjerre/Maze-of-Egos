@@ -12,7 +12,55 @@ endelig M5-godkendelse.
 Der er 0 kr. ekstra budget. Ingen eksterne konti, betalte abonnementer eller
 AI-credits er bestilt. Der er ikke gennemført AI-generering eller upload.
 
-### Build 5: lokal Putin-pilot
+### Build 6: forbedret Putin-pilot
+
+Anden revision forbedrer det eksisterende lokale asset:
+
+- Hovedet har tættere, sammenhængende geometri til næseryg/-tip, bryn,
+  øjenhuler, kinder, mund og hage. UV'er sampler stadig det originale ark.
+- Vertexvægte blander ansigtsteksturen over i hudfarven ved tindinger og hals.
+  Blender-materialet og den nye mobile URP-shader bruger samme vægte; ingen
+  ny eller redigeret PNG er nødvendig. Shaderen følger scenens sol, ambientlys,
+  skygger og tåge.
+- Håret følger kraniet med vigende hårgrænse og seksten formede, fejede striber.
+  Ærmerne har sammenhængende geometri og blød vægtning ved albuerne. Knæene
+  har flere løkker og bredere vægtning. Skjorte/revers/slips følger jakkens
+  krumning med afstand mellem stoflagene.
+- Jagt/retur har nye bagte benbevægelser, løft af svingfoden og plantet
+  støttefod. En analytisk to-knogle-løsning køres ved assetgenerering;
+  Unity behøver ingen IK-pakke. 40 støtteprøver af de faktiske deformerede
+  skosåler kontrolleres mod gulvet under genereringen.
+- Normal jagt bruger en cyklus pr. 0,88 verdensmeter. Tempoet følger farten,
+  også ved krafttilstand og tunnel. Pause/nedtælling ændrer ingen fase.
+  Miniature-retur har et særskilt læsbart tempo på 2,6 cyklusser/sekund.
+  En gammel overraskelsesreaktion fortsætter ikke ind i base/hvile.
+
+Modellen har fortsat 17 knogler og fem klip. Der er nu **17.404 importerede
+trekanter** (18.224 i Blender), ti materialer og et budget på 20.000 trekanter.
+Importer-valideringen kontrollerer også vertexvægtene til teksturovergangen og
+referencematerialets shader/tekstur. Kilder, runtimehash, stride og den bagte
+geometrikontrol er gemt i [manifestet](../art/characters/putin/manifest.json).
+
+Generatoren skriver sammenlignelige front-, profil-, bagfra-, trekvart- og
+jagt-renders samt `geometry-check.json` i `.artifacts/character-pilot/`.
+Den native kontrol er udvidet med fodhøjder, løftet svingfod, hvilepose efter
+reaktion og profil-/bagfra-billeder. Afprøvningsresultater fremgår af
+[testrapporten](TEST_REPORT.md).
+
+Build 6 består nu samme native forløb på fysisk iPhone 13 med 19 billeder.
+Fodkontrollen har højst 0,54 mm afvigelse i støttefodens ankelhøjde over
+23 prøver. Den separate korte Release-måling gennemførte 60,01 sekunder ved
+59,97 fps, p95 18,00 ms og normal temperaturtilstand. Debug-build 6 er
+efterfølgende startet normalt igen. Resultater, billeder og målegrænser følger
+repoet i testrapporten.
+
+Det er fortsat en reviewpilot. Profilen mangler selvstændige teksturdetaljer,
+ansigtet har fast udtryk uden blendshapes, og håret er stiliseret. De nye
+kontroller beviser teknisk funktion; endelig genkendelighed og animationsstil
+skal fortsat vurderes under faktisk spil på enhed. Næste asset er Xi med egen
+silhuet og bevægelse; M5 forbliver åben.
+
+### Build 5: første lokale Putin-pilot
 
 Meshy-forsøget 21. oktober blev afvist af Chrome-værktøjets sikkerhedskontrol:
 `The admin-enforced policy could not be verified`. Konto, ledige credits og
@@ -23,10 +71,10 @@ kreditering; det er ikke bevis for adgang på brugerens konto.
 
 Arbejdet fortsætter med lokalt modelleret geometri, skelet og animation i
 **Blender 4.5.14 LTS** (gratis, officiel ARM64-download kontrolleret mod SHA-256).
-Piloten har skræddersyet jakke, revers, skjorte, slips, hænder, adskilte ben,
+Den første revision havde skræddersyet jakke, revers, skjorte, slips, hænder, adskilte ben,
 sko, volumetrisk hoved, 17 knogler og fem in-place-klip: `Idle`, `Chase`,
-`Surprise`, `Slip` og `Return`. Blender-meshen har 11.636 trekanter; Unity
-fjerner degenererede polflader og importerer 10.796. Grænsen er 20.000.
+`Surprise`, `Slip` og `Return`. Build 5 havde 11.636 Blender-trekanter og
+10.796 efter Unity-import. De aktuelle filer indeholder revisionen fra build 6.
 
 - Redigerbar kilde: [putin-pilot.blend](../art/characters/putin/putin-pilot.blend).
 - Runtime: [putin.fbx](../Assets/Resources/CharacterModels/putin.fbx) med ni URP-materialer.
@@ -34,8 +82,8 @@ fjerner degenererede polflader og importerer 10.796. Grænsen er 20.000.
 - Genskabelse: [build_putin_pilot.py](../Tools/build_putin_pilot.py).
 
 Ansigtets UV'er sampler det uændrede referenceark. Der er ingen redigeret PNG
-eller ansigts-blendshapes. Fronten har fast vredt udtryk; profil, hår, teksturens
-overgange, vægtning og fodkontakt kræver fortsat kvalitetsarbejde. Det er en
+eller ansigts-blendshapes. Fronten har fast vredt udtryk. Build 6 forbedrer
+profil, hår, teksturens overgange, vægtning og fodkontakt. Det er fortsat en
 reviewpilot, ikke en færdig skulptureret karakter.
 
 Unity importerer klippene som Legacy-animation og sampler dem udtrykkeligt med

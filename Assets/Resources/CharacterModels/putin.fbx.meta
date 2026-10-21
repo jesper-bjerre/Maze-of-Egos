@@ -17,6 +17,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: HairHighlight
+    second: {fileID: 2100000, guid: 1aafdea1f606c4ad2b3fab13b649de8a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Leather
     second: {fileID: 2100000, guid: 1ca662ccc25c14d2eb2c01495a02197b, type: 2}
   - first:
@@ -81,7 +86,7 @@ ModelImporter:
       takeName: PutinPilotRig|Chase
       internalID: 3802279469167205592
       firstFrame: 0
-      lastFrame: 20
+      lastFrame: 40
       wrapMode: 2
       orientationOffsetY: 0
       level: 0
@@ -139,7 +144,7 @@ ModelImporter:
       takeName: PutinPilotRig|Return
       internalID: -1956845510059166548
       firstFrame: 0
-      lastFrame: 20
+      lastFrame: 40
       wrapMode: 2
       orientationOffsetY: 0
       level: 0

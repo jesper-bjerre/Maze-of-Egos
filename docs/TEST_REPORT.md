@@ -376,6 +376,115 @@ profil, hår, overgange, vægtning og fodkontakt kræver videre arbejde. Xi, Kim
 Trump og hånden er stadig pladsholdere. Fuld runde, manuel tredje touch,
 begge landscape-retninger, iPad og endelig visuel accept udestår fortsat.
 
+## Build 6 — profil, teksturovergang, vægtning og fodkontakt
+
+Putin-pilotens anden revision har et tættere hoved med formet næse/bryn,
+en blød vertexstyret overgang fra referenceark til hud, tilpasset hårgrænse
+og hårstriber. Skjorte, revers og slips følger nu den krumme jakke, og ærmer
+og knæ har mere sammenhængende geometri/vægtning. Shaderens overgang bruger
+det oprindelige uændrede referenceark; ingen rastergrafik er redigeret.
+
+Der er 17.404 importerede trekanter, ti materialer, 17 knogler og fem klip.
+Importer-valideringen kontrollerer også overgangsvægtene og referencens
+shader/tekstur. Redigerbar Blender-kilde, generator og FBX er opdateret.
+[Front](verification/2026-10-21-build6-blender-putin-front.png),
+[profil](verification/2026-10-21-build6-blender-putin-profile.png),
+[trekvart](verification/2026-10-21-build6-blender-putin-three-quarter.png),
+[bagfra](verification/2026-10-21-build6-blender-putin-back.png) og
+[jagt](verification/2026-10-21-build6-blender-putin-chase.png) er faktiske
+Blender-renders, kopieret uændret og visuelt kontrolleret. De erstatter ikke
+afprøvning af modellen i spillet.
+
+En analytisk to-knogle-løsning bager benstillinger, støttefod og løftet
+svingfod i jagt/retur. Generatoren måler de faktiske deformerede skosåler på
+40 støtteprøver. Maksimal kontaktfejl er under 1 mm i denne diskrete
+Blender-kontrol; det er ikke en garanti for alle interpolerede tidspunkter
+eller terræn. [Uændret geometrirapport](verification/2026-10-21-build6-blender-geometry.json).
+
+`GaitClock` integrerer fart i verdensmeter fra simulationstiden. Normal jagt
+bruger én cyklus pr. 0,88 meter, også når hastigheden ændres. Pause og
+nedtælling fryser fasen; en tidligere gendannet tidslinje nulstiller den.
+AnimationState-referencer caches. Returens lille figur bruger et særskilt
+læsbarhedstempo. En tidligere overraskelsesreaktion kan ikke fortsætte ind i
+base/hvile; den rettelse kontrolleres i det native forløb.
+
+**Bestået:** 55 C#-tests, faktisk Newtonsoft-serialisering, kildebilleder/FBX-
+hashes, unikke GUID'er, C#-kompilering med 0 fejl/advarsler, Unity-import og
+native Mac-build/-forløb. To nye tests kontrollerer ganguret ved fartskift,
+frosset tid, stop, reset/gendannelse og 30/60/120 opdelinger pr. sekund.
+
+Den endelige grafiske Mac-kontrol gemmer 19 framebuffer-PNG'er og
+`character-check.json`. Den måler støttefodens ankelhøjde efter Unity-import
+og kræver samtidig løftet svingfod. 23 prøvebilleder har maksimalt 0,54 mm
+afvigelse; testgrænsen er 15 mm. Dette måler ankelhøjde, mens Blender-kontrollen
+måler skosåler. [Uændret Mac-kontrolrapport](verification/2026-10-21-build6-mac-character.json).
+Den omfatter også de eksisterende touch-, pause-, glid-, kraft-, retur-,
+lagrings- og spilfasekontroller samt nye profil-/bagfra-visninger i scenen.
+De ekstra modelvisninger bruger kontrollerede snapshots med en ryddet
+hjertekorridor og holdt hviletilstand, ikke en almindelig spilrunde.
+
+Uændrede billeder fra den endelige Mac-player følger repoet:
+[jagt](verification/2026-10-21-build6-mac-putin-chase.png),
+[profil](verification/2026-10-21-build6-mac-putin-profile.png) og
+[bagfra](verification/2026-10-21-build6-mac-putin-back.png).
+
+**Kort Mac Release-måling:** 30,02 sekunder efter tre sekunders opvarmning,
+59,63 fps, p95 17,25 ms, p99 17,75 ms og værste interval 65,20 ms. Ét interval
+oversteg 50 ms. 44 hjerter, én fangst og én genstand er registreret; ingen
+runtime-fejl. [Uændret rapport](verification/2026-10-21-build6-mac-performance.json)
+og [CSV](verification/2026-10-21-build6-mac-performance.csv) følger repoet.
+Dette er en kort desktopmåling og dokumenterer ikke iPhone-performance,
+lang stabilitet eller fravær af mærkbare hak.
+
+**Kort fysisk Release-måling:** Efter gentilslutning og oplåsning er
+forbindelsesfejlen CoreDevice 4016 løst. Unity/Xcode Release, version 0.1.0 (6),
+er installeret på iPhone 13 / A15 / iOS 26.6.2 ved 2532 × 1170. Efter ti
+sekunders opvarmning gennemførte målingen 60,01 sekunder: 3.599 billeder,
+**59,97 fps**, p95 **18,00 ms**, p99 18,50 ms og værste interval 20,05 ms.
+Ingen intervaller oversteg 33,33 ms. Alle 13 temperaturprøver var nominal;
+ingen runtime-fejl eller baggrundsafbrydelser er registreret.
+
+56,81 sekunder var Playing; 71 hjerter, én fangst og én genstand blev
+registreret, og alle fire AI-roller var aktive. CPU-hovedtrådens frame-tæller
+var i gennemsnit 2,11 ms. Samplet peak resident/Unity/managed: 208,88 / 83,50 /
+4,87 MiB. GPU-tider og GC-rate var ikke tilgængelige. USB-testen ved 100 %
+batteri måler ikke batteriafladning.
+
+`PERFORMANCE COMPLETED`, resultatfilens `PASS`, completed/stabilityPassed og
+`developmentBuild=false` er kontrolleret. Uændret
+[rapport](verification/2026-10-21-build6-iphone13-performance.json) og
+[CSV](verification/2026-10-21-build6-iphone13-performance.csv) følger repoet;
+log og lokal eksport ligger i `Logs/iphone-performance-build6.log` og
+`.artifacts/performance-iphone-build6/`. Dette er en kort kontrol med den
+forbedrede pilot, ikke en ny 15-minuttersmåling eller endelig grafikaccept.
+
+**Fysisk Debug-funktionskontrol:** Version 0.1.0 (6) er installeret efter
+Release-målingen og består hele det udvidede forløb på samme iPhone 13.
+`RUNTIME SMOKE PASSED` i den friske `Logs/iphone-smoke-build6.log` og `PASS`
+i den hentede resultatfil er begge kontrolleret. Alle 19 framebuffer-PNG'er
+har 2532 × 1170 pixels. Fodkontrollen har 23 prøver, højst 0,54 mm afvigelse
+i støttefodens ankelhøjde og en observeret løftet svingfod.
+[Uændret fysisk kontrolrapport](verification/2026-10-21-build6-iphone13-character.json).
+
+Faktiske iPhone-billeder er visuelt kontrolleret og kopieret uændret:
+[jagt](verification/2026-10-21-build6-iphone13-putin-chase.png),
+[profil](verification/2026-10-21-build6-iphone13-putin-profile.png) og
+[bagfra](verification/2026-10-21-build6-iphone13-putin-back.png).
+Det er syntetisk input og kontrollerede snapshots, ikke manuel spilaccept.
+Der er ingen runtime-exceptions eller manglende komponenttyper. Den tidligere
+noterede Unity-meddelelse om én persistent allocation ved procesafslutning
+forekommer fortsat i Debug-forløbet.
+
+Appen er startet normalt igen uden testflag, bekræftet i
+`Logs/iphone-build6-normal-launch.json`. Testdata bruger fortsat et særskilt
+midlertidigt lager. Det fulde lokale resultat og alle billeder ligger i
+`.artifacts/smoke-iphone-build6/`.
+
+Dette er fortsat en reviewpilot. Faste ansigtsudtryk, begrænset profiltekstur,
+stiliseret hår og de øvrige pladsholderfigurer kræver mere grafisk arbejde og
+accept. Manuel tredje touch, begge landscape-retninger, iPad og en hel runde
+mod AI er fortsat udestående. M5 er ikke afsluttet.
+
 ## Gentagelse og næste trin
 
 ```sh

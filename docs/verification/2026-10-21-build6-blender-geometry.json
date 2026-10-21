@@ -1,0 +1,6 @@
+{
+  "stanceSamples": 40,
+  "maxShoeContactErrorMeters": 1.6192878149468015e-07,
+  "lowestShoeVertexMeters": -1.2491858569774195e-07,
+  "method": "Evaluated skinned shoe vertices on every authored Chase frame; excludes swing foot from contact error."
+}

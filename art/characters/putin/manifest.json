@@ -1,17 +1,25 @@
 {
   "id": "putin",
-  "stage": "local-rigged-review-pilot",
+  "stage": "refined-local-rigged-review-pilot",
   "finalArtAccepted": false,
   "generator": "Tools/build_putin_pilot.py",
   "blenderVersion": "4.5.14 LTS",
   "sourceReference": "docs/images/Putin character reference sheet.png",
   "sourceSha256": "662965da0318e21e7deab41e983ae6ffb7b9067fedcdd468103ead1a33eb97b5",
-  "textureUsage": "Unmodified original sheet sampled by mesh UVs; no edited PNG.",
+  "textureUsage": "Unmodified original sheet sampled by mesh UVs, blended to skin with vertex weights; no edited PNG.",
+  "revision": 2,
+  "strideMeters": 0.88,
+  "geometryValidation": {
+    "stanceSamples": 40,
+    "maxShoeContactErrorMeters": 1.6192878149468015e-07,
+    "lowestShoeVertexMeters": -1.2491858569774195e-07,
+    "method": "Evaluated skinned shoe vertices on every authored Chase frame; excludes swing foot from contact error."
+  },
   "editableSource": "art/characters/putin/putin-pilot.blend",
   "runtimeModel": "Assets/Resources/CharacterModels/putin.fbx",
-  "runtimeSha256": "21b8c3ba18fb2a0840d503efaad409ce381902f058cfb2cb68c537010b263c3e",
-  "vertices": 6390,
-  "triangles": 11636,
+  "runtimeSha256": "d47b558042d4d3f4709ac9ab66e8c40c6269f70f676f93d4f7390a3117e4d748",
+  "vertices": 9726,
+  "triangles": 18224,
   "bones": 17,
   "clips": [
     "Idle",
@@ -20,11 +28,11 @@
     "Slip",
     "Return"
   ],
-  "metersTall": 1.952,
+  "metersTall": 1.944,
   "licensing": "Locally authored geometry/rig/animation in this repository; user-supplied reference art. Final release rights review remains outstanding.",
   "limitations": [
     "Review pilot; not final M5 art.",
     "Fixed scowl portrait texture; no facial blend shapes.",
-    "Reference projection and side transitions require visual review."
+    "Profile texture detail remains limited; further art review required."
   ]
 }

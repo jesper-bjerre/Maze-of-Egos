@@ -37,7 +37,7 @@ namespace MazeOfEgos.Editor
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS, "dk.mazeofegos.game");
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.iOS, ScriptingImplementation.IL2CPP);
             PlayerSettings.iOS.targetOSVersionString = "17.0";
-            PlayerSettings.iOS.buildNumber = "5";
+            PlayerSettings.iOS.buildNumber = "6";
             PlayerSettings.iOS.appleEnableAutomaticSigning = true;
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
             PlayerSettings.allowedAutorotateToLandscapeLeft = PlayerSettings.allowedAutorotateToLandscapeRight = true;

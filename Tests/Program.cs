@@ -40,6 +40,27 @@ internal static class Program
     }
     private static int Main()
     {
+        Run("Gait follows world distance across speed changes and freezes with simulation time", () => {
+            var gait = new GaitClock(); gait.Update(0, 3.75);
+            for (int i = 1; i <= 60; i++) gait.Update(i / 60.0, 3.75);
+            Equal(gait.DistanceMeters, 3.75); gait.Update(1.5, 1); Equal(gait.DistanceMeters, 4.25);
+            double phase = gait.Cycles;
+            for (int i = 0; i < 120; i++) gait.Update(1.5, 3.75);
+            Equal(gait.Cycles, phase); gait.Update(2, 0); Equal(gait.Cycles, phase);
+            gait.Update(2.5, 1); Equal(gait.DistanceMeters, 4.75);
+        });
+        Run("Gait is frame-partition independent and rebases restored or reset timelines", () => {
+            foreach (int fps in new[] { 30, 60, 120 })
+            {
+                var gait = new GaitClock(); gait.Update(0, 3.75);
+                for (int i = 1; i <= 3 * fps; i++) gait.Update(i / (double)fps, i <= fps ? 3.75 : 1.5);
+                Equal(gait.DistanceMeters, 6.75); Equal(gait.Cycles, 6.75 / GaitClock.StrideMeters);
+                gait.Update(.5, 1); Equal(gait.Cycles, 0);
+                gait.Update(1, 1); Equal(gait.DistanceMeters, .5);
+                gait.Reset(); gait.Update(100, 3.75); Equal(gait.Cycles, 0);
+                Reject(() => gait.Update(double.NaN, 1)); Reject(() => gait.Update(101, -1));
+            }
+        });
         Run("Frame statistics measure time-weighted FPS and preserve long stalls", () => {
             var stats = new FrameStatistics(); for (int i = 0; i < 60; i++) stats.Add(1000.0 / 60);
             Equal(stats.FramesPerSecond, 60); Equal(stats.AverageMs, 1000.0 / 60);

@@ -36,6 +36,8 @@ reduceret bevægelse dæmper animationen.
 
 Putin bruger en **rigget Blender-reviewpilot** med fem animationer og ansigt fra
 det originale karakterark. De øvrige figurer og hånden er midlertidige modeller.
+Piloten har nu blødere ansigtsovergange, formet profil/hår og fodkontakt med
+skridttempo, der følger farten.
 Endelig karakterkvalitet udestår. Redigerbar Blender-kilde, FBX og
 [produktionsvejledning](docs/CHARACTER_PRODUCTION.md) følger repoet; Blender
 kræves kun for at ændre modellen.
@@ -71,7 +73,7 @@ Support. Resultater ligger i `Builds/`; logfiler ligger i `Logs/`.
 `smoke-mac` starter den grafiske udviklingsbuild, afprøver menu, tre samtidige
 syntetiske touchpunkter i begge layouts, genstande, pause, indstillinger,
 save/resume midt i kast, reduceret bevægelse, vægskift, baseporte, Putin-skelet,
-pause/glid/power/retur, levelskifte, Game Over og genstart og lukker
+fodkontakt/pause/glid/power/retur, profil/bagfra, levelskifte, Game Over og genstart og lukker
 appen igen. Testdata er isoleret fra spillerens gemte spil. Skærmbilleder gemmes i
 `.artifacts/smoke-mac/`. Se [testresultater og aktuelle begrænsninger](docs/TEST_REPORT.md).
 En automatisk touchtest erstatter ikke manuel afprøvning på en fysisk iPhone.
