@@ -109,6 +109,12 @@ Manglende 3D-assets eller utilstrækkelig kvalitet registreres som udestående.
 Grundspillet kan udvikles med tydeligt markerede pladsholdere; de opfylder ikke M5.
 Spillet må ikke være afhængigt af AI-tjenesten under afvikling.
 
+Build 5 fortsætter med en lokal Blender-pilot, fordi Meshy-adgang blev afvist
+af browserens sikkerhedskontrol. Putin har nu faktisk mesh, skelet og fem
+animationer i Unity. Kilden og FBX følger repoet; Blender kræves kun for
+redigering. Piloten opfylder ikke slutkvaliteten alene. Se
+[produktion, kildefiler og begrænsninger](CHARACTER_PRODUCTION.md).
+
 ## Testplan
 
 - Importér og kontrollér 28 × 31 felter, præcis 240 + 4 hjerter og adgang til alle.
@@ -144,9 +150,9 @@ Implementering påbegyndt 21. oktober 2026. Planen blev gemt før kodearbejdet.
 | Grundrunde | Fire AI-roller, base/retur, hjerter, kraft, score, chancer, fangst, levels og Game Over | Regeltests og traversal af 244 hjerter består; native sidste-hjerte, levelskifte, Game Over og genstart består på Mac/iPhone med kontrollerede snapshots |
 | Genstande/vægge | Ét inventarfelt, banankast med bue/håndbevægelse, olie, boost, tydelige fælder, varsling, vægcyklus og sikre passager | Regeltests samt brug/visning af alle genstande og varsling/åbning/reservation/lukning består i Mac/iPhone-app |
 | Lagring | Atomisk snapshot/settings, backup, validering, profil/RNG/trail, kasttilstand og pauset genoptagelse; snapshot v1 migreres til v2 | .NET/Newtonsoft-tests og faktisk Mac/iPhone save/resume består |
-| Præsentation | Prototypemodeller, volumetriske hjerter, mekanisk have, HUD/menu, egne synteselyde og indstillinger | Mac/iPhone-menu, gameplay og indstillinger er renderet og skærmbilleder visuelt kontrolleret; 15 minutters prototypeperformance er målt; slutkvalitet og måling med endelige modeller udestår |
-| Performance | Opt-in Release-måler, billedintervaller, samplet hukommelse, iOS-temperatur/batteri og automatisk spiller med normale regler | 900,04 sekunder på fysisk iPhone 13: 59,98 fps, p95 17,25 ms, ingen runtime-fejl; alle temperaturprøver nominal |
-| Karakterreferencer | Fem uændrede runtimekopier, portrætter og SHA-256-manifest | Kopierne er kontrolleret byte-for-byte; endelige 3D-assets mangler |
+| Præsentation | Rigget Putin-reviewpilot, øvrige prototypemodeller, volumetriske hjerter, mekanisk have, HUD/menu, egne synteselyde og indstillinger | Mac/iPhone-kontrol af skelet, skala/retning, pause, glid, power og retur består; slutkvalitet og måling med endelige modeller udestår |
+| Performance | Opt-in Release-måler, billedintervaller, samplet hukommelse, iOS-temperatur/batteri og automatisk spiller med normale regler | Build 4: 900,04 sekunder / 59,98 fps. Build 5 med Putin-pilot: 60,02 sekunder / 59,97 fps, p95 17,00 ms. Fysisk iPhone 13, ingen runtime-fejl, temperaturprøver nominal |
+| Karakterreferencer | Fem uændrede runtimekopier, portrætter, Putin Blender/FBX/rig/animation og SHA-256-manifester | Kopier samt pilotens source/FBX-hashes kontrolleres; endelige 3D-assets mangler |
 
 **Kontroller:** 53 C#-tests (50 spilregeltests og tre måletests) bestået, separat Unity C#-kompilering med 0 fejl/
 advarsler, Newtonsoft save/resume-test, repositoryvalidering og native Mac-
@@ -156,19 +162,22 @@ består på den fysiske iPhone, og faktiske skærmbilleder er kontrolleret.
 Build 2 er kontrolleret med det udvidede scene-/inputforløb, inklusive begge
 layouts, genstande, vægge, porte og centrale spilfaser. Build 3 består også på
 Mac og fysisk iPhone, inklusive banankast, hånd, pause/gem/genoptagelse midt i
-luften og reduceret bevægelse. Der gemmes nu 13 faktiske skærmbilleder pr. kontrol.
+luften og reduceret bevægelse. Build 5 udvider til 17 skærmbilleder med Putin-piloten.
 Se [testresultater](TEST_REPORT.md) for kommandoer og grænserne for denne evidens.
 
 **Værktøjer:** Den tidligere Unity-licensblokering er løst via Unity Hub.
 Editor og iOS Build Support findes under `.tools/`; Xcode 27.1 og .NET 10.0.401
-er tilgængelige. Blender er ikke installeret. Computer-use er blokeret af en
+er tilgængelige. Blender 4.5.14 LTS ligger lokalt under `.tools/blender/`;
+officiel ARM64-download er kontrolleret mod SHA-256. Meshy-adgang er afvist af
+Chrome-værktøjets sikkerhedskontrol; ingen upload, kontoændring eller køb er udført.
+Computer-use er blokeret af en
 ChatGPT-klient/server-versionsforskel; den grafiske Mac-kontrol bruger derfor
 en automatisk udviklingsbuild og faktiske skærmbilleder.
 
-**iPhone-status:** Version 0.1.0 (4) er installeret og startet normalt efter
+**iPhone-status:** Version 0.1.0 (5) er installeret og startet normalt efter
 bestået udvidet automatisk kontrol. Native IL2CPP-stripping er rettet via `Assets/link.xml`.
-Aktuelle skærmbilleder og funktionsresultat ligger lokalt i `.artifacts/smoke-iphone-build4/`.
-Den gennemførte Release-performancekørsel ligger i `.artifacts/performance-iphone-build4/`;
+Aktuelle 17 skærmbilleder og funktionsresultat ligger lokalt i `.artifacts/smoke-iphone-build5/`.
+Den korte Release-performancekørsel med piloten ligger i `.artifacts/performance-iphone-build5/`;
 uændret JSON/CSV følger repoet under `docs/verification/`. Tidligere billeder er bevaret.
 Brugeren har 21. oktober 2026 bekræftet, at joystickbevægelse og kameratræk
 fungerer samtidigt med rigtige fingre på iPhone 13. Manuel brug af genstand
@@ -178,11 +187,36 @@ som tredje touch samt de øvrige spil- og enhedskontroller er fortsat udeståend
 mod AI. Kør `python3 Tools/unity.py smoke-mac` for reproducerbar Mac-kontrol.
 Der må ikke erklæres fuld M1–M4-accept, før de relevante runtimekontroller er
 gennemført. Performanceinstrumentering og den 15 minutter lange prototypekontrol
-er nu udført. Næste implementeringsområde er karakterproduktion og visuel kvalitet;
-iPad og manuel afprøvning følger fortsat. Den gratis karakterpilot kræver
-adgang til en tjeneste med gratis generering/eksport. Mål igen efter endelige assets.
+er nu udført. Næste implementeringsområde er videre kvalitetsarbejde på Putin:
+profil/ansigt, hår, teksturovergange, vægtning og fodkontakt før de øvrige figurer.
+Xi, Kim, Trump og Zelenskyjs hånd følger derefter; iPad og manuel afprøvning
+udestår. AI-piloten kræver fungerende, autoriseret adgang og gratis eksport.
+Den lokale Blender-pilot gør videre assetarbejde muligt uden denne tjeneste.
+Mål igen efter endelige assets.
 
-**Aktuel arbejdsblok — build 4:** Performanceinstrumentering, automatisk
+**Aktuel arbejdsblok — build 5:** Første lokale riggede karakterpilot. Putin
+bruger en importeret FBX med 17 knogler, 10.796 importerede trekanter, ni
+URP-materialer og Idle/Chase/Surprise/Slip/Return-klip. Spillets ur sampler
+animationerne; pause fryser både skelet og position. Power farver tøjet blåt,
+reduceret bevægelse giver fast glidepose, og retur bruger miniature/boble.
+Redigerbar Blender-kilde og generator er med i repoet. Originalbillederne
+er uændrede. Den udvidede Mac-kontrol består med 17 framebuffer-billeder.
+53 C#-tests, Newtonsoft og kompilering med 0 fejl/advarsler består.
+iOS-eksport, signeret Xcode Debug-build og samme udvidede kontrol på fysisk
+iPhone 13 består. Både den friske logs `RUNTIME SMOKE PASSED` og resultatfilens
+`PASS` er kontrolleret. Alle 17 PNG'er er 2532 × 1170; jagt, glid, power og
+retur er visuelt kontrolleret og uændrede evidenskopier følger repoet.
+Appen er startet normalt igen uden testflag; normale gemte spil er bevaret.
+
+En separat Unity/Xcode Release-build med piloten gennemførte 60,02 sekunder
+efter 10 sekunders opvarmning: 59,97 fps, p95 17,00 ms, p99 17,25 ms,
+værste interval 21,69 ms og ingen intervaller over 33,33 ms. Alle
+temperaturprøver var nominal; 71 hjerter, én fangst og én genstand blev
+registreret. Det er en kort kontrol og erstatter ikke en ny 15-minuttersmåling
+med endelige assets. JSON/CSV og billeder følger repoet under
+`docs/verification/`; se [testrapporten](TEST_REPORT.md).
+
+**Tidligere arbejdsblok — build 4:** Performanceinstrumentering, automatisk
 stabilitetstest med aktive AI-roller og cache af HUD-tekst. 53 C#-tests,
 Newtonsoft, repositoryvalidering, kompilering og udvidet Mac-kontrol består.
 Den fysiske iPhone gennemførte en Unity/Xcode Release-kørsel med 15 sekunders
@@ -215,19 +249,22 @@ kompilering med 0 fejl/advarsler består. Native Mac-build/runtime, iOS-eksport,
 signeret Xcode Debug-build og samme runtimekontrol på fysisk iPhone 13 består.
 Appen er efterfølgende startet normalt uden testflag. Se testresultaterne.
 
-**Udestående grafik:** Gratis AI-karakterpilot, endelige modeller, rigs og
-animationer er ikke udført. Følg [karakterproduktionen](CHARACTER_PRODUCTION.md).
-Primitive fuldkropsmodeller er prototyper og opfylder ikke M5.
+**Udestående grafik:** AI-pilot og endelige modeller/rigs/animationer er ikke
+udført. Putin har en lokal rigget reviewpilot; de øvrige fuldkropsmodeller og
+hånden er primitive prototyper. Følg [karakterproduktionen](CHARACTER_PRODUCTION.md).
+M5 er fortsat åben og kræver visuel accept på enhed.
 
-**Bevidste prototypeforenklinger:** Hånden og forfølgernes reaktioner bruger
-fortsat enkel prototypegeometri/-animation. De udgør ikke de endelige riggede
-karakterer. Banan-/oliefælder har særskilt geometri og bananen en faktisk kastbue. Belysningen bruger ambientlys
+**Bevidste prototypeforenklinger:** Putin har fast vred ansigtstekstur uden
+ansigts-blendshapes og synlige overgange til profil/hår; riggens vægtning og
+fodkontakt kræver mere arbejde. Hånden og de øvrige forfølgere bruger enkel
+prototypegeometri/-animation. Banan-/oliefælder har særskilt geometri og bananen
+en faktisk kastbue. Belysningen bruger ambientlys
 og én dynamisk sol. Der er ingen lysbagning; performance med endelige modeller
 skal måles igen. Haptik er
 den simple platformsvibration, ikke et færdigafstemt haptikdesign.
 
-**Versionsstyring:** Build 3 findes i repoets commit `9e30e93` ved starten af
-denne arbejdsblok. Build 4-ændringerne gemmes på disken; der er ikke udført
+**Versionsstyring:** Build 4 findes i repoets commit `e775596` ved starten af
+denne arbejdsblok. Build 5-ændringerne gemmes på disken; der er ikke udført
 commit eller push i denne arbejdsblok. For overdragelse
 via kloning skal ændringerne også committes og synkroniseres. Lokale downloads,
 licenser, caches og builds er bevidst ignoreret.

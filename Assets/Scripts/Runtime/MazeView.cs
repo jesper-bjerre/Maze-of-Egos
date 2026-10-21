@@ -32,6 +32,7 @@ namespace MazeOfEgos.Runtime
             public Transform root, body, head, leftArm, rightArm, leftLeg, rightLeg, bubble;
             public Renderer jacket;
             public TextMesh label;
+            public ImportedCharacterPose imported;
         }
         public static Vector3 World(Point2 p, float height = 0) => new Vector3((float)(p.x * MazeMap.GridMeters), height, (float)(-p.y * MazeMap.GridMeters));
 
@@ -192,6 +193,14 @@ namespace MazeOfEgos.Runtime
             string[] names = { "Putin", "Xi", "Kim", "Trump" };
             Transform avatarRoot = new GameObject(names[index] + " temporary full-body model").transform; avatarRoot.SetParent(root);
             var a = new Avatar { root = avatarRoot };
+            if (index == 0)
+            {
+                avatarRoot.name = "Putin imported pilot";
+                a.imported = new ImportedCharacterPose(avatarRoot, Resources.Load<GameObject>("CharacterModels/putin"));
+                a.label = Label(names[index], avatarRoot, new Vector3(0, 2.22f, 0), 0.065f, new Color(1, .92f, .65f));
+                a.bubble = SceneMeshes.Primitive("Return bubble", avatarRoot, PrimitiveType.Sphere, returnMaterial, new Vector3(0, .55f, 0), Vector3.one * .85f);
+                a.bubble.gameObject.SetActive(false); return a;
+            }
             Material skin = SceneMeshes.Material("Skin " + index, index == 3 ? new Color(0.91f, 0.58f, 0.35f) : new Color(0.88f, 0.69f, 0.53f), 0, 0.35f);
             Material hair = SceneMeshes.Material("Hair " + index, index == 3 ? new Color(0.94f, 0.67f, 0.22f) : index == 0 ? new Color(0.35f, 0.29f, 0.22f) : new Color(0.075f, 0.065f, 0.06f));
             Material black = SceneMeshes.Material("Eyes/shoes " + index, new Color(0.055f, 0.05f, 0.04f));
@@ -239,7 +248,12 @@ namespace MazeOfEgos.Runtime
             label.font = labelFont; label.GetComponent<Renderer>().sharedMaterial = labelMaterial;
             return label;
         }
-        public void ResetEncounters() { Array.Clear(seen, 0, seen.Length); nextScare = 0; }
+        public void ResetEncounters()
+        {
+            Array.Clear(seen, 0, seen.Length); nextScare = 0;
+            foreach (Avatar avatar in avatars) avatar.imported?.Reset();
+            foreach (Avatar avatar in tunnelAvatars) avatar.imported?.Reset();
+        }
 
         public void Render(GameSession session, Point2 previousPlayer, Point2[] previousGhosts, float alpha, bool showHands)
         {
@@ -305,6 +319,7 @@ namespace MazeOfEgos.Runtime
                 if (session.Phase == SessionPhase.Playing && visible && !seen[i] && session.Time >= nextScare)
                 {
                     nextScare = session.Time + 8;
+                    avatars[i].imported?.Surprise(session.Time); tunnelAvatars[i].imported?.Surprise(session.Time);
                     app.Encounter(i);
                 }
                 seen[i] = visible;
@@ -347,11 +362,15 @@ namespace MazeOfEgos.Runtime
             if (direction.LengthSquared > 0) avatar.root.rotation = Quaternion.Euler(0, (float)(Math.Atan2(direction.x, -direction.y) * 180 / Math.PI), 0);
             float walk = (float)session.PursuerSpeed(state) > 0 ? Mathf.Sin(time * 12 + index) * 28 : 0;
             bool slip = session.Time < state.stunUntil || session.Time < state.oilUntil;
-            avatar.leftLeg.localRotation = Quaternion.Euler(walk, 0, 0); avatar.rightLeg.localRotation = Quaternion.Euler(-walk, 0, 0);
-            avatar.leftArm.localRotation = Quaternion.Euler(-walk, 0, slip ? -35 : 7); avatar.rightArm.localRotation = Quaternion.Euler(walk, 0, slip ? 35 : -7);
-            avatar.head.localRotation = Quaternion.Euler(0, 0, slip ? Mathf.Sin(time * 18) * 18 : 0);
             bool vulnerable = session.IsFrightened(state);
-            avatar.jacket.sharedMaterial = vulnerable ? frightened : clothes[index];
+            if (avatar.imported != null) avatar.imported.Render(session, state, app.Settings.reducedMotion);
+            else
+            {
+                avatar.leftLeg.localRotation = Quaternion.Euler(walk, 0, 0); avatar.rightLeg.localRotation = Quaternion.Euler(-walk, 0, 0);
+                avatar.leftArm.localRotation = Quaternion.Euler(-walk, 0, slip ? -35 : 7); avatar.rightArm.localRotation = Quaternion.Euler(walk, 0, slip ? 35 : -7);
+                avatar.head.localRotation = Quaternion.Euler(0, 0, slip ? Mathf.Sin(time * 18) * 18 : 0);
+                avatar.jacket.sharedMaterial = vulnerable ? frightened : clothes[index];
+            }
             avatar.label.text = vulnerable ? "!" : returning ? "Til pause" : state.id == "putin" ? "Putin" : state.id == "xi" ? "Xi" : state.id == "kim" ? "Kim" : "Trump";
             avatar.label.transform.rotation = Camera.transform.rotation;
             avatar.label.gameObject.SetActive((Camera.transform.position - avatar.label.transform.position).sqrMagnitude > 9);

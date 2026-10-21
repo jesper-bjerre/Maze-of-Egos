@@ -1,0 +1,30 @@
+{
+  "id": "putin",
+  "stage": "local-rigged-review-pilot",
+  "finalArtAccepted": false,
+  "generator": "Tools/build_putin_pilot.py",
+  "blenderVersion": "4.5.14 LTS",
+  "sourceReference": "docs/images/Putin character reference sheet.png",
+  "sourceSha256": "662965da0318e21e7deab41e983ae6ffb7b9067fedcdd468103ead1a33eb97b5",
+  "textureUsage": "Unmodified original sheet sampled by mesh UVs; no edited PNG.",
+  "editableSource": "art/characters/putin/putin-pilot.blend",
+  "runtimeModel": "Assets/Resources/CharacterModels/putin.fbx",
+  "runtimeSha256": "21b8c3ba18fb2a0840d503efaad409ce381902f058cfb2cb68c537010b263c3e",
+  "vertices": 6390,
+  "triangles": 11636,
+  "bones": 17,
+  "clips": [
+    "Idle",
+    "Chase",
+    "Surprise",
+    "Slip",
+    "Return"
+  ],
+  "metersTall": 1.952,
+  "licensing": "Locally authored geometry/rig/animation in this repository; user-supplied reference art. Final release rights review remains outstanding.",
+  "limitations": [
+    "Review pilot; not final M5 art.",
+    "Fixed scowl portrait texture; no facial blend shapes.",
+    "Reference projection and side transitions require visual review."
+  ]
+}

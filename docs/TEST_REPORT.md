@@ -106,7 +106,7 @@ joystick og kameratræk på højre side fungerer samtidigt med rigtige fingre
 på iPhone 13. Dette bekræfter to samtidige touchhandlinger; genstand som tredje
 touch, begge landscape-retninger og en komplet spilrunde er ikke dermed godkendt.
 
-## Fortsat ikke verificeret
+## Begrænsninger ved build 1
 
 - Manuel brug af genstand samtidig med bevægelse/kamera, lyd/haptik, safe areas
   og begge landscape-retninger på iPhone; manuel styring på iPad.
@@ -308,6 +308,73 @@ iPad, en hel normalt spillet runde mod AI og endelige karaktermodeller er
 fortsat udestående. Release-performance og Debug-funktionskontrol er separate
 builds med samme spilændringer; målerens senere håndtering af Mac-vinduesfokus
 ændrer ingen iPhone-spilregel eller den målte renderkode.
+
+## Build 5 — rigget Putin-reviewpilot
+
+Putins programmerede primitive krop er erstattet af en lokal Blender-pilot,
+baseret på det oprindelige referenceark. Den har én skinnet mesh, 17 knogler,
+10.796 importerede trekanter, ni URP-materialer og fem animationer. Geometri,
+rig og klip er lokalt modelleret; der er ikke gennemført AI-generering.
+Redigerbar kilde, FBX, generator og kilde-/runtime-SHA-256 følger repoet.
+Se [karakterproduktionen](CHARACTER_PRODUCTION.md) for fremgangsmåde og grænser.
+
+Unitys indbyggede animationsmodul er nu udtrykkeligt med i manifest/lock.
+Importerens validering kontrollerer skelet, klip, meter-skala, trekantbudget
+og URP-materialer. Runtime sampler klippene med simulationstiden, mens
+spillereglerne fortsat bestemmer position og retning. Power farver tøjet blåt;
+ansigtet bruger referencearket. Reduceret bevægelse holder glideposen fast.
+
+**Bestået:** 53 C#-tests, faktisk Newtonsoft-serialisering, repositorykontrol
+inklusive pilotens hashes, C#-kompilering med 0 fejl/advarsler, native
+Unity-validering, Mac-build og hele det udvidede native Mac-forløb.
+Det kontrollerer også fremadretning, faktisk højde, fem tilgængelige klip,
+deformerede meshvertices under jagt, fuldstændigt frosset skelet/root under
+pause, glidepose, fast glidepose ved reduceret bevægelse, blå power-materialer
+og miniature/boble under retur. I alt gemmes 17 framebuffer-PNG'er.
+
+Den første power-fixture manglede et nyt `powerId` og aktiverede derfor korrekt
+ingen ny kraftperiode. Testopsætningen blev rettet; spilreglen er uændret.
+Det endelige Mac-forløb består inklusive kontrollen af det faktiske materiale.
+
+**Fysisk funktionskontrol:** iOS-eksport, signeret Xcode Debug-build,
+installation og hele det samme udvidede forløb består på iPhone 13.
+`RUNTIME SMOKE PASSED` i `Logs/iphone-smoke-build5.log` og `PASS` i det hentede
+resultat er begge kontrolleret. De 17 PNG'er er alle 2532 × 1170; de fire
+karakterbilleder er visuelt kontrolleret og kopieret uændret til repoet:
+[jagt](verification/2026-10-21-build5-iphone13-putin-chase.png),
+[glid](verification/2026-10-21-build5-iphone13-putin-slip.png),
+[power](verification/2026-10-21-build5-iphone13-putin-power.png) og
+[retur](verification/2026-10-21-build5-iphone13-putin-return.png).
+Det er kontrollerede snapshots og syntetisk input, ikke manuel spilaccept.
+
+Der er ingen runtime-exceptions eller manglende komponenttyper. Den tidligere
+noterede Unity-meddelelse om én persistent allocation ved procesafslutning
+forekommer stadig i Debug-forløbet. Appen er derefter startet normalt uden
+testflag, bekræftet i `Logs/iphone-build5-normal-launch.json`. Normale gemte
+spil bruger fortsat et andet lager end testdata. Lokale resultater/billeder:
+`.artifacts/smoke-iphone-build5/`.
+
+**Kort fysisk performancekørsel:** Unity Release/Xcode Release, version 0.1.0 (5),
+iPhone 13 / A15 / iOS 26.6.2, 2532 × 1170. Efter 10 sekunders opvarmning er
+60,02 sekunder målt: 3.599 billeder, **59,97 fps**, p95 **17,00 ms**, p99
+17,25 ms og værste interval 21,69 ms. Ingen intervaller oversteg 33,33 ms.
+Alle 13 temperaturprøver var nominal; ingen runtime-fejl eller
+baggrundsafbrydelser. 56,81 sekunder var Playing, 71 hjerter blev opsamlet,
+én fangst og én genstand registreret, og alle fire AI-roller var aktive.
+
+Samplet peak resident/Unity/managed: 226,33 / 82,96 / 4,78 MiB. GPU-tider og
+GC-rate var ikke tilgængelige; 100 % batteri via USB måler ikke batteriafladning.
+`PERFORMANCE COMPLETED`, resultatfil og rapportens completed/stabilityPassed
+er kontrolleret. [Uændret rapport](verification/2026-10-21-build5-iphone13-performance.json)
+og [CSV](verification/2026-10-21-build5-iphone13-performance.csv) følger repoet.
+Log: `Logs/iphone-performance-build5.log`.
+
+Dette er en kort kontrol med den nye pilot, ikke en ny 15-minuttersmåling.
+Build 4's lange måling gjaldt de tidligere primitive modeller. Piloten er ikke
+endelig M5-grafik: ansigtet har et fast projiceret udtryk uden blendshapes;
+profil, hår, overgange, vægtning og fodkontakt kræver videre arbejde. Xi, Kim,
+Trump og hånden er stadig pladsholdere. Fuld runde, manuel tredje touch,
+begge landscape-retninger, iPad og endelig visuel accept udestår fortsat.
 
 ## Gentagelse og næste trin
 

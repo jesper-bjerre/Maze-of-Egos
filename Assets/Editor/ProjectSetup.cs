@@ -37,7 +37,7 @@ namespace MazeOfEgos.Editor
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS, "dk.mazeofegos.game");
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.iOS, ScriptingImplementation.IL2CPP);
             PlayerSettings.iOS.targetOSVersionString = "17.0";
-            PlayerSettings.iOS.buildNumber = "4";
+            PlayerSettings.iOS.buildNumber = "5";
             PlayerSettings.iOS.appleEnableAutomaticSigning = true;
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
             PlayerSettings.allowedAutorotateToLandscapeLeft = PlayerSettings.allowedAutorotateToLandscapeRight = true;
@@ -71,6 +71,7 @@ namespace MazeOfEgos.Editor
             // Resource materials retain the actual lit/emissive/instancing variants.
             if (!Resources.Load<Material>("Materials/GardenLit") || !Resources.Load<Material>("Materials/GardenEmissive"))
                 throw new InvalidOperationException("Missing runtime material resources.");
+            CharacterModelSetup.Configure();
             AssetDatabase.SaveAssets();
             var scene = EditorSceneManager.OpenScene(Scene); EditorSceneManager.SaveScene(scene);
             Debug.Log("Maze of Egos configured: Unity 6000.3.26f1, URP, landscape, Input System, iOS 17.");
@@ -87,6 +88,7 @@ namespace MazeOfEgos.Editor
             foreach (string id in new[] { "zelenskyy", "putin", "xi", "kim", "trump" })
                 if (!Resources.Load<Texture2D>("Characters/" + id)) throw new InvalidOperationException("Missing character reference " + id);
             if (!AssetDatabase.LoadAssetAtPath<SceneAsset>(Scene)) throw new InvalidOperationException("Missing playable scene.");
+            CharacterModelSetup.Validate();
             Debug.Log("CONTENT VALIDATION PASSED: 244 hearts, save roundtrip, five references, playable scene.");
         }
         public static void ConfigureAndValidate() { Configure(); Validate(); }

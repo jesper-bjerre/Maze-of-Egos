@@ -60,7 +60,7 @@ namespace MazeOfEgos.Runtime
                 if (!more) break;
                 yield return next;
             }
-            File.WriteAllText(Path.Combine(output, "result.txt"), "PASS native rendering, portraits, menu, three-touch controls in both layouts, release, pause, settings, save/resume, banana flight/hand/landing, mid-flight save/resume, reduced motion, banana/oil visuals, shortcut signals/opening/reservation/closure, pursuer gates, level transition, Game Over and replay.\nSynthetic touch and controlled scene fixtures; manual device testing, full rounds against AI and performance remain separate.\n");
+            File.WriteAllText(Path.Combine(output, "result.txt"), "PASS native rendering, portraits, menu, three-touch controls in both layouts, release, pause, settings, save/resume, banana flight/hand/landing, mid-flight save/resume, reduced motion, banana/oil visuals, shortcut signals/opening/reservation/closure, pursuer gates, rigged Putin chase/pause/slip/power/return, level transition, Game Over and replay.\nSynthetic touch and controlled scene fixtures; manual device testing, full rounds against AI and performance remain separate.\n");
             Debug.Log("RUNTIME SMOKE PASSED"); Application.Quit(0);
         }
         private IEnumerator Run()
@@ -283,6 +283,9 @@ namespace MazeOfEgos.Runtime
             yield return new WaitForSecondsRealtime(0.6f);
             Require(Mathf.Abs(Mathf.DeltaAngle(GameObject.Find("Pursuer gate 0").transform.localEulerAngles.y, 0)) < 1, "Pursuer gate did not close.");
 
+            IEnumerator characterSteps = CheckCharacter(app);
+            while (characterSteps.MoveNext()) yield return characterSteps.Current;
+
             InstallFixture(app, ItemKind.None, new Point2(1, 29), 90);
             SessionSnapshot ending = app.Session.Snapshot(); ending.score = 0;
             for (int i = 0; i < ending.collected.Length; i++) ending.collected[i] = true;
@@ -316,9 +319,80 @@ namespace MazeOfEgos.Runtime
                 "Replay did not reset the game.");
             RequireHud(app.Session);
             yield return new WaitForSecondsRealtime(0.3f);
-            foreach (string name in new[] { "01-menu.png", "02-gameplay.png", "03-settings.png", "04-left-handed.png", "05-items.png", "06-shortcut-warning.png", "07-shortcut-open.png", "08-base.png", "09-level-clear.png", "10-game-over.png", "11-banana-flight.png", "12-banana-landed.png", "13-banana-reduced-motion.png" })
+            foreach (string name in new[] { "01-menu.png", "02-gameplay.png", "03-settings.png", "04-left-handed.png", "05-items.png", "06-shortcut-warning.png", "07-shortcut-open.png", "08-base.png", "09-level-clear.png", "10-game-over.png", "11-banana-flight.png", "12-banana-landed.png", "13-banana-reduced-motion.png", "14-putin-chase.png", "15-putin-slip.png", "16-putin-power.png", "17-putin-return.png" })
                 Require(File.Exists(Path.Combine(output, name)), "Screenshot was not written: " + name);
             InputSystem.RemoveDevice(screen);
+        }
+        private IEnumerator CheckCharacter(GameApp app)
+        {
+            bool originalMotion = app.Settings.reducedMotion; app.Settings.reducedMotion = false;
+            InstallFixture(app, ItemKind.None, new Point2(6, 5), 90);
+            SessionSnapshot fixture = app.Session.Snapshot();
+            PursuerState putin = fixture.pursuers[0]; putin.life = PursuerLife.Active;
+            putin.from = new Cell(9, 5); putin.to = new Cell(8, 5); putin.progress = .4;
+            putin.releaseAt = putin.stunUntil = putin.oilUntil = 0;
+            app.Session.Restore(fixture); app.Session.Resume(0);
+            yield return new WaitForSecondsRealtime(.2f);
+            Transform avatar = GameObject.Find("Putin imported pilot").transform;
+            SkinnedMeshRenderer skin = avatar.GetComponentInChildren<SkinnedMeshRenderer>();
+            Require(skin && skin.bones.Length >= 17 && skin.sharedMesh, "Imported Putin rig/skin is missing.");
+            Require(skin.bounds.size.y > 1.6f && skin.bounds.size.y < 2.4f, "Putin world scale is incorrect: " + skin.bounds.size);
+            Animation animation = skin.GetComponentInParent<Animation>();
+            foreach (string clip in new[] { "Idle", "Chase", "Surprise", "Slip", "Return" })
+                Require(animation && animation[clip] != null && animation[clip].length > .1f, "Missing Putin clip " + clip);
+            Transform facing = Array.Find(avatar.GetComponentsInChildren<Transform>(), t => t.name == "FacingForward");
+            Vector3 forward = (facing.position - animation.transform.position).normalized;
+            Require(Vector3.Dot(forward, avatar.forward) > .95f, "Putin faces away from his movement direction.");
+            Mesh baked = new Mesh(); skin.BakeMesh(baked); Vector3[] before = baked.vertices;
+            yield return new WaitForSecondsRealtime(.14f);
+            skin.BakeMesh(baked);
+            Require(VertexDifference(before, baked.vertices) > .01f, "Chase clip did not deform the model.");
+            yield return new WaitForEndOfFrame(); Capture("14-putin-chase.png");
+            app.Session.Pause();
+            yield return null;
+            skin.BakeMesh(baked); before = baked.vertices; Vector3 root = avatar.position;
+            yield return new WaitForSecondsRealtime(.2f);
+            skin.BakeMesh(baked);
+            Require(VertexDifference(before, baked.vertices) < .00001f && Vector3.Distance(root, avatar.position) < .00001f,
+                "Paused Putin skeleton or root moved.");
+            app.Session.Resume(0);
+            fixture = app.Session.Snapshot(); fixture.pursuers[0].stunUntil = fixture.time + 4;
+            app.Session.Restore(fixture); app.Session.Resume(0);
+            yield return new WaitForSecondsRealtime(.15f);
+            skin.BakeMesh(baked); Vector3[] slip = baked.vertices;
+            Require(VertexDifference(before, slip) > .01f, "Slip did not change the skeletal pose.");
+            yield return new WaitForEndOfFrame(); Capture("15-putin-slip.png");
+            app.Settings.reducedMotion = true;
+            yield return null;
+            skin.BakeMesh(baked); before = baked.vertices;
+            yield return new WaitForSecondsRealtime(.15f);
+            skin.BakeMesh(baked);
+            Require(VertexDifference(before, baked.vertices) < .00001f, "Reduced-motion slip still wobbled.");
+            fixture = app.Session.Snapshot(); fixture.pursuers[0].stunUntil = 0;
+            fixture.powerUntil = fixture.time + 5; fixture.powerId++;
+            app.Settings.reducedMotion = false;
+            app.Session.Restore(fixture); app.Session.Resume(0);
+            yield return new WaitForSecondsRealtime(.15f);
+            MaterialPropertyBlock tint = new MaterialPropertyBlock(); bool blueSuit = false;
+            for (int i = 0; i < skin.sharedMaterials.Length; i++)
+                if (skin.sharedMaterials[i].name == "Putin-SuitNavy")
+                { skin.GetPropertyBlock(tint, i); blueSuit = tint.GetColor("_BaseColor").b > .8f; }
+            Require(blueSuit, "Power did not tint Putin's suit.");
+            yield return new WaitForEndOfFrame(); Capture("16-putin-power.png");
+            fixture = app.Session.Snapshot(); fixture.pursuers[0].life = PursuerLife.Returning;
+            app.Session.Restore(fixture); app.Session.Resume(0);
+            yield return new WaitForSecondsRealtime(.1f);
+            Require(Math.Abs(avatar.localScale.x - .38f) < .001f && avatar.Find("Return bubble").gameObject.activeSelf,
+                "Return did not miniaturise the imported model with its bubble.");
+            yield return new WaitForEndOfFrame(); Capture("17-putin-return.png");
+            app.Settings.reducedMotion = originalMotion; Destroy(baked);
+        }
+        private static float VertexDifference(Vector3[] first, Vector3[] second)
+        {
+            Require(first.Length == second.Length, "Skinned vertex count changed.");
+            float distance = 0;
+            for (int i = 0; i < first.Length; i++) distance = Mathf.Max(distance, Vector3.Distance(first[i], second[i]));
+            return distance;
         }
         private static void InstallFixture(GameApp app, ItemKind item, Point2 position, double yaw)
         {

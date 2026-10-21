@@ -19,6 +19,7 @@
 *.apk
 *.aab
 *.ipa
+*.blend1
 .DS_Store
 **/bin/
 **/obj/

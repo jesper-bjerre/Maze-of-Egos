@@ -19,6 +19,10 @@ def main():
         source = (ROOT / asset["source"]).read_bytes()
         runtime = (ROOT / asset["runtimeCopy"]).read_bytes()
         assert source == runtime and hashlib.sha256(source).hexdigest() == asset["sha256"], asset["id"]
+    pilot = json.loads((ROOT / "art/characters/putin/manifest.json").read_text())
+    assert hashlib.sha256((ROOT / pilot["sourceReference"]).read_bytes()).hexdigest() == pilot["sourceSha256"], "Pilot source reference changed"
+    assert hashlib.sha256((ROOT / pilot["runtimeModel"]).read_bytes()).hexdigest() == pilot["runtimeSha256"], "Pilot FBX differs from its manifest"
+    assert (ROOT / pilot["editableSource"]).is_file(), "Editable Blender source missing"
     guids = {}
     for path in (ROOT / "Assets").rglob("*"):
         if path.suffix == ".meta":
@@ -33,7 +37,7 @@ def main():
     expected = {"MazeOfEgos.Core", "Unity.InputSystem", "UnityEngine.UI", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"}
     runtime = json.loads((ROOT / "Assets/Scripts/Runtime/MazeOfEgos.Runtime.asmdef").read_text())
     assert set(runtime["references"]) == expected, "Assembly references do not match the pinned Unity packages"
-    print(f"PASS source maze equality, five exact reference copies, {len(guids)} unique Unity GUIDs, package/assembly JSON and references.")
+    print(f"PASS source maze equality, five exact reference copies, pilot source/FBX hashes and editable source, {len(guids)} unique Unity GUIDs, package/assembly JSON and references.")
     return 0
 
 
