@@ -6,7 +6,7 @@ namespace MazeOfEgos.Runtime
     // Vector artwork stays sharp at every device scale and needs no texture download.
     public sealed class TouchArtwork : MaskableGraphic
     {
-        public enum Shape { Base, Thumb, Button, Empty, Banana, Oil, Boost }
+        public enum Shape { Base, Thumb, Button, Empty, Banana, Oil, Boost, Heart }
         private Shape shape;
         public Shape Artwork { get => shape; set { if (shape == value) return; shape = value; SetVerticesDirty(); } }
         protected override void OnPopulateMesh(VertexHelper mesh)
@@ -31,6 +31,12 @@ namespace MazeOfEgos.Runtime
                 Disc(mesh, Vector2.zero, 45 * unit, color * new Color(0.85f, 0.78f, 0.53f, 0.75f));
                 Ring(mesh, 45 * unit, 1.8f * unit, color);
                 Disc(mesh, Vector2.zero, 7 * unit, color * new Color(1, 1, 1, 0.5f));
+            }
+            else if (shape == Shape.Heart)
+            {
+                Vector2 previous = HeartPoint(0) * unit;
+                for (int i = 1; i <= 48; i++)
+                { Vector2 next = HeartPoint(i * Mathf.PI * 2 / 48) * unit; Triangle(mesh, Vector2.zero, previous, next, color); previous = next; }
             }
             else if (shape == Shape.Banana)
             {
@@ -67,6 +73,8 @@ namespace MazeOfEgos.Runtime
                 Line(mesh, new Vector2(-17, -17) * unit, new Vector2(17, 17) * unit, 2 * unit, color);
             }
         }
+        private static Vector2 HeartPoint(float t) => new Vector2(16 * Mathf.Pow(Mathf.Sin(t), 3),
+            13 * Mathf.Cos(t) - 5 * Mathf.Cos(2 * t) - 2 * Mathf.Cos(3 * t) - Mathf.Cos(4 * t) + 2) * 2.7f;
         public override bool Raycast(Vector2 screenPoint, Camera eventCamera)
         {
             if (!base.Raycast(screenPoint, eventCamera)) return false;

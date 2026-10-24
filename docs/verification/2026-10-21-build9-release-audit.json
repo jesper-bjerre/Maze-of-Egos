@@ -1,0 +1,46 @@
+{
+  "passed": true,
+  "version": "0.2.0",
+  "build": "9",
+  "bundleId": "dk.mazeofegos.game",
+  "minimumOS": "17.0",
+  "deviceFamily": [
+    1,
+    2
+  ],
+  "localizations": [
+    "da"
+  ],
+  "sdk": "iphoneos27.1",
+  "xcodeBuild": "27A9275",
+  "orientations": [
+    "UIInterfaceOrientationLandscapeRight",
+    "UIInterfaceOrientationLandscapeLeft"
+  ],
+  "usageDescriptionKeys": [],
+  "storeIcon": "1024x1024 RGB8 without alpha",
+  "testHarnessAbsent": true,
+  "signatureVerified": true,
+  "executableSha256": "4cc3399989f1e49ac9d001050afbb737583a9fd32728deaec7f099f205860e4d",
+  "requiredReasonAPIs": {
+    "NSPrivacyAccessedAPICategorySystemBootTime": [
+      "35F9.1"
+    ],
+    "NSPrivacyAccessedAPICategoryDiskSpace": [
+      "E174.1"
+    ],
+    "NSPrivacyAccessedAPICategoryUserDefaults": [
+      "CA92.1"
+    ],
+    "NSPrivacyAccessedAPICategoryFileTimestamp": [
+      "0A2A.1",
+      "C617.1"
+    ]
+  },
+  "manifestDeclaresTracking": false,
+  "manifestCollectedDataTypes": [],
+  "limitations": [
+    "Local development-signed archive, not App Store validation or distribution export.",
+    "Manifest/configuration audit is not a packet capture or legal/rights approval."
+  ]
+}

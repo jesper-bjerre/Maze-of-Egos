@@ -93,10 +93,11 @@ Testkoden er kun med i editor- og udviklingsbuilds og kører kun med testflaget.
 
 Grundprofilen kan afprøves ved at sætte de tre uafhængige flag i
 `Assets/Resources/Data/rules.json` til false. Hovedoplevelsen har alle tre true.
-Et gemt spil bevarer sin egen regelprofil ved genoptagelse. Fra build 3 er
-snapshotindholdets version 2; tidligere version 1 migreres ved indlæsning.
+Et gemt spil bevarer sin egen regelprofil ved genoptagelse. Fra build 10 er
+snapshotindholdets version 3 med gangretning og svingkø. Version 1/2 migreres
+til automatisk gang på en lovlig midterlinje ved indlæsning.
 Filnavnet `session-v1.json` bevares med vilje, så eksisterende spil findes.
-Version 2 kan ikke åbnes i ældre builds. Kastets position og tider gemmes
+Version 3 kan ikke åbnes i builds før 10. Kastets position og tider gemmes
 sammen med resten af runden; pause og nedtælling forbruger ingen kasttid.
 
 ## Bygning til iPhone
@@ -151,3 +152,60 @@ skal installeres på ny på en anden computer.
 - Lokale kildefiler overlever en afbrudt chat. Overdragelse via kloning kræver
   også et Git-commit og push. `.tools/`, `Library/`, `Logs/` og `Builds/` er
   tilsigtet ignoreret; de skal ikke med i kildekodeoverdragelsen.
+
+
+## Build 12 — illustreret startskærm
+
+`docs/images/Jagten gennem egoernes labyrint.png` kopieres uændret til
+`Assets/Resources/Brand/MenuBackground.png`. Unity konfigurerer billedet som
+UI-tekstur med oprindelige proportioner. Startmenuen har PLAY, CONTINUE SAVED
+GAME og HELP i højre side; Settings findes via pausemenuen. Bredformat bruger
+en mørk udvidelse med blød overgang til billedet. Kopiér begge PNG-filer ved
+manuel overdragelse; repositoryvalideringen kræver, at de er identiske.
+
+## Build 11 — engelsk produkt
+
+Alle spillertekster, verdensskilte og udgivelsesudkast er engelske. Appen
+angiver kun `en` som iOS-sprog. Score og effekttider bruger engelsk talformat
+uafhængigt af enhedens sprog. Spil-/settingsfilernes format og navne er uændrede.
+Den native kontrol tvinger `da-DK` kultur, så engelsk tekst og formatering også
+kontrolleres på en dansk enhed. Ved hver optagelse kontrolleres tekstens højde.
+
+## Aktuel test og Release-kandidat fra build 12
+
+Alle figurer er nu importerede FBX-modeller; Unity kræver stadig ikke Blender.
+Læs den seneste status i planen, da ældre Build 1–6-beskrivelser ovenfor er
+historiske. Den udvidede kontrol producerer 40 PNG'er på Mac og 42 på iPhone.
+Fire separate `*-character-check.json` indeholder fodmålingerne. Begge fysiske
+landscape-retninger og safe area testes på iOS; desktop springer netop den
+fysiske rotationskontrol over.
+
+```sh
+python3 Tools/unity.py smoke-mac --width 1600 --height 1200
+python3 Tools/unity.py smoke-mac --width 2400 --height 1080
+# Efter installation af den signerede Debug-app på din egen enhed:
+python3 Tools/ios_test.py smoke --device DIN_IPHONE --label build12
+python3 Tools/ios_test.py lifecycle --device DIN_IPHONE --label build12
+# Efter installation af den særskilte signerede Release-performanceapp:
+python3 Tools/ios_test.py performance --device DIN_IPHONE --seconds 60 --label build12
+# Normal Release-eksport uden testharness:
+python3 Tools/unity.py build-ios-release
+```
+
+`ios_test.py lifecycle` åbner systemets Indstillinger, venter otte sekunder og
+aktiverer den samme kørende app igen. Den kræver faktiske OS-callbacks og
+kontrollerer frosne timere, disk-checkpoint og resume-nedtælling. Kun den
+udtrykkeligt startede test bruger dette forløb; normal gameplay gør ikke.
+Runneren kræver en frisk lokal outputmappe og bevarer tidligere evidens.
+Brug en ny `--label`/`--output` ved gentagelser. Build 12 gentager menu-, tekst- og funktionskontrollen. Der er ikke optaget en ny
+performancekørsel; brug `--seconds 60` eller `--seconds 900` ved behov.
+
+En normal Release-eksport har hverken `DevelopmentSmoke`, `DevelopmentLifecycle`
+eller `DevelopmentPerformance` i den genererede spilassembly. Den signerede
+lokale archive ligger under `Builds/Archives/`, som er ignoreret. Dens signering
+er til lokal enhedsafprøvning; App Store-distribution og upload udføres særskilt
+efter review. Brug dit eget udviklerteam ved signering på en ny Mac.
+
+Mac 4:3 og bredformat validerer layout og input i de faktiske renderstørrelser;
+de erstatter ikke fysisk iPad-accept. Fuld testdokumentation og afgrænsninger
+står i [testrapporten](TEST_REPORT.md) og [udgivelsesstatus](release/READINESS.md).

@@ -2,12 +2,105 @@
   "id": "putin",
   "stage": "refined-local-rigged-review-pilot",
   "finalArtAccepted": false,
-  "generator": "Tools/build_putin_pilot.py",
+  "generator": "Tools/build_character.py",
   "blenderVersion": "4.5.14 LTS",
   "sourceReference": "docs/images/Putin character reference sheet.png",
   "sourceSha256": "662965da0318e21e7deab41e983ae6ffb7b9067fedcdd468103ead1a33eb97b5",
   "textureUsage": "Unmodified original sheet sampled by mesh UVs, blended to skin with vertex weights; no edited PNG.",
-  "revision": 2,
+  "revision": 3,
+  "displayName": "Putin",
+  "materials": [
+    {
+      "name": "SuitNavy",
+      "color": [
+        0.075,
+        0.1,
+        0.15,
+        1
+      ]
+    },
+    {
+      "name": "SuitLapel",
+      "color": [
+        0.105,
+        0.135,
+        0.19,
+        1
+      ]
+    },
+    {
+      "name": "ShirtIvory",
+      "color": [
+        0.91,
+        0.9,
+        0.84,
+        1
+      ]
+    },
+    {
+      "name": "TieBurgundy",
+      "color": [
+        0.38,
+        0.035,
+        0.055,
+        1
+      ]
+    },
+    {
+      "name": "Leather",
+      "color": [
+        0.035,
+        0.028,
+        0.025,
+        1
+      ]
+    },
+    {
+      "name": "Skin",
+      "color": [
+        0.78,
+        0.55,
+        0.4,
+        1
+      ]
+    },
+    {
+      "name": "Hair",
+      "color": [
+        0.28,
+        0.18,
+        0.1,
+        1
+      ]
+    },
+    {
+      "name": "HairHighlight",
+      "color": [
+        0.38,
+        0.26,
+        0.16,
+        1
+      ]
+    },
+    {
+      "name": "Metal",
+      "color": [
+        0.52,
+        0.35,
+        0.13,
+        1
+      ]
+    },
+    {
+      "name": "FaceReference",
+      "color": [
+        1,
+        1,
+        1,
+        1
+      ]
+    }
+  ],
   "strideMeters": 0.88,
   "geometryValidation": {
     "stanceSamples": 40,
@@ -17,16 +110,18 @@
   },
   "editableSource": "art/characters/putin/putin-pilot.blend",
   "runtimeModel": "Assets/Resources/CharacterModels/putin.fbx",
-  "runtimeSha256": "d47b558042d4d3f4709ac9ab66e8c40c6269f70f676f93d4f7390a3117e4d748",
+  "runtimeSha256": "bbeac8c901a1ec02ba5fc354d6e551f1bd668505da76980011a635b624336a93",
   "vertices": 9726,
-  "triangles": 18224,
+  "triangles": 18286,
   "bones": 17,
   "clips": [
-    "Idle",
     "Chase",
-    "Surprise",
+    "Idle",
+    "Puff",
+    "Recover",
+    "Return",
     "Slip",
-    "Return"
+    "Surprise"
   ],
   "metersTall": 1.944,
   "licensing": "Locally authored geometry/rig/animation in this repository; user-supplied reference art. Final release rights review remains outstanding.",

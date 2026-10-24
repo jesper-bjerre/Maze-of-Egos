@@ -1,4 +1,312 @@
-# Verifikation — 21. oktober 2026
+# Verifikation — senest opdateret 24. oktober 2026
+
+## Existing build 12 redeployed — October 24, 2026
+
+Opened `Builds/iOS-Release/Unity-iPhone.xcodeproj` in Xcode 27.1 (27A9275),
+rebuilt its normal Release configuration successfully, and verified the app's
+signature, version 0.2.0 (12), English locale and absence of test harnesses.
+Installed it on the physical iPhone 13; the device's installed-app listing
+confirms version/build. No uninstall or data reset was performed.
+
+After the user unlocked the phone, the normal Release was launched and
+activated in the foreground without test arguments or MAZE test flags. Process
+39725 was still running after an 8-second startup wait. No new gameplay run or
+performance test is claimed. This is the existing first-person version, not the
+planned competition.
+[Deployment record](verification/2026-10-24-build12-iphone13-redeploy-mdtcgwa.json).
+
+## Manual controls acceptance — October 24, 2026
+
+The user answered **“Styringen fungerer godt”** when asked how automatic walking
+and relative turns work in the latest installed build 12 on their iPhone.
+The manual acceptance of the new control feel is now recorded as passed.
+[Recorded feedback](verification/2026-10-24-build12-manual-controls.json).
+
+This confirms the control experience. A complete hand-played round, start-menu
+design, final art/audio quality, and physical iPad acceptance remain separate.
+No new build or automated/device run was performed to record this feedback.
+
+## Resume check — October 24, 2026
+
+All 59 entries in the recorded build 12 source inventory still match (49
+non-generated files and 10 generated build files). The executable in the local
+build 12 archive matches its previous audit hash. Repository validation passes:
+the maze, original reference/runtime copies, all five character FBX/source
+manifests, editable sources, rig budgets, and 138 unique Unity GUIDs.
+`git diff --check` also passes.
+
+This checks continuity of the local handover. No new build, device installation,
+gameplay run, or performance measurement was performed. The previous device
+installation/launch evidence remains dated October 21. This check did not record
+manual product acceptance; the subsequent controls confirmation is recorded above.
+[Recorded check](verification/2026-10-24-build12-resume-check.json).
+
+## Manual sound confirmation — October 21, 2026
+
+The user confirmed that **both music and sound effects are audible** with the
+physical iPhone Ring/Silent switch set to silent, responding to the build 10
+question requesting in-game sound/music on and media volume above zero.
+Exact reply: “Ja, begge dele kan høres”.
+
+This closes the pending manual check of the Silent-switch audio fix. The reply
+is linked to the build 10 question; the build running during listening was not
+independently identified. No separate build 12 listening test or full audio/
+haptics quality acceptance is claimed.
+[Recorded feedback](verification/2026-10-21-manual-silent-switch-audio.json).
+
+## Illustrated start screen — 0.2.0 (12), verified
+
+The supplied `docs/images/Jagten gennem egoernes labyrint.png` is copied byte
+for byte to `Assets/Resources/Brand/MenuBackground.png`. The start screen shows
+only PLAY, CONTINUE SAVED GAME, and HELP in the dark area on the right. Extra
+portraits, 3D hero, title/subtitle, best-score text, prototype notice, and the
+start-menu Settings action are removed. Settings remain available from pause.
+The hero celebration at level clear remains. Empty-save Continue is disabled.
+
+- 62/62 Core checks passed; managed compile passed with no errors/warnings.
+- Native checks now require three menu texts/actions in order, all buttons in
+  the right side and safe area, original cover proportions, no character
+  overlays, and no unused hero camera rendering. Help opens through touch.
+- Both empty-save and saved-game start screens are captured; save/resume and
+  the existing gameplay/settings/rig checks remain in the native suite.
+- Mac native checks passed at 1600×900 during layout development and at
+  2400×1080 after the final edge blend/button styling. The final wide capture
+  preserves the complete cover and blends its empty edge into the dark extension.
+  Both empty-save and saved-game menus pass. [Result](verification/2026-10-21-build12-mac-wide-smoke.txt),
+  [menu](verification/2026-10-21-build12-mac-wide-01-menu.png),
+  [saved menu](verification/2026-10-21-build12-mac-wide-42-menu-saved.png).
+- Final Mac 4:3 (1600×1200) passed with 40 PNGs. The complete cover is fitted
+  inside the narrower screen, with dark margins above/below, while the right
+  actions remain in the image's dark region. This is layout evidence, not a
+  physical iPad test. [Result](verification/2026-10-21-build12-mac-4x3-smoke.txt),
+  [menu](verification/2026-10-21-build12-mac-4x3-menu.png).
+- Physical iPhone 13 Debug build 12 passed with **42 PNGs at 2532×1170**,
+  including both landscape directions/safe areas. Help touch, Play, saved-game
+  Continue, pause Settings, all gameplay fixtures, and hero celebration pass.
+  The start screen has only the three requested English action labels.
+  [Result](verification/2026-10-21-build12-iphone13-smoke.txt),
+  [start](verification/2026-10-21-build12-iphone13-01-menu.png),
+  [saved game](verification/2026-10-21-build12-iphone13-42-menu-saved.png).
+- Signed normal Release 0.2.0 (12) archive passed signature, English language,
+  iPhone/iPad family, landscape, icon, permission/privacy, and absence-of-test-
+  harness checks. [Audit](verification/2026-10-21-build12-release-audit.json).
+  The normal Release was installed from this archive and launched on iPhone
+  without test flags. Normal user storage was preserved. No Apple upload was performed.
+  Development-build watermarks in QA captures are absent in normal Release.
+
+Earlier builds below are historical evidence.
+
+## English product — 0.2.0 (11), verified
+
+All player-facing menus, HUD labels, tutorials, notifications/errors, and 3D
+signs are English. The hero's English display name is Zelenskyy. Life icons
+remain, now labeled `Lives:`. English score grouping and decimal timers are
+explicit, independent of the device locale. iOS declares `en` as the default
+and only supported app language. Store metadata and privacy drafts are English.
+
+- 62/62 Core tests passed again. The actual Unity Newtonsoft roundtrip passed.
+- Managed compile: zero errors/warnings. Repository/assets validation passed.
+- Native checks force `da-DK` culture, assert `Best: 12,345` and decimal-point
+  effect timers, and check text height within its layout at every capture.
+- Native Mac checks passed at 1600×900 and 1600×1200 with 39 framebuffer
+  captures per run. Menu, gameplay, help, settings, and Game Over were inspected.
+  [Result](verification/2026-10-21-build11-mac-smoke.txt),
+  [4:3 result](verification/2026-10-21-build11-mac-4x3-smoke.txt).
+- Signed Debug build 11 passed on physical iPhone 13 with 41 framebuffer PNGs
+  at 2532×1170, including both landscape orientations and safe areas. English
+  menu/settings/HUD/help/world sign text and all existing functional fixtures
+  passed under forced `da-DK` culture. Input is synthetic, not manual acceptance.
+  [Result](verification/2026-10-21-build11-iphone13-smoke.txt),
+  [menu](verification/2026-10-21-build11-iphone13-01-menu.png),
+  [HUD](verification/2026-10-21-build11-iphone13-02-gameplay.png),
+  [settings](verification/2026-10-21-build11-iphone13-03-settings.png),
+  [help](verification/2026-10-21-build11-iphone13-20-help.png),
+  [base sign](verification/2026-10-21-build11-iphone13-08-base.png).
+- Both iOS exports declare `en` and contain exactly one localization key.
+  The signed normal Release archive 0.2.0 (11) passed signature, language,
+  device family, orientations, icon, permission/privacy, and test-harness checks.
+  [Audit](verification/2026-10-21-build11-release-audit.json).
+  The normal Release from this archive was installed and launched on iPhone
+  without test flags after QA. Existing normal user storage was preserved.
+  No App Store upload has been performed.
+
+Build 10 and earlier evidence below remains historical; no new long performance
+measurement is claimed for this text-only update.
+
+## Rettelser efter brugerafprøvning — 0.2.0 (10)
+
+Brugeren valgte relativt joystick: automatisk gang midt i gangen, venstre/højre
+bestiller ét gemt sving, op fortsætter ligeud, ned vender om, slip fortsætter.
+Kameraet følger retningen uden lodret kig. HUD viser `Liv:` med tegnede hjerter.
+iOS bruger Playback/MixWithOthers for lyd uafhængigt af Ring/Silent-knappen;
+spillets lydvalg og medielydstyrken gælder fortsat.
+
+- **62/62** Core-tests består. De omfatter sving før kryds, forbrug af den
+  resterende bevægelse efter svinget, ét sving pr. udslag, erstatning af køen,
+  vending mellem feltcentre, stop ved væg, tunnel, alle 244 hjerter, pause og
+  v1/v2-migration til snapshot v3. [Resultat](verification/2026-10-21-build10-core-checks.txt).
+- Kompilering mod Unity: **0 fejl og 0 advarsler**. Unitys faktiske Newtonsoft
+  serializer bevarer også et bestilt sving og giver identisk videre simulation.
+- **540.000 ticks / 10 seeds** består med midterlinjeinvariant efter hvert tick:
+  7.564 hjerter, 235 fangster, 145 genstande, 702 vægskift, 900 checkpoints og
+  alle fire aktive AI-roller. [JSON](verification/2026-10-21-build10-core-stress.json).
+- Stresstesten fandt en reservation, der sluttede før sidste feltcenter ved en
+  genvej. Begge ender af den aktuelle gangkant reserveres nu, indtil spilleren
+  er helt ude. En målrettet regressionstest består sammen med hele stresstesten.
+- Native Mac-kontrol består med syntetisk sving før et kryds, fortsat gang efter
+  slip, stop ved væg, fast kamera og kontrol af 0/2/3/4 livssymboler. De øvrige
+  genstands-, rig-, menu- og save/resume-kontroller består også.
+- **iPhone 13:** signeret Debug-build 10 består med **41 PNG'er på 2532×1170**,
+  begge landscape-retninger/safe area og samme native kontrol. Et venstreudslag
+  før et kryds udfører ét sving efter slip. Livrækken tælles ved 0/2/3/4 liv.
+  [Resultat](verification/2026-10-21-build10-iphone13-smoke.txt),
+  [HUD](verification/2026-10-21-build10-iphone13-02-gameplay.png),
+  [sving](verification/2026-10-21-build10-iphone13-41-automatic-turn.png).
+- **Reel OS-baggrund:** 9,36 sekunder i Indstillinger og tilbage i samme proces.
+  Timere/disk-checkpoint/nedtælling består; den faktiske iOS-lydsession har
+  fortsat Playback/MixWithOthers efter forgrund. [JSON](verification/2026-10-21-build10-iphone13-lifecycle.json).
+- **Mac 4:3:** den endelige build med genvejsrettelsen består ved 1600×1200 med
+  39 PNG'er; hjælpetekst og livrækken er visuelt kontrolleret. Ingen fysisk iPad-test.
+- **Normal Release-archive:** signatur, version 0.2.0 (10), dansk locale,
+  iPhone/iPad, iOS 17, ikon, tilladelsesnøgler, manifest og fravær af testharness
+  består. [Audit](verification/2026-10-21-build10-release-audit.json).
+  Ingen Apple-upload er foretaget.
+- **Kort Release-måling på iPhone:** 60,0021 s efter 15 s opvarmning, 60,00 fps,
+  p95 18,00 ms, p99 18,50 ms, værst 20,40 ms; ingen frames over 33,33 ms.
+  71 hjerter, én fangst og én brugt genstand med alle fire AI-roller.
+  Samplet peak resident 263,42 MiB, alle 13 temperaturprøver nominal.
+  Ingen fejl/baggrundsskift; GPU-/GC-tællere utilgængelige. USB/haptik-afgrænsning
+  som i [performancebeskrivelsen](PERFORMANCE.md).
+  [JSON](verification/2026-10-21-build10-iphone13-performance.json),
+  [CSV](verification/2026-10-21-build10-iphone13-performance.csv).
+  Dette erstatter ikke build 9's 15-minutters måling med en ny lang test.
+- Den normale signerede Release 0.2.0 (10) er installeret og startet på iPhone
+  uden testflag efter målingen; normal brugerlagring er bevaret.
+- Den automatiske lydtest kontrollerer den faktiske iOS-session. Brugeren har
+  senere bekræftet både musik og effekter med den fysiske knap på lydløs som
+  svar på build 10-spørgsmålet; se den manuelle bekræftelse øverst.
+
+Build 9 nedenfor er historisk evidens. Dets 900-sekunders måling og tidligere
+manuelle bekræftelse af frit kamera er ikke validering af den nye styring.
+
+## Samlet build 7–9 — 0.2.0 (9), 21. oktober 2026
+
+Denne sektion erstatter historiske udsagn om, at kun Putin er importeret.
+Alle fem figurer og heltens arm er nu eksporteret fra lokale Blender-kilder.
+
+### Kontroller og faktisk evidens
+
+- **56/56** C#-tests, 0 fejl/advarsler ved kompilering mod Unitys managed
+  biblioteker, Unity Newtonsoft-rundløb og repositoryvalidering består.
+- **Stresstest:** 10 seeds × 900 nominelle simulerede sekunder = 540.000 faste
+  ticks. 5.641 hjerter, 228 fangster, 111 brugte genstande, 712 vægskift og
+  900 JSON-checkpoints/genoptagelser. Alle fire AI-roller var aktive. Ingen
+  ulovlige spillerpositioner, tællerdrift eller ugyldige snapshot-/aktørtilstande.
+  Dette er Core-simulation, ikke 150 minutters fysisk enhedstid.
+  [Uændret JSON](verification/2026-10-21-build9-core-stress.json).
+- **Mac:** Den udvidede native kontrol består med 38 framebuffer-PNG'er ved
+  1600×900, 1600×1200 og 2400×1080. Det kontrollerer touch, håndlayouts,
+  genstande/vægge, alle fire rigs, menuavatar, hjælp, grafikprofil og spilfaser.
+  4:3-formatet er ikke en fysisk iPad-test.
+- **iPhone 13 / iOS 26.6.2:** Debug-build 9 er signeret, installeret og består
+  samme kontrol. 40 faktiske PNG'er på 2532×1170 inkluderer tvungen fysisk
+  LandscapeLeft/LandscapeRight og kontrol af safe area i begge retninger.
+  Inputtet er syntetiske Input System-events, ikke en ny håndført tretouchtest.
+  [Resultat](verification/2026-10-21-build9-iphone13-smoke.txt).
+- **Rigs:** Fire native fodmålinger med 22 støtteprøver pr. figur. Højst
+  0,537 mm afvigelse i plantet ankelhøjde; svingfoden løftes. Skala/retning,
+  deformerende jagt, frossen pause, fast reduceret glidepose, power, miniature-
+  retur samt profil/bagfra består. Unity importerer 16.806–17.994 trekanter
+  pr. hel figur og 1.896 i heltens arm. Kilder har 17 knogler, syv fælles
+  klip, helten desuden Throw/Cheer. Ansigternes kunstneriske slutkvalitet er åben.
+- **Faktisk OS-livscyklus:** Runneren åbnede Indstillinger og aktiverede samme
+  spilproces igen. 9,24 sekunder i baggrunden; simulationstid, kraft-, boost-
+  og vægvarslingstimer var uændrede. Et pauset disk-checkpoint stemte, og
+  genoptagelsens nedtælling forbrugte ingen simulationstid.
+  [Uændret JSON](verification/2026-10-21-build9-iphone13-lifecycle.json).
+- **Mac Release, kort kontrol:** 30,01 målte sekunder efter 3 sekunders
+  opvarmning: 59,80 fps, p95 17,25 ms, p99 17,75 ms, værste interval 19,79 ms,
+  ingen intervaller over 50 ms. 39 hjerter, én fangst og én genstand. Mac'en
+  byggede andre lokale artifacts samtidig; dette er ikke en mobilmåling.
+  [JSON](verification/2026-10-21-build9-mac-performance.json),
+  [CSV](verification/2026-10-21-build9-mac-performance.csv).
+
+Efter den lange måling er den seneste Debug-build installeret og hele
+funktionskontrollen gentaget med de sidste UI-rettelser. Den består igen;
+frisk log og PASS er kontrolleret, og alle 40 PNG'er er 2532×1170.
+De kopierede build 9-billeder og fodrapporter ovenfor stammer fra denne sidste
+kørsel i `.artifacts/smoke-iphone-build9-final`. Spilregler og 3D-assets er
+uændrede gennem de sidste UI-rettelser.
+
+### Lang fysisk Release-måling — bestået
+
+**900,0107 målte sekunder efter 15 sekunders opvarmning på fysisk iPhone 13.**
+Release (`developmentBuild=false`), 2532×1170, alle aktuelle 3D-assets og normal
+AI. Både frisk `PERFORMANCE COMPLETED` og det hentede `PASS`/JSON er kontrolleret.
+`completed=true`, `stabilityPassed=true`, ingen fejl eller baggrundsafbrydelser.
+
+| Måling | Resultat |
+| --- | ---: |
+| Frames / gennemsnit | 53.954 / 59,9485 fps |
+| p95 / p99 | 18,00 / 18,25 ms |
+| Værste interval | 48,80 ms |
+| Over 33,33 ms / over 50 ms | 21 / 0 |
+| CPU main thread, gennemsnit / p95 | 2,95 / 5,50 ms |
+| Samplet peak resident / Unity / managed | 271,56 / 100,46 / 5,57 MiB |
+| Temperaturprøver | 181, alle nominal |
+| Aktiv Playing-tid | 830,90 sekunder |
+| Startede runder / hjerter / fangster / genstande | 7 / 1.124 / 19 / 19 |
+| Aktive AI-roller | Alle fire, maske 15 |
+
+[Uændret rapport](verification/2026-10-21-build9-iphone13-performance.json) og
+[CSV](verification/2026-10-21-build9-iphone13-performance.csv) følger repoet.
+De langsommere intervaller er samlet omkring 686–711 sekunder; der er ingen
+registreret OS-baggrund eller temperaturændring på det tidspunkt. Årsagen er
+ikke fastslået; de konkrete langsomme intervaller er bevaret i CSV til videre profilering.
+GPU-frame time og GC-rate var ikke tilgængelige og rapporteres derfor ikke som
+nul. Haptik er slået fra under automatisk langtidskørsel. USB-opladning betyder,
+at der ikke kan drages en konklusion om uopladet batteriforbrug.
+
+Automaten spiller med normale regler, fangster og genstarter; den fuldførte
+ikke et level i denne måling (`maxLevel=1`). Fuld 244-hjertetraversal og
+levelskifte er verificeret særskilt i regler/native fixtures. Dette er ikke
+manuel spilaccept eller slutaccept af de anvendte reviewmodeller. Efter
+performance-eksporten er kun tastaturhjælpetekst og dansk bundle-locale rettet;
+spilregler og 3D-assets er uændrede. Final normal Release har ingen måler.
+
+### Udgivelseskandidat og resterende accept
+
+Normal Release er adskilt fra Debug/performance. Lokal archive er bygget og auditeret med
+udviklersignering, dansk sprogangivelse, begge landscape-retninger og iOS 17
+som minimum. Audit kontrollerer også fravær af de tre testharness-klasser,
+1024px RGB-ikon uden alfa og Unitys privatlivsmanifest. [Uændret audit](verification/2026-10-21-build9-release-audit.json). Det er ikke en
+App Store-validering eller upload.
+
+Den afsluttende normale Release-build er installeret fra den auditerede archive
+og startet uden testflag på iPhone. Opstarten er bekræftet i
+`Logs/iphone-build9-normal-launch.json`; en efterfølgende procesliste bekræfter,
+at processen kører. Brugerens normale gemte spil er ikke ændret af testharness.
+Der er ikke lavet manuel gameplayaccept af denne Release-build.
+
+Brugeren har valgt at fortsætte uden fysisk iPad-test i denne omgang. Manuel
+hel runde mod AI, tredje finger, endelig grafik, lyd/haptik og rettighedsafklaring
+står fortsat åbne. Den tidligere Unity Debug-meddelelse om én persistent
+allocation ved procesafslutning ses stadig; den er ikke erklæret løst.
+
+Gentag stresstesten med:
+
+```sh
+dotnet run --project Tests/MazeOfEgos.StressChecks.csproj
+python3 Tools/ios_test.py lifecycle --device DIN_IPHONE
+python3 Tools/ios_test.py performance --device DIN_IPHONE --seconds 900
+python3 Tools/verify_ios_release.py
+```
+
+Se [udgivelsesstatus](release/READINESS.md) og [planen](IMPLEMENTATION_PLAN.md).
+
+
+## Historik — build 1–6
+
 
 ## Bekræftede resultater
 

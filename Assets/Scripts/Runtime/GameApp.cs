@@ -11,7 +11,7 @@ namespace MazeOfEgos.Runtime
     public sealed class GameSettings
     {
         public int version = 1;
-        public bool sound = true, music = true, haptics = true, reducedMotion, leftHanded;
+        public bool sound = true, music = true, haptics = true, reducedMotion, leftHanded, economyGraphics;
         public bool tutorialSeen, powerHelpSeen, itemHelpSeen;
         public float fov = 80;
         public long highScore;
@@ -28,6 +28,7 @@ namespace MazeOfEgos.Runtime
         private GameHud hud;
         private GameAudio audioView;
         private DesktopActions input;
+        private readonly JoystickTurnLatch turnInput = new JoystickTurnLatch();
         private bool inMenu = true;
         private SessionSnapshot savedGame;
         private string runPath, settingsPath;
@@ -56,6 +57,7 @@ namespace MazeOfEgos.Runtime
             string storage = Application.persistentDataPath;
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
             if (DevelopmentSmoke.Enabled) storage = DevelopmentSmoke.StorageDirectory;
+            if (DevelopmentLifecycle.Enabled) storage = DevelopmentLifecycle.StorageDirectory;
 #endif
 #if DEVELOPMENT_BUILD || UNITY_EDITOR || MAZE_PERFORMANCE
             if (DevelopmentPerformance.Enabled) storage = DevelopmentPerformance.StorageDirectory;
@@ -63,6 +65,7 @@ namespace MazeOfEgos.Runtime
             runPath = Path.Combine(storage, "session-v1.json");
             settingsPath = Path.Combine(storage, "settings-v1.json");
             Settings = ReadSettings();
+            GraphicsProfile.Apply(Settings.economyGraphics);
             TextAsset data = Resources.Load<TextAsset>("Data/classic_reference");
             if (!data) throw new InvalidOperationException("Missing classic_reference.json.");
             definition = JsonConvert.DeserializeObject<MazeDefinition>(data.text, Json);
@@ -103,10 +106,10 @@ namespace MazeOfEgos.Runtime
         {
             Session = new GameSession(Session.Maze, unchecked((uint)DateTime.UtcNow.Ticks), rules);
             inMenu = false; accumulator = 0; CopyPrevious(); hud.CloseSettings(); view.ResetEncounters();
-            hud.Joystick.Clear(); hud.Look.Clear(); SaveRun();
+            hud.Joystick.Clear(); turnInput.Clear(); SaveRun();
             if (!Settings.tutorialSeen)
             {
-                hud.Notify("Saml alle hjerter.\nVenstre joystick: gå · Træk til højre: kig", 9);
+                hud.Notify("Collect all hearts.\nYou move automatically. Use the stick to choose your next turn.\nDown: turn around · Release: keep moving", 9);
                 Settings.tutorialSeen = true; SaveSettings();
             }
         }
@@ -116,9 +119,9 @@ namespace MazeOfEgos.Runtime
             try
             {
                 Session.Restore(savedGame); inMenu = false; accumulator = 0; CopyPrevious(); view.ResetEncounters();
-                hud.Notify("Dit spil er gendannet. Tryk Fortsæt, når du er klar.", 4);
+                hud.Notify("Your game is restored. Tap Resume when you are ready.", 4);
             }
-            catch (ArgumentException) { savedGame = null; hud.Notify("Det gemte spil kunne ikke gendannes. Rekorden er bevaret.", 6); }
+            catch (ArgumentException) { savedGame = null; hud.Notify("Your saved game could not be restored. Your best score is safe.", 6, showInMenu: true); }
         }
         public void TogglePause()
         {
@@ -127,41 +130,39 @@ namespace MazeOfEgos.Runtime
             if (Session.Phase == SessionPhase.GameOver) { GoToMenu(); return; }
             if (Session.Phase == SessionPhase.Paused) { Session.Resume(); hud.Notify("", 0); }
             else { Session.Pause(); SaveRun(); }
-            hud.Joystick.Clear(); hud.Look.Clear(); accumulator = 0; CopyPrevious();
+            hud.Joystick.Clear(); turnInput.Clear(); accumulator = 0; CopyPrevious();
         }
         public void GoToMenu()
         {
             if (Session.Phase != SessionPhase.GameOver) { Session.Pause(); SaveRun(); }
-            inMenu = true; hud.CloseSettings(); hud.Joystick.Clear(); hud.Look.Clear(); accumulator = 0;
+            inMenu = true; hud.CloseSettings(); hud.Joystick.Clear(); turnInput.Clear(); accumulator = 0;
         }
         public void UseItem()
         {
             if (inMenu) return;
             if (Session.UseItem()) HandleEvents();
-            else if (Session.Inventory != ItemKind.None) hud.Notify("Der er ikke plads her. Prøv et andet sted.", 2);
+            else if (Session.Inventory != ItemKind.None) hud.Notify("There is no room here. Try another spot.", 2);
         }
         private void Update()
         {
             if (Session == null || hud == null) return;
             float delta = Mathf.Min(UnityEngine.Time.unscaledDeltaTime, 0.15f);
 #if DEVELOPMENT_BUILD || UNITY_EDITOR || MAZE_PERFORMANCE
-            Vector2 automation = DevelopmentPerformance.Enabled ? DevelopmentPerformance.ReadMovement(Session, delta) : Vector2.zero;
+            if (DevelopmentPerformance.Enabled) DevelopmentPerformance.Drive(Session, delta);
 #endif
             if (input.Pause.WasPressedThisFrame()) TogglePause();
             if (!inMenu && !hud.SettingsOpen && Session.Phase == SessionPhase.Playing)
             {
-                Vector2 look = hud.Look.ConsumeLook() * (180f / Mathf.Max(1, Screen.height));
-                look += input.Look.ReadValue<Vector2>() * (100 * delta);
-                Session.Yaw = (Session.Yaw + look.x + 360) % 360;
-                Session.Pitch = Geometry.Clamp(Session.Pitch + look.y, -20, 20);
-                Vector2 move = hud.Joystick.Movement + input.Move.ReadValue<Vector2>();
+                Vector2 stick = hud.Joystick.Movement + input.Move.ReadValue<Vector2>();
+                RelativeTurn? turn = turnInput.Read(new Point2(stick.x, stick.y));
 #if DEVELOPMENT_BUILD || UNITY_EDITOR || MAZE_PERFORMANCE
-                if (DevelopmentPerformance.Enabled) move = automation;
+                if (!DevelopmentPerformance.Enabled && turn.HasValue) Session.RequestTurn(turn.Value);
+#else
+                if (turn.HasValue) Session.RequestTurn(turn.Value);
 #endif
-                Session.SetMovement(new Point2(move.x, move.y));
                 if (input.Use.WasPressedThisFrame()) UseItem();
             }
-            else { Session.SetMovement(new Point2()); hud.Look.ConsumeLook(); }
+            else turnInput.Clear();
             if (!inMenu && Session.Phase != SessionPhase.Paused && Session.Phase != SessionPhase.GameOver)
             {
                 accumulator += delta;
@@ -173,7 +174,11 @@ namespace MazeOfEgos.Runtime
             view.Render(Session, previousPlayer, previousGhosts, Mathf.Clamp01((float)(accumulator / GameSession.FixedDelta)), !inMenu);
             audioView.Update(Session, inMenu || Session.Phase != SessionPhase.Playing);
             hud.Update(Session, inMenu);
-            if (saveFailure != null) { hud.Notify("Kunne ikke gemme: " + saveFailure, 6); saveFailure = null; }
+            if (saveFailure != null)
+            {
+                Debug.LogWarning("Save failed: " + saveFailure); saveFailure = null;
+                hud.Notify("Your progress could not be saved. Please try again.", 6, showInMenu: true);
+            }
         }
         private void CopyPrevious()
         {
@@ -181,6 +186,7 @@ namespace MazeOfEgos.Runtime
             for (int i = 0; i < 4; i++) previousGhosts[i] = Session.Pursuers[i].Position(Session.Maze);
         }
 #if DEVELOPMENT_BUILD || UNITY_EDITOR || MAZE_PERFORMANCE
+        internal void SynchronizeAutomationPresentation() { accumulator = 0; CopyPrevious(); view.ResetCamera(); }
         internal void ProcessAutomationEvents() => HandleEvents();
 #endif
         private void HandleEvents()
@@ -188,17 +194,15 @@ namespace MazeOfEgos.Runtime
             foreach (GameEvent e in Session.Events)
             {
                 audioView.Event(e);
-                if (e.Kind == EventKind.PursuerPaused) hud.Notify("Til pause! +" + e.Points, 1.2f);
-                else if (e.Kind == EventKind.ExtraChance) hud.Notify("En ekstra chance!", 3);
+                if (e.Kind == EventKind.PursuerPaused) hud.Notify("Time out! +" + e.Points, 1.2f);
+                else if (e.Kind == EventKind.ExtraChance) hud.Notify("An extra life!", 3);
                 else if (e.Kind == EventKind.ItemPicked && !Settings.itemHelpSeen)
-                { hud.Notify("Tryk på genstandsknappen for at bruge dit fund.", 5); Settings.itemHelpSeen = true; SaveSettings(); }
+                { hud.Notify("Tap the item button to use what you found.", 5); Settings.itemHelpSeen = true; SaveSettings(); }
                 else if (e.Kind == EventKind.PowerHeart && !Settings.powerHelpSeen)
-                { hud.Notify("Jagten er vendt! Send de overraskede forfølgere til pause.", 4); Settings.powerHelpSeen = true; SaveSettings(); }
-                else if (e.Kind == EventKind.WallWarning) hud.Notify("En genvej åbner snart", 2);
+                { hud.Notify("The chase is reversed! Send the surprised pursuers back for a break.", 4); Settings.powerHelpSeen = true; SaveSettings(); }
+                else if (e.Kind == EventKind.WallWarning) hud.Notify("A shortcut will open soon", 2);
                 else if (e.Kind == EventKind.LevelClear) SaveRun();
-#if UNITY_IOS || UNITY_ANDROID
-                if (Settings.haptics && (e.Kind == EventKind.PowerHeart || e.Kind == EventKind.Caught)) Handheld.Vibrate();
-#endif
+                if (Settings.haptics) GameHaptics.Play(e.Kind);
             }
             if (Session.Score > Settings.highScore) { Settings.highScore = Session.Score; SaveSettings(); }
             if (Session.Phase == SessionPhase.GameOver) ClearRun();

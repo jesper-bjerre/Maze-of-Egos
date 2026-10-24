@@ -1,6 +1,10 @@
 # Maze-of-Egos
 
-Et førstepersonsarkadespil til iPhone og iPad.
+Et 3D-arkadespil til iPhone og iPad. Det aftalte nye design er alle mod alle:
+én menneskestyret og fire computerstyrede figurer konkurrerer om hjerter i
+2-minutters runder med et lokalt, skråt kamera. Først til tre pokaler vinder.
+Designquizzen og implementeringsplanen er færdige; den nye model er endnu ikke
+implementeret. Seneste dokumenterede build 12 er stadig førstepersonsversionen.
 
 Start med [implementeringsplan og aktuel status](docs/IMPLEMENTATION_PLAN.md).
 Planen indeholder aftalte beslutninger, milepæle og instruktioner til overdragelse
@@ -19,11 +23,12 @@ Unity Hub og aktivering af Unity Personal.
 2. Kør **Tools → Maze of Egos → Configure project** første gang.
 3. Åbn `Assets/Scenes/Maze.unity`, og tryk Play.
 
-På touch: venstre joystick styrer bevægelsen, træk på højre side styrer kameraet,
-og knappen til højre bruger genstanden. På computer: WASD til bevægelse,
-træk med musen på højre skærmhalvdel eller brug piletasterne til kamera,
-mellemrum til genstand og Escape til pause. Controllerens to sticks, nederste
-knap og Start bruger samme handlinger.
+I build 12 går figuren automatisk midt i gangen. Venstre/højre på joysticket
+bestiller et relativt sving, op fortsætter ligeud, og ned vender om. Slip
+fortsætter gangen; der er intet frit kameratræk. Knappen til højre bruger
+genstanden. WASD/piletaster eller controllerens venstre stick giver samme
+relative kommandoer; mellemrum/nederste controllerknap bruger genstanden,
+og Escape/Start åbner pause. Den nye models skærmorienterede styring er planlagt.
 
 Touch-overlayet har et rundt joystick, større berøringsområde og symboler for
 banan, olie og boost. Venstrehåndslayout kan vælges i Indstillinger.
@@ -34,13 +39,12 @@ Bananen har en kort kastbue og håndbevægelse. Den aktiveres ved landing og
 lever derefter i 20 sekunder. Pause og gemt spil bevarer et igangværende kast;
 reduceret bevægelse dæmper animationen.
 
-Putin bruger en **rigget Blender-reviewpilot** med fem animationer og ansigt fra
-det originale karakterark. De øvrige figurer og hånden er midlertidige modeller.
-Piloten har nu blødere ansigtsovergange, formet profil/hår og fodkontakt med
-skridttempo, der følger farten.
-Endelig karakterkvalitet udestår. Redigerbar Blender-kilde, FBX og
+Alle fem figurer og førstepersonshånden har importerede, riggede FBX-modeller
+fra lokale Blender-kilder med referencebaserede ansigter og animationer.
+Endelig karakterkvalitet udestår. Redigerbare Blender-kilder, FBX og
 [produktionsvejledning](docs/CHARACTER_PRODUCTION.md) følger repoet; Blender
-kræves kun for at ændre modellen.
+kræves kun for at ændre modellerne. Den nye model skal vise den valgte figur
+i fuld størrelse i verden.
 
 ## Kontroller
 
@@ -70,11 +74,12 @@ På Windows bruges normalt `python` i stedet for `python3` og `build-windows`
 til en lokal prototype. iOS-eksport til Xcode foretages på en Mac med iOS Build
 Support. Resultater ligger i `Builds/`; logfiler ligger i `Logs/`.
 
-`smoke-mac` starter den grafiske udviklingsbuild, afprøver menu, tre samtidige
-syntetiske touchpunkter i begge layouts, genstande, pause, indstillinger,
-save/resume midt i kast, reduceret bevægelse, vægskift, baseporte, Putin-skelet,
-fodkontakt/pause/glid/power/retur, profil/bagfra, levelskifte, Game Over og genstart og lukker
-appen igen. Testdata er isoleret fra spillerens gemte spil. Skærmbilleder gemmes i
+`smoke-mac` starter den grafiske udviklingsbuild og kontrollerer den nuværende
+spilmodel: startmenu, syntetisk touch i begge layouts, automatisk gang/sving,
+genstande, pause, indstillinger, save/resume midt i kast, reduceret bevægelse,
+vægskift, importerede figurer/animationer, levelskifte, Game Over og genstart.
+Disse checks skal udvides til den nye konkurrence; de er ikke evidens for den
+planlagte model. Testdata er isoleret fra spillerens gemte spil. Billeder gemmes i
 `.artifacts/smoke-mac/`. Se [testresultater og aktuelle begrænsninger](docs/TEST_REPORT.md).
 En automatisk touchtest erstatter ikke manuel afprøvning på en fysisk iPhone.
 

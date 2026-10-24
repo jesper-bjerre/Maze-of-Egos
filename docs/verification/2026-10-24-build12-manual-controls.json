@@ -1,0 +1,11 @@
+{
+  "reportedDate": "2026-10-24",
+  "timezone": "Europe/Copenhagen",
+  "evidenceType": "manual user feedback",
+  "device": "iPhone 13",
+  "questionBuild": "0.2.0 (12)",
+  "question": "Hvordan fungerer den nye automatiske gang og de relative sving i den senest installerede build 12 på din iPhone?",
+  "userReply": "Styringen fungerer godt",
+  "manualControlsAccepted": true,
+  "scope": "Acceptance of the automatic walking and relative controls in reply to the build 12 question. This does not confirm a complete round, start-menu design, final art/audio quality, or physical iPad testing. No new automated or device test was performed to record this feedback."
+}

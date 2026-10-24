@@ -36,12 +36,22 @@ internal static class SerializationChecks
         for (int i = 0; i < 30; i++) { original.Tick(); restored.Tick(); }
         if (JsonConvert.SerializeObject(restored.Snapshot(), json) != JsonConvert.SerializeObject(original.Snapshot(), json))
             throw new Exception("Restored banana diverged at landing.");
+        snapshot = original.Snapshot(); snapshot.player = new Point2(10.25, 5); snapshot.yaw = 90;
+        snapshot.autoMoving = true; snapshot.queuedHeading = 0; snapshot.trail = new[] { snapshot.player };
+        original.Restore(snapshot); original.Resume(0);
+        serialized = JsonConvert.SerializeObject(original.Snapshot(), json);
+        restored.Restore(JsonConvert.DeserializeObject<SessionSnapshot>(serialized, json)); restored.Resume(0);
+        if (restored.QueuedHeading != 0 || !restored.AutoMoving) throw new Exception("Queued turn lost in Unity JSON.");
+        for (int i = 0; i < 90; i++) { original.Tick(); restored.Tick(); }
+        if (restored.Yaw != 0 || restored.Player.x != 12 || restored.Player.y >= 5 ||
+            JsonConvert.SerializeObject(restored.Snapshot(), json) != JsonConvert.SerializeObject(original.Snapshot(), json))
+            throw new Exception("Restored automatic turn diverged.");
         var legacy = Newtonsoft.Json.Linq.JObject.Parse(serialized); legacy["version"] = 1;
         foreach (var trap in legacy["traps"]) { ((Newtonsoft.Json.Linq.JObject)trap).Remove("launchPosition"); ((Newtonsoft.Json.Linq.JObject)trap).Remove("launchedAt"); ((Newtonsoft.Json.Linq.JObject)trap).Remove("landsAt"); }
         restored.Restore(legacy.ToObject<SessionSnapshot>());
-        if (restored.Snapshot().version != 2 || restored.Traps[0].FlightProgress(restored.Time) != 1)
+        if (restored.Snapshot().version != 3 || restored.Traps[0].FlightProgress(restored.Time) != 1)
             throw new Exception("Version 1 save migration failed.");
-        Console.WriteLine("PASS actual Unity Newtonsoft JSON roundtrip, paused restore, no derived-property recursion, deterministic simulation, airborne banana/landing and version 1 migration.");
+        Console.WriteLine("PASS actual Unity Newtonsoft JSON roundtrip, paused restore, queued automatic turn, no derived-property recursion, deterministic simulation, airborne banana/landing and version 1 migration.");
         return 0;
     }
 }

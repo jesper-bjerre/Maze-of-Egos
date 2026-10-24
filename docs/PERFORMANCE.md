@@ -98,3 +98,46 @@ Bevar sammenlignelige rapporter under forskellige navne før en ny kørsel.
 - [Apple thermalState](https://developer.apple.com/documentation/foundation/processinfo/thermalstate-swift.property) og [batteriovervågning](https://developer.apple.com/documentation/uikit/uidevice/isbatterymonitoringenabled): offentlige systemmålinger.
 
 Aktuelle resultater og grænser dokumenteres i [testrapporten](TEST_REPORT.md).
+
+
+## Build 9 med alle karakterer og haven
+
+Samme opt-in måler bruges nu med hele det importerede karakterhold,
+3D-menuavatar, arm, haveudsmykning og de nye lyde. Unity-eksporten er en
+Release-build uden Development Build. En separat normal Release-eksport
+udelader også selve måleren.
+
+Den reproducerbare enhedsrunner installerer ikke selv; installér den signerede
+performanceapp først og start derefter:
+
+```sh
+python3 Tools/ios_test.py performance --device DIN_IPHONE --seconds 900
+python3 Tools/performance.py report .artifacts/performance-iphone-build9
+```
+
+Runneren bevarer gamle lokale outputmapper, kræver frisk `PERFORMANCE COMPLETED`
+i konsolloggen og kontrollerer den hentede rapport: `completed`,
+`stabilityPassed`, `developmentBuild=false` og mindst den ønskede måletid.
+Både JSON og CSV kopieres til repositoryets `docs/verification` efter en
+bestået kørsel. Den normale app startes uden testflag bagefter.
+
+Stabilitetskriterierne dækker aktivt spil og fortsat fremdrift; den samlede fps,
+percentiler, enkelte lange intervaller, temperatur og hukommelsesprøver vurderes
+separat. Der er ingen GPU-/GC-tal, hvis platformen ikke udstiller tællerne.
+Den separate 540.000-ticks regelsimulation må ikke omtales som fysisk enhedstid.
+
+## Build 10 — kort kontrol af den nye automatiske styring
+
+60,0021 målte sekunder på fysisk iPhone 13 efter 15 sekunders opvarmning,
+Release uden Development Build, 2532×1170. 3.600 frames, 60,00 fps,
+p95 18,00 ms, p99 18,50 ms, værst 20,40 ms, ingen intervaller over 33,33 ms.
+71 samlede hjerter, én fangst, én brugt genstand og alle fire aktive AI-roller.
+CPU main thread 3,05 ms i gennemsnit / p95 5,50 ms. Samplet peak resident
+263,42 MiB; alle 13 temperaturprøver nominal. Ingen fejl eller baggrundsskift.
+
+[JSON](verification/2026-10-21-build10-iphone13-performance.json) og
+[CSV](verification/2026-10-21-build10-iphone13-performance.csv).
+Automatiseret spil med normal AI og særskilte testdata. GPU-/GC-tællere var
+ikke tilgængelige. Haptik var slukket; USB-opladning udelukker batterikonklusioner.
+Dette er en kort regressionsmåling. Build 9's 900 sekunder gælder fortsat kun
+build 9 og dokumenterer ikke en ny lang måling af build 10.

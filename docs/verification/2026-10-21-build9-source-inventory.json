@@ -1,0 +1,1085 @@
+{
+  "version": "0.2.0",
+  "build": 9,
+  "baselineCommit": "2f8533fdda39e189a620485de551231e2a6fb97f",
+  "dirtyWorktree": true,
+  "files": [
+    {
+      "path": "Assets/Editor/CharacterModelSetup.cs",
+      "sha256": "d3df95ffbe41c4ca370af35c50156247e96bd6cc688504dd2affbca308a0ff95"
+    },
+    {
+      "path": "Assets/Editor/CharacterModelSetup.cs.meta",
+      "sha256": "ff61e8037fc91bc5d69b2780a71cc21fc5b8e381ea585f20010794fa90a5df7a"
+    },
+    {
+      "path": "Assets/Editor/ProjectSetup.cs",
+      "sha256": "85a9ac472786c6110a9afb2dd0eb411c789d5aa15cc50a853d83c8d5f7ff1f54"
+    },
+    {
+      "path": "Assets/Editor/ProjectSetup.cs.meta",
+      "sha256": "942775e1798a03b57b9670c7f58ada029bb13ab65e597ea623016402e8658e80"
+    },
+    {
+      "path": "Assets/Editor.meta",
+      "sha256": "a466ed3bbda88b220c672059090e90e61a4b8f2463b4f569f049b4b0f8285687"
+    },
+    {
+      "path": "Assets/Plugins/iOS/MazeDeviceMetrics.mm",
+      "sha256": "fb7e75dae245dda8e90c6a0626e56073b2d76eaf2c60b4bf19f4c80f14e39993"
+    },
+    {
+      "path": "Assets/Plugins/iOS/MazeDeviceMetrics.mm.meta",
+      "sha256": "c5620b372273b1aab132f66961c9fccf534144ada8211f6b6ef1b2287ac0fb24"
+    },
+    {
+      "path": "Assets/Plugins/iOS/MazeHaptics.mm",
+      "sha256": "922e33574199cf9fe0e3149c296d5ebcbfe7acfbaa684832a8f31fc2055ccbac"
+    },
+    {
+      "path": "Assets/Plugins/iOS/MazeHaptics.mm.meta",
+      "sha256": "8d1aa75d372093a0a9428a8fe2548847dfeb00941587cd8fe5a7480d085c70c7"
+    },
+    {
+      "path": "Assets/Plugins/iOS.meta",
+      "sha256": "b583dce05d71e372b86051d75922ddc2a0d956d2a6c4aeb8d6db1d4104a67ab1"
+    },
+    {
+      "path": "Assets/Plugins.meta",
+      "sha256": "838dae1d6fd5c8e3f8be6fa4208566c2a7a4e1fa5e89519dcd918fc6079f7b58"
+    },
+    {
+      "path": "Assets/Resources/Brand/AppIcon.png",
+      "sha256": "a36e32d7c78c659db7201bccc1cfa64ac659a308ac779266eb91265249e2a51f"
+    },
+    {
+      "path": "Assets/Resources/Brand/AppIcon.png.meta",
+      "sha256": "2dcae7bd31a6e648837829f222bd5308e0b7affdb00885c869204aec139f70b5"
+    },
+    {
+      "path": "Assets/Resources/Brand.meta",
+      "sha256": "085dab8b00ec47c738a6347c74de30030e42a4bc364d72a84c9cc9f93a772913"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-FaceReference.mat",
+      "sha256": "f91cfd0ff4efb4970ed1f0b5b35db37c95903c950d95c007e639d91bf460be85"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-FaceReference.mat.meta",
+      "sha256": "4d55559556b471ca1fca8dac23ca295cf4a271a1f0c4c2acfb6e92c935577a38"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-Hair.mat",
+      "sha256": "b9d87fb4fda6c3115b21f5a624c22117e936b69f101ca5b6f18474987ddfd607"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-Hair.mat.meta",
+      "sha256": "1dc8095c9744730193a76ccae797890f76db5b4b4bdbcaa3230535f8937343e1"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-HairHighlight.mat",
+      "sha256": "6328c4197fc29da275824ced6e5816846f91b8c7949592357db7dfa2c861ecd3"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-HairHighlight.mat.meta",
+      "sha256": "2f53251272bb06fb7001a85d79e8347136df01b9404c0c9a33702650b2ada766"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-Leather.mat",
+      "sha256": "d90569d39772c45617dd7a50dddf243f9545c8b2da1e0afab3cbb9736f2fc010"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-Leather.mat.meta",
+      "sha256": "7a712c1a5e65960a70782a70e1150c8d50ea37d6c0d6280377def529e4f0ed68"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-Metal.mat",
+      "sha256": "3500a7b36275f00fd99eb93dd3247162b59e51a4f318f6656a9b9e07a5b7484c"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-Metal.mat.meta",
+      "sha256": "dd167ae7950e3ea486f9fb818c58e18a881f992e56100b07669143fcd1d50098"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-ShirtIvory.mat",
+      "sha256": "280e87eda76b39d46ad5babf1f2d107d7a6d2f7591b57dbe6f02789d7939d994"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-ShirtIvory.mat.meta",
+      "sha256": "981b175f08fa47c83c5c6274ec0e7815655e65fec5c82cb08380b158d046986d"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-Skin.mat",
+      "sha256": "fcd4afeb01f83bae34527ef9ebd2d19da5b0aff465c968ea42250a38374e93c0"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-Skin.mat.meta",
+      "sha256": "631146f2d183cd477a1dc6a7778b8d25aec9322fe34a1d456c2b202d6b05cf5b"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-SuitLapel.mat",
+      "sha256": "c350ab7f9895d32e1be9fa4e9da751ed393d924d4a4e319594db4c8014dc59b6"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-SuitLapel.mat.meta",
+      "sha256": "e63fa87b6ac77ad284cdd40515a10b2c41265241a1c7fa877c851a87a352544a"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-SuitNavy.mat",
+      "sha256": "4adcbcf4b05d269c001bac6d4a5bdcbc698878f727ead2643acc65c7e1195bff"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-SuitNavy.mat.meta",
+      "sha256": "cbb34cbb0c6245cc8d1541eaf8744df58e847bde23310a1d3372a932f3efbf10"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-TieBurgundy.mat",
+      "sha256": "d3af8eef496200ce5f0b183ac062689ee934baf87f5bf2b30752b5ae8238858d"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Kim-TieBurgundy.mat.meta",
+      "sha256": "ad8f616bc95109f2ba49ebf7c368b779972201be2c509902aeaf1a192faf7a00"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-FaceReference.mat",
+      "sha256": "2f14b1769240108b0c8b7e5db7c0b84cb4dccaeee92f1869d77bdf79b4efc661"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-FaceReference.mat.meta",
+      "sha256": "d9528f18b1ef4dd474f333af66ec8cb652c79941cae8ce5dc54785ae5b203ab5"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-Hair.mat",
+      "sha256": "19e55c1e656e9647e2ce049c5153d3dd385a1bf3df2595d701f77758020893eb"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-Hair.mat.meta",
+      "sha256": "022efdf874e93856beded74c21f5d1113a7f565eac63bbb807f8aa79f4e8bfe2"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-HairHighlight.mat",
+      "sha256": "377536d9a09cd77d259f41ccd619a871dcfc3412cabcf6e80a6d048e64eec833"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-HairHighlight.mat.meta",
+      "sha256": "63c3e8d85b2c3c10567532d00f818d9eafaaa4c982cbe7bc625df345566ff8d9"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-Leather.mat",
+      "sha256": "5325af6a37415eb971f113937601dada1214ce70df1ed741f9c69a2ea8abae0c"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-Leather.mat.meta",
+      "sha256": "5005b64cec13b50161abffd77820ce336644ef6c654c0c55f104bcf43f876101"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-Metal.mat",
+      "sha256": "6c814b875ed78ac7a380a6f58b39768489b2f9157ff886fe2ddc56d1d51e2279"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-Metal.mat.meta",
+      "sha256": "aa4609443652c923c0a37b4f38401a1a345f84435228a31711952de9f0306fa6"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-ShirtIvory.mat",
+      "sha256": "6cadd3f53885a8bb7fe03345edda49cbe15ccdce7c21432923073e6b42f9d1e0"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-ShirtIvory.mat.meta",
+      "sha256": "a5047c8e47d493785f06de6b50b90028d2501ed295c3fa24db4a8a4150caa100"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-Skin.mat",
+      "sha256": "02d5442159ebe5db117d325ba688dcac4900740036571899ed81d6c4aac1c533"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-Skin.mat.meta",
+      "sha256": "ed4c73873bed7c58f719c9ca2df25a6861d4976633cdc46d65f184bc52546406"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-SuitLapel.mat",
+      "sha256": "f99894917d5fd996266671a9d3ba6d810c2a71c4977da72ba1f2a8a1d3ad8552"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-SuitLapel.mat.meta",
+      "sha256": "ea4e68b446826d7572e14b07aad3440afb1dbb83fd478579cef3c8eb092a5863"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-SuitNavy.mat",
+      "sha256": "3db5d15b6cace097fa0987fa280d5917cf685b4ca752a7a3cf8ac9ace8e49316"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-SuitNavy.mat.meta",
+      "sha256": "f3c7d7876b773dfa8ce95318f81c58006f8a5ab0c31d3ea67f12c660c0605d8b"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-TieBurgundy.mat",
+      "sha256": "0a926549907f187befe6ffaad9b1a3cdd289205dae86d93902150ab1ddd61a03"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Putin-TieBurgundy.mat.meta",
+      "sha256": "5b94316108d5b95d57e3565a6a50239db6dd258a1ef810f7cd25389bb9b9b1b6"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-FaceReference.mat",
+      "sha256": "6a032e51b3ea60a854da93193748a62a2f23f49b505b68e90d1e9ed1005515d9"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-FaceReference.mat.meta",
+      "sha256": "d4d236f92153318aee5874e5adb6f2be278cc173d6b5d435752f150b3ca58e57"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-Hair.mat",
+      "sha256": "e323470588bfacf831f623d358b78bbd84defbc057356e94c49e2192e92037b2"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-Hair.mat.meta",
+      "sha256": "f219484c651b0b4029465be6c752fadb06c55a091bed991d66e838718eb07495"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-HairHighlight.mat",
+      "sha256": "6ba3a4b6199fa35d16e8352ba62a8193265b53fa31270f8c7d5394c8d170e579"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-HairHighlight.mat.meta",
+      "sha256": "b80a93a992e21bd7f53d987ddfa10c6a33f9523bfef498f7949ade2c7b73b940"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-Leather.mat",
+      "sha256": "b127dafc8d0deaec7b8cb31420524fed6fa64e798d2023ddfb7626dc3bd01533"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-Leather.mat.meta",
+      "sha256": "01dd5112eaae4a654b1c72d3d91bb69f60615b1a9dee748e17c3b63da94374a7"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-Metal.mat",
+      "sha256": "b71c1fbe016870bd92b2688eb6448154e242cba5aa93ff60c15518033865e692"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-Metal.mat.meta",
+      "sha256": "162b47e97f8561bf224bac14f60b2a632dbf1c0e238b59e542cbee0b75d3f394"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-ShirtIvory.mat",
+      "sha256": "65a971f977440df4b410ba781d63e1ea730cff4c1bf4da052b118650ed135ca9"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-ShirtIvory.mat.meta",
+      "sha256": "54c2792b0f43796f0d68e3de8d9713c04afd13c01f8d791472915b170c2d5ef7"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-Skin.mat",
+      "sha256": "6eb9e02d071f94f59581c99d8e7bbda16701d42ac66990107a29a144af5f1379"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-Skin.mat.meta",
+      "sha256": "320bdb3f50dfa0ceafe53e7a6adf15c4be7a66e5a09c259580e492f35595b1d3"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-SuitLapel.mat",
+      "sha256": "8ed068bf38ea67f6c466bcc4f97b05b841126458d655bdb16bdfcbd593e891bc"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-SuitLapel.mat.meta",
+      "sha256": "344a79737655b97f0489878c67f68a033298e190cda9c0e883fc4068da62571d"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-SuitNavy.mat",
+      "sha256": "85d82335f36d8dc3fcabf2e235b2a7361883b3e32b3c9da95a5e660d4d3fd584"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-SuitNavy.mat.meta",
+      "sha256": "026c1aa386625608a835477b852a69d100c27d6b3bb2a92aa6f8c6f56324de36"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-TieBurgundy.mat",
+      "sha256": "c917cd9c4dd7eb757aa1858fdff56dff3356813d65d5a08e57520422c9805d33"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Trump-TieBurgundy.mat.meta",
+      "sha256": "baa26ce0f35b49c47c7261d50d57a47f201f681d0fc96033f4ca21be4f5a3389"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-FaceReference.mat",
+      "sha256": "a5fa781f1d106f7aff6d404638fe557c93c5357d566f816bcb1ed528039252a4"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-FaceReference.mat.meta",
+      "sha256": "b141d521692d92d66efa1f830ae606d02a9b6e772a3d4c7b600d23af062630ba"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-Hair.mat",
+      "sha256": "a13cad23e5f4a876c841b4965c961aec18f850a5525c8b46e25b5f3078210cdb"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-Hair.mat.meta",
+      "sha256": "d11adf7d4d9c463606ef3320e7e3e97a7920bd47efef52be533e5bcca4726afb"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-HairHighlight.mat",
+      "sha256": "d49d7ff43dfff922f549e7a4602e8c3a3abc78e6ff895f2280d4d69605a8283e"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-HairHighlight.mat.meta",
+      "sha256": "70692834670ed8a0638b267e43e405b4f38b7922412055f64e34b02f25d0636c"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-Leather.mat",
+      "sha256": "4e4c58137cb9d8df5df6e33f74c020b61a2e4665a0cb2451852b339e00376a46"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-Leather.mat.meta",
+      "sha256": "46ba47f75ef48d58a31da60f815536ddf3dcd0e83b655214861c0576c96230b1"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-Metal.mat",
+      "sha256": "03a339413ba22c28cb7c1d0ae8212f1146c9e7f5188da0c6128ed3398a97cfce"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-Metal.mat.meta",
+      "sha256": "fcff6b90b7b5561602d6a75b520e3bcc608d3aceb89a87bd1ef26303137eb204"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-ShirtIvory.mat",
+      "sha256": "e2206db33665cbaa8c10475f3cd7b86d1b4c3a808e9bbb4f01113029df92a9da"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-ShirtIvory.mat.meta",
+      "sha256": "8e79fa0112720c2fb4ed06be690a769c98ca156199b553f4d6b5f7d7ff276394"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-Skin.mat",
+      "sha256": "550553be7ce86928fa573f075c740b377b8b10f53182848eaa8f4e9387150d3f"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-Skin.mat.meta",
+      "sha256": "3ac75b1abd92459540b845f208d79574014ec12d2ee8cbac4c57d66e398d4ad8"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-SuitLapel.mat",
+      "sha256": "576990dd63df380ec1021f854ae9bd339f05552522cb6b2d9babff16c8252b0c"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-SuitLapel.mat.meta",
+      "sha256": "413c4f8d7c8274b6807d216463bf357105d0218718bb94aebe4a89530595b6a5"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-SuitNavy.mat",
+      "sha256": "d0277a05bb21ab0f86e7088f00b6d55538df6535a0ebe1366f8eaf6feff30b93"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-SuitNavy.mat.meta",
+      "sha256": "f0f9ae79e4f9dd77dabfb8a268f331eae73319e35b9a3f54f813d16aceae775c"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-TieBurgundy.mat",
+      "sha256": "a5fd9e936410d31c52886af0b884abec8198dcc1d87f07cb82f3e153804a80a7"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Xi-TieBurgundy.mat.meta",
+      "sha256": "23ae49ac0897ab0bd18609d240939f41cfb396c7fbd0ac50a53746ee06025dde"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-FaceReference.mat",
+      "sha256": "82fe668b4ee96117297d4c881bdec7bd17667ca793f6f15f7960959b4a5f6c1e"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-FaceReference.mat.meta",
+      "sha256": "557f0a09e993b9fe7ebf506565513d8cb023adb0b7b3c5f1b7d2928e80041ae6"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-Hair.mat",
+      "sha256": "0d874f17ea0398e80d9d222d5ff5ede4d3815014a7b5e5e2ceea7091623a16dc"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-Hair.mat.meta",
+      "sha256": "d5e3db517932890d6857e5160dc458e26868087e184507901212aada7ee964ab"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-HairHighlight.mat",
+      "sha256": "c375205aac27f7429251e5326ae82e12612e0fb7c83333a5790a1412a087aa0e"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-HairHighlight.mat.meta",
+      "sha256": "cee90f145928a38dd66c371644ce550bade4e5290db2db4abf1384bc54d54ace"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-Leather.mat",
+      "sha256": "c420c2ada773c833f88dc8768d9821b14de3fe2ff199b7fb9430ae758e185cc3"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-Leather.mat.meta",
+      "sha256": "2f561d376f0ec97443734d44fd34588fe8e8fea5573b77041c4b596767b21de0"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-Metal.mat",
+      "sha256": "0ce1d0e0e0859db810fbbc1109423ee5603866fe74250f9901ae15bb49d356c8"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-Metal.mat.meta",
+      "sha256": "ce8d494dbe1de6ef9fd7234d6e55d6ccff69f7e665ad1f0fecb9c57ba5d06cc9"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-ShirtIvory.mat",
+      "sha256": "658972ef9d5d5d3e0afc760cd9e62abb994a6fc3854f47aa8f8eec1e6c862850"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-ShirtIvory.mat.meta",
+      "sha256": "16879cb2bc53c73c09df7fbdf503e9f277f500c578783d9557f733e03e3ec250"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-Skin.mat",
+      "sha256": "08abdd991525c2aacb504fdebad91a1b804ad481a9b07136259e4e34ca717b41"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-Skin.mat.meta",
+      "sha256": "75678448e55813f34f02efca71e7f6d71e2c4a2fe6fceb7f8202b017b66057b1"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-SuitLapel.mat",
+      "sha256": "6508bce8b4baa51d7d5718f3572ee0dfbcc11f19b6c1987d52b9932065ccc3f8"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-SuitLapel.mat.meta",
+      "sha256": "d0822609ad1d68706a5778a94c1c6fca802b82c5f7ead604bdcb82e1676fea36"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-SuitNavy.mat",
+      "sha256": "002fca237626915faf1819d224b851337629cd5b2dd0221763a72935e9f31e83"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-SuitNavy.mat.meta",
+      "sha256": "a67d4756cb53929058fc62270f4c12f4ec64e2f6d789e2861d6af7aafeb2c878"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-TieBurgundy.mat",
+      "sha256": "c3750fea418a1bd1d67d500a5a4c4d8fcf472ddc31743a3fcfd2b18d724cc01d"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-TieBurgundy.mat.meta",
+      "sha256": "a51d0917ff42341d76f615551266b3569d96f1728fe272d40876b931e09954c0"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-TrousersOlive.mat",
+      "sha256": "c7b2732c408dc326728a3412014255fe219b82e67cf29934292b1b1274f5a123"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials/Zelenskyj-TrousersOlive.mat.meta",
+      "sha256": "c224c642f398710657130c31023a4886502af394d4ae51dd9b3bd1eda40d49e9"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/Materials.meta",
+      "sha256": "ba588d9b9d0451418a316f339f9eea83fef58c4414d26e3a76eb282051d8059a"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/kim.fbx",
+      "sha256": "f6ba33ce2421d846215af4921d5e49da7e6798532ac6548b6f0e1dbfd8e007d3"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/kim.fbx.meta",
+      "sha256": "4c9b27a1f3c2498beade375166dc5ed081935fbaade170f704cbca2feeded183"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/putin.fbx",
+      "sha256": "bbeac8c901a1ec02ba5fc354d6e551f1bd668505da76980011a635b624336a93"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/putin.fbx.meta",
+      "sha256": "663c50fcb772f663b3ccc98102618970cfc9a10d5925e922a541ace35fc24b2f"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/trump.fbx",
+      "sha256": "2acbdbde771a4745b85136cfccf1ce6e7c9f56cbc558908857aa9f2a10136806"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/trump.fbx.meta",
+      "sha256": "45c22ee3210d09a592ab0e78e30ba2444b17507b877967c61cc9328a59f010c5"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/xi.fbx",
+      "sha256": "afca848d30e180cf0a7f3964cf6dac1e7577556b1600dc9765a05b93e0dcd841"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/xi.fbx.meta",
+      "sha256": "20f88c30a6e719840c3ad71839cd532da170fc41a3b06a23ea3606b5c1e30723"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/zelenskyy-hand.fbx",
+      "sha256": "c3885b7bbb7763fbc1019dd43648a5a5df12cf1302916c90905197817bace5f5"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/zelenskyy-hand.fbx.meta",
+      "sha256": "99dd0ceaa3fd563b10f77a730c11501056c089edd3d3f02bae064acda112aa3b"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/zelenskyy.fbx",
+      "sha256": "e783f5186f7ce13e6a61b11a30326b42e842580c5896965a0ce17593e9fcda6e"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels/zelenskyy.fbx.meta",
+      "sha256": "082d509211474b43e0b6654b6c27bfc24dbcbdec3cb131719abcfc66f87924a6"
+    },
+    {
+      "path": "Assets/Resources/CharacterModels.meta",
+      "sha256": "c3f828935c811a6450078f3eff4c6a1adfe0092cba5b0efdb3a6117740a790c9"
+    },
+    {
+      "path": "Assets/Resources/Characters/kim.png",
+      "sha256": "5a509a08a9228290205d442786f33d57f2898be2f23708fce45a391e42a9698d"
+    },
+    {
+      "path": "Assets/Resources/Characters/kim.png.meta",
+      "sha256": "2a0064d5aa6ea11bee96c793bbeafee157427a43576c3aa31bded5036f33418b"
+    },
+    {
+      "path": "Assets/Resources/Characters/putin.png",
+      "sha256": "662965da0318e21e7deab41e983ae6ffb7b9067fedcdd468103ead1a33eb97b5"
+    },
+    {
+      "path": "Assets/Resources/Characters/putin.png.meta",
+      "sha256": "46943188676b57f5aab6f76426af732b1c4bdf46ef5cf3b451061f7b64743c32"
+    },
+    {
+      "path": "Assets/Resources/Characters/trump.png",
+      "sha256": "bed3f0dad3db0463ca807474dd1e0a4c16b36542d9758d4c62cc02092d0f1b84"
+    },
+    {
+      "path": "Assets/Resources/Characters/trump.png.meta",
+      "sha256": "6e94dc400d96bc0bb33254ae25a8859194cbf84749a1625d98907ab974183244"
+    },
+    {
+      "path": "Assets/Resources/Characters/xi.png",
+      "sha256": "fa4171f9ad920507f2dfd143239d42f3b782f26fc96eda4a5dd5e4e9cb00e966"
+    },
+    {
+      "path": "Assets/Resources/Characters/xi.png.meta",
+      "sha256": "77cf5a708d39d5e62c9f3dfca8a1c0466b7eefc729504fbdb5e847f61b778732"
+    },
+    {
+      "path": "Assets/Resources/Characters/zelenskyy.png",
+      "sha256": "c39aafd625b0cbb7b1a50df5521ef0fbbae24b2224fca42ba3a5456f1ccb4034"
+    },
+    {
+      "path": "Assets/Resources/Characters/zelenskyy.png.meta",
+      "sha256": "652f4fb3eb68f6e6112566c60871ea1107e9437aee0d8f8b49bf25e4455e1a78"
+    },
+    {
+      "path": "Assets/Resources/Characters.meta",
+      "sha256": "04dbb6cbea92cce1ea3e8f9153baf153d6e226a039d16952e93389e59933a014"
+    },
+    {
+      "path": "Assets/Resources/Data/characters.json",
+      "sha256": "a46eb656e3e00f71f0a600e9a85a28f53ba4dd79befc4e4b98bff586ee8f7cab"
+    },
+    {
+      "path": "Assets/Resources/Data/characters.json.meta",
+      "sha256": "9f567f85961ea9777739c808509b6405ba73a00e6fde435fc9c3ff7a42c5123f"
+    },
+    {
+      "path": "Assets/Resources/Data/classic_reference.json",
+      "sha256": "8d8e59a97ba5f615cd0be00fb319a4dce82f45acdf9ac6428ea3cb096123c722"
+    },
+    {
+      "path": "Assets/Resources/Data/classic_reference.json.meta",
+      "sha256": "2e11d9bf1a73cde1e8cdd565c0bc795e2d115754b3228f1af3cb5e45061f6d4e"
+    },
+    {
+      "path": "Assets/Resources/Data/rules.json",
+      "sha256": "bb6e25f9f959865f97b4dd8f28e3d61548a518e15f5a614a79ad06eb5d4e3742"
+    },
+    {
+      "path": "Assets/Resources/Data/rules.json.meta",
+      "sha256": "2dad92ea290d499582f85cc40306855123483590bbdddb978658de7cdb98d185"
+    },
+    {
+      "path": "Assets/Resources/Data.meta",
+      "sha256": "78f7ea5debc17573c0338173ce35a455d2dc4d3744c47a6f0103a9aba63184eb"
+    },
+    {
+      "path": "Assets/Resources/Materials/GardenEmissive.mat",
+      "sha256": "2d071c4776b92846696aa1106c0d78da1fc4e302d1dd041fe09091258065d53b"
+    },
+    {
+      "path": "Assets/Resources/Materials/GardenEmissive.mat.meta",
+      "sha256": "afda6a8bb2a66847715e3979095d8c14822fb421338c3570190b282ebab21c02"
+    },
+    {
+      "path": "Assets/Resources/Materials/GardenLit.mat",
+      "sha256": "523b19c39ccc7ad2f0d491576f7c70686ff1cc056b1917d44daaa9987b149a65"
+    },
+    {
+      "path": "Assets/Resources/Materials/GardenLit.mat.meta",
+      "sha256": "dac4ee6e9c59de1bef00aaa2eb80c21b2ec789a5c1ab40dd74d5879ff9c86d19"
+    },
+    {
+      "path": "Assets/Resources/Materials/WorldText.mat",
+      "sha256": "e3a59cf93574982a893126d171464a4b8433c3dcdd5976bed22ba810b7bac0ba"
+    },
+    {
+      "path": "Assets/Resources/Materials/WorldText.mat.meta",
+      "sha256": "ca6fc5fb7471535d03341cc1b1f191100abe617b808a6d928e22705d4d6a30b8"
+    },
+    {
+      "path": "Assets/Resources/Materials.meta",
+      "sha256": "580727e5647c8e7a26be92970d71614ad503fd36caa669be7389184c40d0f1b1"
+    },
+    {
+      "path": "Assets/Resources.meta",
+      "sha256": "fa69819ef56d58fe2757422c5f77c8c7723ba98127948aeac77b3970c5a0fda0"
+    },
+    {
+      "path": "Assets/Scenes/Maze.unity",
+      "sha256": "a045badc0ea921819184ed33996bb816a910ff5260127d5c0cdfe8a37c00b281"
+    },
+    {
+      "path": "Assets/Scenes/Maze.unity.meta",
+      "sha256": "822491b727f03500b980be155e8fa9e48ee2753117bde31515afa7da4df57fce"
+    },
+    {
+      "path": "Assets/Scenes.meta",
+      "sha256": "9f34e95dca03bbc9e5886e96a3022ad6fafc15b54d661855cdb03ca2983d72fe"
+    },
+    {
+      "path": "Assets/Scripts/Core/AtomicFile.cs",
+      "sha256": "e45d1a967e5dcda2e60163bcf67cefe0edfebf673350021599da2f0b69b55a32"
+    },
+    {
+      "path": "Assets/Scripts/Core/AtomicFile.cs.meta",
+      "sha256": "b73141ccd40658f2a281a67106e0ef721d9d7f16de6510d89750e6db0061307f"
+    },
+    {
+      "path": "Assets/Scripts/Core/FrameStatistics.cs",
+      "sha256": "e9c1ea3c5c15e7366718e92b0f4e655bbc5e4e8fae7dd87c19b0ea56e12a133a"
+    },
+    {
+      "path": "Assets/Scripts/Core/FrameStatistics.cs.meta",
+      "sha256": "b082f9c31bcb8d2c407a650bf583ab35e0dd70ea352053a610871bac02014af5"
+    },
+    {
+      "path": "Assets/Scripts/Core/GaitClock.cs",
+      "sha256": "ee1ebca9763f84ee80c63dadabcc4d6b0d281b1e6f57783360aae263b2d03021"
+    },
+    {
+      "path": "Assets/Scripts/Core/GaitClock.cs.meta",
+      "sha256": "318b55013b4fd14a278b2051bd7a4a9e4c5a1538a0cbf91246684cdac016e9cc"
+    },
+    {
+      "path": "Assets/Scripts/Core/GameSession.cs",
+      "sha256": "c01b90df9578a4992aa411f4c43329ffa09dfa66b4a0e313e919ae266dadc249"
+    },
+    {
+      "path": "Assets/Scripts/Core/GameSession.cs.meta",
+      "sha256": "79cfb159149f2fa33e730ad384b257a63259379581875bef2a7dddde796bbede"
+    },
+    {
+      "path": "Assets/Scripts/Core/Geometry.cs",
+      "sha256": "34ee64186721de77d182c90ad98ac4fdf63944cd422a1486866170bbbee6c773"
+    },
+    {
+      "path": "Assets/Scripts/Core/Geometry.cs.meta",
+      "sha256": "dd7ff03eddf878c3e4a8c4e44fc92bf43ab90eb5b55159520afbd8f37d1296ae"
+    },
+    {
+      "path": "Assets/Scripts/Core/MazeMap.cs",
+      "sha256": "66fadb467b0b3b0e2a8887b147219336bc7f0f1bed433833b361665674a69cd2"
+    },
+    {
+      "path": "Assets/Scripts/Core/MazeMap.cs.meta",
+      "sha256": "26ac1ab1a7bc46b8dd1bf7e924ce49adbc6725ec958b9e9a471c07e1ac978137"
+    },
+    {
+      "path": "Assets/Scripts/Core/MazeOfEgos.Core.asmdef",
+      "sha256": "dfa58aeb63cb5904c337d8e366e539f23ae0c7e189858affda0ee40467d08ee2"
+    },
+    {
+      "path": "Assets/Scripts/Core/MazeOfEgos.Core.asmdef.meta",
+      "sha256": "3c81097b5b510bb1fba37be112388398f5a9387e9fd1de66ed27069dbb7f97dc"
+    },
+    {
+      "path": "Assets/Scripts/Core/SessionState.cs",
+      "sha256": "e6fc0cdd981bb081b29134f1ed65e1aca3a2a1f4f6b333bd61d78688456712c9"
+    },
+    {
+      "path": "Assets/Scripts/Core/SessionState.cs.meta",
+      "sha256": "a3949ca1942be90363b6d1904ec578a8cc984029e534d079e58d10fcd4008f42"
+    },
+    {
+      "path": "Assets/Scripts/Core.meta",
+      "sha256": "76953a78d11bbcf05b6eea2edddf86693bff4bf034b399ec41af980d4346658c"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/CharacterRoster.cs",
+      "sha256": "c8ad3b454efef19f528c637c2afc53eaa791e5bdefb2c494a607d7daea9f26b1"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/CharacterRoster.cs.meta",
+      "sha256": "866b8856cada365becbc2765a9049a37d4492f7e643aa646bfa1e1bddf5abcff"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/DevelopmentLifecycle.cs",
+      "sha256": "87d059ce4797abf1b4b3aea8403683939dc1dc6f6b8729a13d77c01f4e7332f5"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/DevelopmentLifecycle.cs.meta",
+      "sha256": "9447dcaaf9788c641a44dff3028d3826eac31c039e1927e1751ec639f48cc90d"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/DevelopmentPerformance.cs",
+      "sha256": "6166e0e664b06f3ebdf92d0322058e81f80b5383f02ccfed736858c6a2d7beb8"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/DevelopmentPerformance.cs.meta",
+      "sha256": "e555ec24437d897b20005e9b37715ed0aef3c30a07964cc4597a03f019b1c771"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/DevelopmentSmoke.cs",
+      "sha256": "2f1fad7f4512fe254ca71838f60fcee7af26c676f63e5342afee23e06905de9b"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/DevelopmentSmoke.cs.meta",
+      "sha256": "1466e361229fcdd33877b0a5b1eb18e21f418c67fc4af389d78198a3f8067cca"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/GameApp.cs",
+      "sha256": "c7325331ef21edcbfdb170ab0cc8f858650304c694d52c78cc777947fb8a6570"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/GameApp.cs.meta",
+      "sha256": "4fb134775ce77fbd1f5a0c3a89c943992e02912ba4f1e83d53d0dfa4b3ff89b5"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/GameAudio.cs",
+      "sha256": "0ec37d553a255fdfb1c0fbeb41fb10a320e8e0ac5955c217a05bb01caa5c6ca7"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/GameAudio.cs.meta",
+      "sha256": "86927b00f4c9b287d043cebc6f463f622022aaab7ebd5ccf09b63fd24dbe5af0"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/GameHaptics.cs",
+      "sha256": "ecbb00439d17decbdc34368e68b972b9e893d99866ce1c0e2dfaa73497216b40"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/GameHaptics.cs.meta",
+      "sha256": "209994327cde44536df6b2556483716885d260b15ca189cc0f845ebcea0bb448"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/GameHud.cs",
+      "sha256": "c1c8ceac0ef8cdb7d65e75177ea9676ec53c1b3f730ed0b78ad4153ce322801d"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/GameHud.cs.meta",
+      "sha256": "069aa7e24600867ba88372ad2dcb313dca90074f9cdbaf47eed81acf0326ed71"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/GardenDressing.cs",
+      "sha256": "12e222f026dcbe59eb40a85e19bcd6a4ca22b3e7cf7e815ab05f13be69648958"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/GardenDressing.cs.meta",
+      "sha256": "bb24d2641556361f3e74ee33993deaf8f6e668fcd46f3b8c2a3cbf00c662f942"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/GraphicsProfile.cs",
+      "sha256": "6eca7f204494afdc29109e245beaf8711f60caeb9cbecf753c34fe27a37bbe85"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/GraphicsProfile.cs.meta",
+      "sha256": "456611ae62744d7946e384f2d60dbd2ae2e1df6e2be90037f4c25021d607f0f6"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/HeroPresentation.cs",
+      "sha256": "b5b0de149599ef9dda51f1d5ed1b7f41dd8f8c5e2598b8ba6c9526177874bcf0"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/HeroPresentation.cs.meta",
+      "sha256": "73da5a8d7b7cbdb7461964d255a19dd47f83bd6359ec06577a1582a266322794"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/ImportedCharacterPose.cs",
+      "sha256": "d58a473d4771b938dcfabced792b1c80fceee91c66d1bef0464ab41dc5d17ca3"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/ImportedCharacterPose.cs.meta",
+      "sha256": "151205b4981b4ecd9ca94559404168dd618b0d4d90011f59893379386d368883"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/MazeOfEgos.Runtime.asmdef",
+      "sha256": "da2e25c0b66263ecfdc80d66d58c98587d3754d585235260d593765af1d99731"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/MazeOfEgos.Runtime.asmdef.meta",
+      "sha256": "10ab2aabc23d8e0489119ee9095151877234c6fdcb492e5e778c928b172854a0"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/MazeView.cs",
+      "sha256": "5cb810fac8741271ceb3b9ae9e11ffa26fe3d8f9742f76b6c2f24695273987aa"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/MazeView.cs.meta",
+      "sha256": "e98a184f29d6a416bdaa3ed0e37d1318b86593685146efcd5f6789701e2b7468"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/SceneMeshes.cs",
+      "sha256": "740ba12d8ec765ef2b21aa674440905e4f2fecb928e3f3c5e1d944ad36d8ea7f"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/SceneMeshes.cs.meta",
+      "sha256": "59f3bd3acb13b3f09835ed5209b4d28aa5ef9eb7eba580a738da1d8c43d6e1b3"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/TouchArtwork.cs",
+      "sha256": "93622f35e9c3f46504efe38c6796ae5782ed23e9cb4375c5f54dddf617ff38f7"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/TouchArtwork.cs.meta",
+      "sha256": "fe0526890377539bb3061cb3475fcc0e8e13e05ae6a3886f76f64318f427f7aa"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/TouchControls.cs",
+      "sha256": "add77f9d87059317a72bd0a99181b2917e6ff99a9f37b88cd0085a8e6110e14f"
+    },
+    {
+      "path": "Assets/Scripts/Runtime/TouchControls.cs.meta",
+      "sha256": "0558dbf7554ee527f81f9333e3910bd46357693a7342639ced76e1b3135f4be9"
+    },
+    {
+      "path": "Assets/Scripts/Runtime.meta",
+      "sha256": "dc5bdaec81c4d45c800f210e972f01facb9eb937f7f98a93ecdd698aa7143c20"
+    },
+    {
+      "path": "Assets/Scripts.meta",
+      "sha256": "23ab6abe14f7a2935d4427f66c74ed01cf6b003e78cc92425b4893c28ea31630"
+    },
+    {
+      "path": "Assets/Settings/DefaultVolumeProfile.asset",
+      "sha256": "4047747c019180cf8b430d5c01152a2f437b22f2beda0f56512329b41f8fc0d7"
+    },
+    {
+      "path": "Assets/Settings/DefaultVolumeProfile.asset.meta",
+      "sha256": "efbcb026cee6b8e32fdf27018c06b0515296a6ccbb43969e792fea270310700a"
+    },
+    {
+      "path": "Assets/Settings/GardenPipeline.asset",
+      "sha256": "e15933b68dd44dc309307780503c69d0c6441ac193268c6ca572c59cd679ae21"
+    },
+    {
+      "path": "Assets/Settings/GardenPipeline.asset.meta",
+      "sha256": "53ea46647712c615fd1a3f2e0dddfa8559eeedc649e9a1dbf93ff913de28544c"
+    },
+    {
+      "path": "Assets/Settings/GardenRenderer.asset",
+      "sha256": "c3b2a932258a5ae35dac02a2e30ca54c72ccdee95852f09680283c177974e4c5"
+    },
+    {
+      "path": "Assets/Settings/GardenRenderer.asset.meta",
+      "sha256": "a148ee2b4987b05b8ff7ae5f9bf84916184f77aefddc821dceb551f5a69f8179"
+    },
+    {
+      "path": "Assets/Settings/UniversalRenderPipelineGlobalSettings.asset",
+      "sha256": "4a7b5ad23c7829b0b42b3eaed0beb09cdaeccd0bbfc78228049997e3c6ebaa64"
+    },
+    {
+      "path": "Assets/Settings/UniversalRenderPipelineGlobalSettings.asset.meta",
+      "sha256": "f61661d8bc8dbe531daf09f6211ef978c7ba145c9207c8e76524396ae0722d7c"
+    },
+    {
+      "path": "Assets/Settings.meta",
+      "sha256": "4d8fa693a0371a7903762c9c8d8083d22346153418803a1468def47c94b5b82d"
+    },
+    {
+      "path": "Assets/Shaders/CharacterReference.shader",
+      "sha256": "93e4f86d9c884584575e2eba5272630dc61807715cb3cfb98fa1423fb3fe1ef2"
+    },
+    {
+      "path": "Assets/Shaders/CharacterReference.shader.meta",
+      "sha256": "e611a561e958d86203570323aa80c00b6397eb1528ea760899c8f37ba0ad1bb0"
+    },
+    {
+      "path": "Assets/Shaders/WorldText.shader",
+      "sha256": "79c28cac4dc4af224cdd5c6add1f0fec1886a29ac35fa8094af6996d5494bc98"
+    },
+    {
+      "path": "Assets/Shaders/WorldText.shader.meta",
+      "sha256": "1fc5836b3282745cc11fe2679d94f9efcfbb5b552520d721c342a2955173b8b0"
+    },
+    {
+      "path": "Assets/Shaders.meta",
+      "sha256": "c9dfcea13c324ad94c5cddeb6fec7d9f9b76c8f588a6ba258ab84445925f6a85"
+    },
+    {
+      "path": "Assets/link.xml",
+      "sha256": "052abe4718445b1fe9c0029335a5937287e3673240cf2f64f32e51349dd6f67b"
+    },
+    {
+      "path": "Assets/link.xml.meta",
+      "sha256": "bca793f4ee05776bb51fa54d701ff771ae44e17f6937f94548664a4180d9b695"
+    },
+    {
+      "path": "Packages/manifest.json",
+      "sha256": "05b1fc24bbaccdb5b030fb45ede11daeebc9d0331b28f576d445798ad750178a"
+    },
+    {
+      "path": "Packages/packages-lock.json",
+      "sha256": "40d6bb5cd5af99934878e77bd8c2aea2742ac1e8f2545f4c8ca022ef1ba6adb3"
+    },
+    {
+      "path": "ProjectSettings/AudioManager.asset",
+      "sha256": "aeedeb3243f07b61dbbe854aa08b5ef6f0b5274dd9852ad9f6129dde3e105a31"
+    },
+    {
+      "path": "ProjectSettings/ClusterInputManager.asset",
+      "sha256": "40e65dd214bf254955d2c8829ca8ce2130fd3510485560ce012e9a1ddd93e623"
+    },
+    {
+      "path": "ProjectSettings/DynamicsManager.asset",
+      "sha256": "d102dd312ef330f5e5ca255c070fb34f68f59ec633d1e9fd67e2f2f6f88f66c8"
+    },
+    {
+      "path": "ProjectSettings/EditorBuildSettings.asset",
+      "sha256": "a143c9413880997898127643bd72a14e5f2b8e9260416f776b06c2ca4f65e62c"
+    },
+    {
+      "path": "ProjectSettings/EditorSettings.asset",
+      "sha256": "705e5dde8b4ceb8147971b0c8f3781ebbe566a12b8e280379ee24f2bd9ad9474"
+    },
+    {
+      "path": "ProjectSettings/GraphicsSettings.asset",
+      "sha256": "7fa8cab526fb3fd13db8594db44aa2fa445bcf8ec138c3b05039e5ea600fa333"
+    },
+    {
+      "path": "ProjectSettings/InputManager.asset",
+      "sha256": "d0f454ddb880912abcae92e3e12957a7446786ba89e24937e019ff3bbc0d4300"
+    },
+    {
+      "path": "ProjectSettings/MemorySettings.asset",
+      "sha256": "2c9e2339b4fa50f4782840d37dde021508d411b99278614cba335d206edb1738"
+    },
+    {
+      "path": "ProjectSettings/MultiplayerManager.asset",
+      "sha256": "ce4075d7a7dd8ac7ffe55de2427692c63f90dae398208bd80cec0f27cbe09f4b"
+    },
+    {
+      "path": "ProjectSettings/NavMeshAreas.asset",
+      "sha256": "7ebbf8f53b8033104e1878b95ca07a28d0954092d81c220f14196a42f651e658"
+    },
+    {
+      "path": "ProjectSettings/Physics2DSettings.asset",
+      "sha256": "1cfc0c8fbceec604fd7cd2a06c04ff05dddee6335b75c92b0f5715ad80ba9490"
+    },
+    {
+      "path": "ProjectSettings/PresetManager.asset",
+      "sha256": "29c125923fe6e29f90190d4fce1c82d660e7051546e2c9d02908d18c9cf2436c"
+    },
+    {
+      "path": "ProjectSettings/ProjectSettings.asset",
+      "sha256": "0d45ef5d6cddeca8a38fea63dab68008cb1492b9c894e0bcac743d68ea89d31d"
+    },
+    {
+      "path": "ProjectSettings/ProjectVersion.txt",
+      "sha256": "1ba9ef2a17d110f732474ce61ba26e26395986dfcd828200cb53f29cab2c944c"
+    },
+    {
+      "path": "ProjectSettings/QualitySettings.asset",
+      "sha256": "61ad741a791ea500875b088714c13ee762493d1561c68808490d583ac5be2e97"
+    },
+    {
+      "path": "ProjectSettings/SceneTemplateSettings.json",
+      "sha256": "bb9098b3bfcde78d93e264b96f7b77b5430e64e8c57a7aad7f5a5d9c3945e16a"
+    },
+    {
+      "path": "ProjectSettings/ShaderGraphSettings.asset",
+      "sha256": "6fead5a816c4eed70f224d5472340ecf1ea0b4de4f87d5926bb17fa10ffb3dc9"
+    },
+    {
+      "path": "ProjectSettings/TagManager.asset",
+      "sha256": "23fc56b484aa3d7edf5914cd3591f7a823ccef5e3f3496f8a51f30388ead63dc"
+    },
+    {
+      "path": "ProjectSettings/TimeManager.asset",
+      "sha256": "1a83e54adbbda7c9f4851103a0c6ab7f6448a3343d4ea5b7620452fa08416ecd"
+    },
+    {
+      "path": "ProjectSettings/UnityConnectSettings.asset",
+      "sha256": "11251dae0356b6f43dd2c67bb511f6b7ecda4e5de425186bba3297e6f3dc1c6f"
+    },
+    {
+      "path": "ProjectSettings/VFXManager.asset",
+      "sha256": "2973a6af930e142f62cde00076beda8a3cc3a66d9bfcde7a58ba7d4be2251c26"
+    },
+    {
+      "path": "ProjectSettings/VersionControlSettings.asset",
+      "sha256": "e199cdfa6a8f2bf33cfd47e549198f13e3eb2a5099e908fdb4e0f14d939ccc6b"
+    },
+    {
+      "path": "Tools/UnityCompileCheck.csproj",
+      "sha256": "a6041471dc1a2261c639b1863802ea9c3297576ce08371566a7183aa5c37d14c"
+    },
+    {
+      "path": "Tools/build_character.py",
+      "sha256": "9548d04a8a3db259d20ee6ceaaadb2702a13f1f0185742587acb24ebd7c2b89a"
+    },
+    {
+      "path": "Tools/build_characters.py",
+      "sha256": "c46d29d1689b6b8ac9e24560c8c0337e4d7a9e6922b8d4c2a210fe944c3e39de"
+    },
+    {
+      "path": "Tools/build_icon.swift",
+      "sha256": "269b69be62dcd5168716502705495ffa299d0efbe8d90ee25601df9542f3e5b6"
+    },
+    {
+      "path": "Tools/build_putin_pilot.py",
+      "sha256": "ce568b43fd5e053a8828c0ef27ab01a95d44d072a636fb3e6d176e3900557777"
+    },
+    {
+      "path": "Tools/ios_test.py",
+      "sha256": "6869bb244a3c521ed902b52a2705107011db0e41f0c09b300e124c5967b8ff35"
+    },
+    {
+      "path": "Tools/performance.py",
+      "sha256": "183d854701afafb65a9fb0339d163f30ecc2fe765f9b0a3173feedda338f2e21"
+    },
+    {
+      "path": "Tools/unity.py",
+      "sha256": "f978edf502f669f5ada86bf56a9cc4f655078d4b96ed16d49364f23b1e1cdc57"
+    },
+    {
+      "path": "Tools/verify_ios_release.py",
+      "sha256": "f1cb30ab53cb4f4ba9b37911e948672181ef65f75f17f6669cc8a278b0cb5c70"
+    },
+    {
+      "path": "Tools/verify_repository.py",
+      "sha256": "173eba6121797bc319db6bd64c5aa9871af94f70a94417ff74111e820f886e2b"
+    },
+    {
+      "path": "Tests/Directory.Build.props",
+      "sha256": "9cdb11da871e3d47927d6116b04513b86ec68114acd957608e467b83c9f22de3"
+    },
+    {
+      "path": "Tests/MazeOfEgos.Checks.csproj",
+      "sha256": "480aff5fb896684a7613538a55501e360cda1db0cb9bc3b550f81b420743e104"
+    },
+    {
+      "path": "Tests/MazeOfEgos.SerializationChecks.csproj",
+      "sha256": "faf9704db540901f24feb6a1afcee09e6bc5add4ffa5994f3ac3dc0c1cb5972d"
+    },
+    {
+      "path": "Tests/MazeOfEgos.StressChecks.csproj",
+      "sha256": "927a8b51bc231b898dbba0fd6b0b1daa34039c8266b595215d34ee4d06105391"
+    },
+    {
+      "path": "Tests/Program.cs",
+      "sha256": "1fe320665e3f090eecbe713716bd54d6b57c70b338640f2510a88859ec8bb362"
+    },
+    {
+      "path": "Tests/SerializationChecks.cs",
+      "sha256": "34252dd2704784d8777c26bfc581364a1865926cc9a69af7e3339c2eabc88c8b"
+    },
+    {
+      "path": "Tests/StressChecks.cs",
+      "sha256": "937afc55e60fadb5d1d0eee0f6b0fde8ba76f7f827fbc8fccd9151fcb66d696f"
+    }
+  ],
+  "notes": "Final source inventory. Performance export includes the opt-in recorder. Normal Release excludes test harnesses; final help-keyboard text and Danish bundle locale were corrected after the performance export. Gameplay and 3D assets did not change during that run."
+}

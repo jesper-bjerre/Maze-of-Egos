@@ -1,0 +1,17 @@
+{
+  "reportedDate": "2026-10-21",
+  "timezone": "Europe/Copenhagen",
+  "evidenceType": "manual user feedback",
+  "device": "iPhone 13",
+  "questionBuild": "0.2.0 (10)",
+  "requestedConditions": {
+    "ringSilentSwitch": "silent",
+    "inGameMusic": "on",
+    "inGameSound": "on",
+    "mediaVolume": "above zero"
+  },
+  "userReply": "Ja, begge dele kan høres",
+  "musicAudible": true,
+  "effectsAudible": true,
+  "scope": "User confirmation in reply to the build 10 audio question. The installed build at the moment of listening was not independently verified; this is not a separate build 12 listening test."
+}

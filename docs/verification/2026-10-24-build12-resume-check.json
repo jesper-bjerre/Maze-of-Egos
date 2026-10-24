@@ -1,0 +1,17 @@
+{
+  "reviewDate": "2026-10-24",
+  "timezone": "Europe/Copenhagen",
+  "build": "0.2.0 (12)",
+  "sourceInventory": "docs/verification/2026-10-21-build12-source-inventory.json",
+  "matchedInventoryEntries": 59,
+  "matchedNonGeneratedFiles": 49,
+  "matchedGeneratedFiles": 10,
+  "missingInventoryFiles": [],
+  "changedInventoryFiles": [],
+  "localArchivePresent": true,
+  "archivedExecutableMatchesPreviousAudit": true,
+  "releaseAudit": "docs/verification/2026-10-21-build12-release-audit.json",
+  "repositoryValidationPassed": true,
+  "uniqueUnityGuids": 138,
+  "scope": "Local handover continuity check. No new build, device installation, gameplay run, performance measurement, or manual product acceptance is claimed."
+}

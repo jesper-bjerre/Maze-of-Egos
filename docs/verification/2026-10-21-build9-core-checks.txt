@@ -1,0 +1,58 @@
+PASS Item-use feedback identifies banana, oil and boost even during an existing boost
+PASS Gait follows world distance across speed changes and freezes with simulation time
+PASS Gait is frame-partition independent and rebases restored or reset timelines
+PASS Frame statistics measure time-weighted FPS and preserve long stalls
+PASS Frame percentiles bound a known distribution to 0.25ms
+PASS Frame collector rejects invalid times and clears all accumulated state
+PASS A01 reference dimensions, exact counts, and preserved spaces
+PASS A02 all hearts reachable; base and exterior void excluded
+PASS Malformed map is rejected
+PASS A03 tunnel preserves position offset, yaw, and movement
+PASS Free movement stops on release and cannot cross a wall
+PASS Analog diagonals do not move faster
+PASS A04 updated input contract: small joystick magnitude gives proportional speed
+PASS Pursuer body blocks a corridor even at the player's maximum wall offset
+PASS A05 power heart wins a simultaneous encounter and gives chain points
+PASS A06 returning pursuer cannot award points twice
+PASS Power chain is 200/400/800/1600 and second power resets it
+PASS Power expiry at contact is dangerous
+PASS Power still applies at a contact before expiry within the same tick
+PASS Simultaneous dangerous and vulnerable contacts both resolve before capture
+PASS A07 a capture loses exactly one chance and preserves hearts and score
+PASS A08 last heart clears the level once and gives exactly one bonus
+PASS A09 last heart and capture clear after capture without an empty playable level
+PASS Complete physical traversal collects all 244 hearts and clears a real round
+PASS A09 last chance and last heart produce Game Over without level bonus
+PASS A10 extra chance crosses 10000 once, including via level bonus
+PASS A11 full inventory preserves question mark while collecting its heart
+PASS A12 banana without landing space is not consumed
+PASS Banana starts immediately, flies two cells, then lives 20 seconds after landing
+PASS Banana stops before a wall with clearance for its visible peel
+PASS An enemy at the landing point is hit only when the banana lands
+PASS An enemy crossing before landing does not trigger an airborne banana
+PASS Landing within a simulation slice resolves at the true landing time
+PASS An airborne banana freezes through pause, save and resume countdown
+PASS Build 2 version 1 saves migrate ground traps without replaying throws
+PASS Invalid flight snapshots are rejected without changing the live round
+PASS A throw through a shortcut reserves the passage until its landing trap expires
+PASS Banana trajectory wraps through the tunnel without crossing the maze
+PASS A12 banana stuns once and shares slip immunity with oil
+PASS A13 boost collects every crossed heart and is faster than threats
+PASS A13 swept contact detects actors exchanging sides
+PASS A14 occupied shortcut delays closure without teleporting
+PASS A15 all eight stable wall combinations preserve every heart
+PASS A16 return routing uses the door and reacts to current topology
+PASS A17 pause and resume countdown consume no effect or simulation time
+PASS A17 snapshot JSON roundtrip resumes paused and preserves all systems
+PASS Corrupt snapshots are rejected without modifying the running game
+PASS Changed gameplay metadata invalidates old saves even with unchanged rows/id
+PASS Atomic save retains a readable backup after a damaged latest file
+PASS A18 same seed and inputs reproduce a full 60-second simulation
+PASS A19 rendering at 30/60/120 fps produces identical fixed-tick state
+PASS A21 progression crosses level 255; power remains useful forever
+PASS A23 character IDs are bound to the agreed AI roles
+PASS AI roles choose distinct chase targets from movement direction
+PASS A24 oil slows to 55 percent for 2.5 seconds and consumes one trap
+PASS Oil follows the actual movement trail rather than camera direction
+
+56 passed, 0 failed

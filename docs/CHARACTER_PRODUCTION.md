@@ -1,11 +1,54 @@
-# Karakterproduktion — udestående M5-arbejde
+# Karakterproduktion — reviewmodeller og udestående M5-accept
 
-De fem referenceark i [images](images/) bestemmer udseendet. Originalerne er
-bevaret; [CHARACTER_ASSETS.json](CHARACTER_ASSETS.json) registrerer kilder,
-runtimekopier og SHA-256. Menuens portrætter bruger et UV-udsnit af de uændrede
-ark. Putin bruger nu en **lokal rigget reviewpilot**. Xi, Kim, Trump og
-førstepersonshånden er fortsat programmerede pladsholdere. Ingen figur har
-endelig M5-godkendelse.
+Alle fem referenceark i [images](images/) er bevaret uændret. Der er nu lokale
+Blender-kilder, importerede FBX-modeller, rigs og animationer til hele
+rollebesætningen samt en særskilt arm til helten. Menuen viser Zelenskyj i 3D;
+forfølgernes små portrætter bruger fortsat udsnit af de oprindelige ark.
+[CHARACTER_ASSETS.json](CHARACTER_ASSETS.json) og de enkelte manifests fastholder
+kilder og SHA-256. Ingen figur har endelig kunstnerisk M5-godkendelse.
+
+## Build 7–9: hele rollebesætningen
+
+`Assets/Resources/Data/characters.json` samler proportioner, kostumer, frisurer,
+originalreferencer og materialer for alle fem. `Tools/build_character.py` genererer
+redigerbar kilde og FBX med 17 knogler. Alle har Idle, Chase, Surprise, Slip,
+Return, Puff og Recover; Zelenskyj har også Throw og Cheer. Heltens førstepersonsarm
+er et separat eksportudsnit af samme mesh/rig. Menuen viser en faktisk 3D-avatar
+på en isoleret RenderTexture-scene.
+
+Genopbyg alle med Blender 4.5 LTS:
+
+```sh
+python3 Tools/build_characters.py --blender /sti/til/blender
+# Eller én figur:
+python3 Tools/build_characters.py --character xi --blender /sti/til/blender
+```
+
+Runneren kræver korrekt exitkode, afslutningsmarkør og en manifest-hash, der
+matcher FBX. Blender skal bruge `--python-exit-code 1`, da Python-fejl ellers kan
+ende med proceskode 0. Den ældre Putin-kommando er en kompatibel wrapper.
+
+| Figur | Importerede trekanter | Knogler | Klip |
+| --- | ---: | ---: | ---: |
+| Putin | 17.466 | 17 | 7 |
+| Xi | 17.466 | 17 | 7 |
+| Kim | 17.550 | 17 | 7 |
+| Trump | 17.994 | 17 | 7 |
+| Zelenskyj | 16.806 | 17 | 9 |
+| Zelenskyjs arm | 1.896 | 17 | 9 |
+
+Kildegeometriens triangulering kan afvige fra Unitys importtal. Budgettet gælder
+importen. Native kontroller dækker alle fire forfølgeres bevægelse, fodkontakt,
+pause, glid, power, retur og profil/bagfra. Hver original PNG er stadig uændret.
+
+Modellerne er lokale reviewmodeller. Ansigtet bruger fortsat projektions-UV'er
+fra referencearket; profil, hår, hænder, stof og ansigtsudtryk kræver kunstnerisk
+review. Der er ingen ansigtsrig eller blend shapes. Den samlede have og figurer
+skal vurderes i første person på enhed før M5/A28 kan accepteres. De er ikke
+udnævnt til færdige filmfigurer af automatiske tests.
+
+
+## Historisk produktion — build 5 og 6
 
 ## Aftalt proces og budget
 

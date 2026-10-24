@@ -12,8 +12,10 @@ namespace MazeOfEgos.Core
         public RuleProfile Rules { get; private set; }
         public SessionPhase Phase { get; private set; }
         public Point2 Player { get; private set; }
-        public double Yaw { get; set; }
-        public double Pitch { get; set; }
+        public double Yaw => navigation.Heading * 90;
+        public double Pitch => 0;
+        public bool AutoMoving => navigation.Moving;
+        public int QueuedHeading => navigation.QueuedHeading;
         public double Time { get; private set; }
         public double LevelTime { get; private set; }
         public double PhaseRemaining { get; private set; }
@@ -40,7 +42,7 @@ namespace MazeOfEgos.Core
         private double savedPhaseRemaining, nextWallAttempt;
         private int powerChain, nextTrapId;
         private bool extraChanceGiven, scatter;
-        private Point2 moveInput;
+        private readonly CorridorNavigation navigation = new CorridorNavigation();
         private static readonly Point2[] ScatterTargets = { new Point2(26, 1), new Point2(1, 1), new Point2(26, 29), new Point2(1, 29) };
         private struct Contact { public double time; public int kind, index, other; }
         private sealed class ContactComparer : IComparer<Contact>
@@ -92,15 +94,15 @@ namespace MazeOfEgos.Core
                 return Math.Max(normal * 1.6, fastest * 1.15);
             }
         }
-        public void SetMovement(Point2 input)
-        {
-            moveInput = input.IsFinite ? (input.LengthSquared > 1 ? input.Normalized : input) : new Point2();
-        }
+        public void RequestTurn(RelativeTurn turn)
+        { if (Phase == SessionPhase.Playing) { Player = CorridorNavigation.AlignLegacy(Maze, Player, navigation.Heading); navigation.Request(turn); } }
+        public void RequestHeading(int heading)
+        { if (Phase == SessionPhase.Playing) { Player = CorridorNavigation.AlignLegacy(Maze, Player, navigation.Heading); navigation.RequestHeading(heading); } }
         public void Pause()
         {
             if (Phase == SessionPhase.Paused || Phase == SessionPhase.GameOver) return;
             resumePhase = Phase; savedPhaseRemaining = PhaseRemaining;
-            Phase = SessionPhase.Paused; moveInput = new Point2();
+            Phase = SessionPhase.Paused;
         }
         public void Resume(double countdown = 1.5)
         {
@@ -163,7 +165,7 @@ namespace MazeOfEgos.Core
         private void ResetActors()
         {
             Player = new Point2(Maze.Definition.playerStart.x, Maze.Definition.playerStart.y);
-            Yaw = 270; Pitch = 0; moveInput = new Point2();
+            navigation.Restore(3, -1, true);
             PowerUntil = BoostUntil = Time; Inventory = ItemKind.None; powerChain = 0;
             LevelTime = 0; scatter = true; Traps.Clear(); trail.Clear(); trail.Add(Player);
             nextWallAttempt = Time + 15;
@@ -186,8 +188,7 @@ namespace MazeOfEgos.Core
         {
             double endTime = Time;
             Point2 oldPlayer = Player;
-            Point2 worldInput = Point2.Right(Yaw) * moveInput.x + Point2.Forward(Yaw) * moveInput.y;
-            Player = Maze.MovePlayer(Player, worldInput * (PlayerSpeed * delta));
+            Player = navigation.Advance(Maze, Player, PlayerSpeed * delta);
             Point2 endPlayer = Maze.Near(Player, oldPlayer);
             if ((Maze.Near(Player, trail[trail.Count - 1]) - trail[trail.Count - 1]).Length > 0.04)
             {
@@ -248,7 +249,7 @@ namespace MazeOfEgos.Core
                 if (capture >= 0)
                 {
                     Chances--; Phase = SessionPhase.Caught; PhaseRemaining = 1.2;
-                    moveInput = new Point2(); Events.Add(new GameEvent(EventKind.Caught, capture));
+                     Events.Add(new GameEvent(EventKind.Caught, capture));
                 }
                 if (Phase == SessionPhase.Playing && RemainingHearts == 0) BeginLevelClear();
                 cursor = end;
@@ -300,7 +301,7 @@ namespace MazeOfEgos.Core
             if (Phase == SessionPhase.LevelClear || Phase == SessionPhase.GameOver) return;
             long bonus = Rules.levelClearBonusEnabled ? 1000L * Level : 0;
             AddScore(bonus); Phase = SessionPhase.LevelClear; PhaseRemaining = 2;
-            moveInput = new Point2(); Events.Add(new GameEvent(EventKind.LevelClear, points: bonus));
+             Events.Add(new GameEvent(EventKind.LevelClear, points: bonus));
         }
 
         private void Reverse(PursuerState p)
@@ -357,11 +358,7 @@ namespace MazeOfEgos.Core
         {
             if (scatter) return ScatterTargets[(int)p.role];
             Point2 player = Maze.NearestPlayerCell(Player).Position;
-            Point2 forward = Point2.Forward(Yaw);
-            if (moveInput.LengthSquared > 0.01)
-                forward = (Point2.Right(Yaw) * moveInput.x + forward * moveInput.y).Normalized;
-            // Targets use the dominant movement axis, preserving the four classic roles.
-            forward = Math.Abs(forward.x) > Math.Abs(forward.y) ? new Point2(Math.Sign(forward.x), 0) : new Point2(0, Math.Sign(forward.y));
+            Point2 forward = CorridorNavigation.Direction(navigation.Heading);
             if (p.role == PursuerRole.Chaser) return player;
             if (p.role == PursuerRole.Ambusher) return player + forward * 4;
             if (p.role == PursuerRole.Flanker) return (player + forward * 2) * 2 - Pursuers[0].Position(Maze);
@@ -415,7 +412,7 @@ namespace MazeOfEgos.Core
                     launchedAt = kind == ItemKind.BananaPeel ? Time : 0, landsAt = kind == ItemKind.BananaPeel ? landing : 0,
                     expiresAt = landing + (kind == ItemKind.BananaPeel ? 20 : 15) });
             }
-            Inventory = ItemKind.None; Events.Add(new GameEvent(EventKind.ItemUsed)); return true;
+            Inventory = ItemKind.None; Events.Add(new GameEvent(EventKind.ItemUsed, (int)kind)); return true;
         }
         private void ApplyTrap(int pursuerIndex, int trapId)
         {
@@ -484,6 +481,10 @@ namespace MazeOfEgos.Core
                             Math.Abs(point.y - c.y) < 0.5 + MazeMap.WallPadding + TrapRadius) return true;
                     }
                 }
+                // The centre-line motor must retain both endpoints of its current edge,
+                // even after the visible body has cleared the moving wall's padding.
+                if ((c.x == (int)Math.Floor(Player.x + 1e-8) && c.y == (int)Math.Floor(Player.y + 1e-8)) ||
+                    (c.x == (int)Math.Ceiling(Player.x - 1e-8) && c.y == (int)Math.Ceiling(Player.y - 1e-8))) return true;
                 if (Math.Abs(Player.x - c.x) < 0.5 + MazeMap.PlayerRadius + 0.2 && Math.Abs(Player.y - c.y) < 0.5 + MazeMap.PlayerRadius + 0.2) return true;
                 foreach (PursuerState p in Pursuers)
                 {
@@ -502,7 +503,7 @@ namespace MazeOfEgos.Core
                 phase = Phase, resumePhase = Phase == SessionPhase.Paused ? resumePhase : Phase, time = Time, levelTime = LevelTime,
                 phaseRemaining = PhaseRemaining, savedPhaseRemaining = Phase == SessionPhase.Paused ? savedPhaseRemaining : PhaseRemaining,
                 powerUntil = PowerUntil, boostUntil = BoostUntil, nextWallAttempt = nextWallAttempt,
-                yaw = Yaw, pitch = Pitch, player = Player, level = Level, chances = Chances, remainingHearts = RemainingHearts,
+                yaw = Yaw, pitch = 0, autoMoving = navigation.Moving, queuedHeading = navigation.QueuedHeading, player = Player, level = Level, chances = Chances, remainingHearts = RemainingHearts,
                 powerId = PowerId, powerChain = powerChain, nextTrapId = nextTrapId, score = Score,
                 extraChanceGiven = extraChanceGiven, scatter = scatter,
                 itemRandom = itemRandom.state, aiRandom = aiRandom.state, wallRandom = wallRandom.state, inventory = Inventory,
@@ -515,7 +516,7 @@ namespace MazeOfEgos.Core
         }
         public void Restore(SessionSnapshot state)
         {
-            if (state == null || (state.version != 1 && state.version != 2) || state.mazeId != Maze.Definition.id || state.mazeFingerprint != Maze.Fingerprint ||
+            if (state == null || (state.version != 1 && state.version != 2 && state.version != 3) || state.mazeId != Maze.Definition.id || state.mazeFingerprint != Maze.Fingerprint ||
                 state.rules == null || state.collected == null || state.collected.Length != Collected.Length ||
                 state.itemAvailable == null || state.itemAvailable.Length != ItemAvailable.Length ||
                 state.pursuers == null || state.pursuers.Length != 4 || state.walls == null || state.walls.Length != Walls.Length ||
@@ -528,6 +529,10 @@ namespace MazeOfEgos.Core
                 double.IsNaN(state.pitch) || state.itemRandom == 0 || state.aiRandom == 0 || state.wallRandom == 0 ||
                 !Enum.IsDefined(typeof(SessionPhase), state.phase) || !Enum.IsDefined(typeof(SessionPhase), state.resumePhase) ||
                 !Enum.IsDefined(typeof(ItemKind), state.inventory)) throw new ArgumentException("Snapshot is incompatible or corrupt.");
+            if (state.version == 3 && (state.queuedHeading < -1 || state.queuedHeading > 3 || state.pitch != 0 ||
+                state.yaw != CorridorNavigation.FromYaw(state.yaw) * 90 ||
+                (state.autoMoving && !CorridorNavigation.OnCentreLine(state.player, CorridorNavigation.FromYaw(state.yaw)))))
+                throw new ArgumentException("Invalid corridor navigation state.");
             int remaining = 0; foreach (bool c in state.collected) if (!c) remaining++;
             if (remaining != state.remainingHearts) throw new ArgumentException("Snapshot heart count is inconsistent.");
             string[] expectedIds = { "putin", "xi", "kim", "trump" };
@@ -548,7 +553,7 @@ namespace MazeOfEgos.Core
             foreach (TrapState trap in state.traps)
                 if (trap == null || !WithinMazeFrame(trap.position) || !FiniteNonnegative(trap.expiresAt) || trap.id < 1 || trap.id > state.nextTrapId ||
                     (trap.kind != ItemKind.BananaPeel && trap.kind != ItemKind.OilSlick)) throw new ArgumentException("Invalid trap.");
-            if (state.version == 2) foreach (TrapState trap in state.traps)
+            if (state.version >= 2) foreach (TrapState trap in state.traps)
                 if (!WithinMazeFrame(trap.launchPosition) || !FiniteNonnegative(trap.launchedAt) || !FiniteNonnegative(trap.landsAt) ||
                     (trap.landsAt == 0 && trap.launchedAt != 0) ||
                     (trap.landsAt > 0 && (trap.kind != ItemKind.BananaPeel || trap.launchedAt > state.time ||
@@ -559,8 +564,9 @@ namespace MazeOfEgos.Core
             // Validate topology on a temporary map so rejected data cannot mutate a running game.
             var restoredMap = new MazeMap(Maze.Definition);
             for (int i = 0; i < state.walls.Length; i++) restoredMap.SetShortcut(i, state.walls[i].phase == WallPhase.Open);
+            if (state.version == 3 && state.autoMoving && !CorridorNavigation.HasLegalPosition(restoredMap, state.player, CorridorNavigation.FromYaw(state.yaw))) throw new ArgumentException("Player is outside corridor graph.");
             if (!restoredMap.CanOccupy(state.player)) throw new ArgumentException("Snapshot player is inside a wall.");
-            if (state.version == 2) foreach (TrapState trap in state.traps)
+            if (state.version >= 2) foreach (TrapState trap in state.traps)
                 if (trap.landsAt > state.time)
                 {
                     Point2 start = trap.PositionAt(restoredMap, state.time), end = restoredMap.Near(trap.position, start);
@@ -579,7 +585,10 @@ namespace MazeOfEgos.Core
             for (int i = 0; i < state.walls.Length; i++) { Walls[i] = state.walls[i].Copy(); Maze.SetShortcut(i, Walls[i].phase == WallPhase.Open); }
             Rules = state.rules.Copy(); Time = state.time; LevelTime = state.levelTime; PhaseRemaining = state.phaseRemaining;
             PowerUntil = state.powerUntil; BoostUntil = state.boostUntil; nextWallAttempt = state.nextWallAttempt;
-            Yaw = state.yaw; Pitch = state.pitch; Player = state.player; Level = state.level; Chances = state.chances;
+            int heading = CorridorNavigation.FromYaw(state.yaw);
+            Player = state.version < 3 ? CorridorNavigation.AlignLegacy(restoredMap, state.player, heading) : state.player;
+            navigation.Restore(heading, state.version < 3 ? -1 : state.queuedHeading, state.version < 3 || state.autoMoving);
+            Level = state.level; Chances = state.chances;
             RemainingHearts = state.remainingHearts; PowerId = state.powerId; powerChain = state.powerChain;
             nextTrapId = state.nextTrapId; Score = state.score; extraChanceGiven = state.extraChanceGiven; scatter = state.scatter;
             itemRandom.state = state.itemRandom; aiRandom.state = state.aiRandom; wallRandom.state = state.wallRandom;
@@ -591,7 +600,7 @@ namespace MazeOfEgos.Core
                 if (state.version == 1) { copy.launchPosition = copy.position; copy.launchedAt = copy.landsAt = 0; }
                 Traps.Add(copy);
             }
-            trail.Clear(); trail.AddRange(state.trail); moveInput = new Point2();
+            trail.Clear(); trail.AddRange(state.trail);
             resumePhase = state.phase == SessionPhase.Paused ? state.resumePhase : state.phase;
             savedPhaseRemaining = state.phase == SessionPhase.Paused ? state.savedPhaseRemaining : state.phaseRemaining;
             Phase = SessionPhase.Paused; Events.Clear();

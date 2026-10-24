@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using MazeOfEgos.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,20 +11,25 @@ namespace MazeOfEgos.Runtime
     public sealed class GameHud
     {
         public TouchControls Joystick { get; private set; }
-        public TouchControls Look { get; private set; }
         private readonly GameApp app;
         private readonly Font font;
         private readonly RectTransform safe;
-        private readonly GameObject menu, controls, pause, settings, results;
-        private readonly Text stats, hearts, center, effects, toast, danger, record, prototype;
+        private readonly GameObject menu, controls, pause, settings, results, help, backdrop;
+        private readonly HeroPresentation hero;
+        private readonly RawImage celebration, menuArtwork;
+        private readonly RectTransform backdropRect;
+        private readonly MenuEdgeFade menuFade;
+        private readonly Text stats, hearts, center, effects, toast, danger, prototype;
         private readonly Button itemButton, resumeButton;
-        private readonly Text itemText;
+        private readonly Text itemText, livesLabel, resumeText;
+        private readonly TouchArtwork[] lifeHearts = new TouchArtwork[4];
         private readonly TouchArtwork itemIcon;
         private readonly Image scare;
         private readonly Text resultText;
         public bool SettingsOpen => settings.activeSelf;
         public void CloseSettings() => settings.SetActive(false);
         private float toastUntil, scareUntil;
+        private bool menuNotice;
         private Rect lastSafeArea;
         private int lastScreenWidth, lastScreenHeight;
         private long shownScore = -1, shownRecord = -1;
@@ -31,6 +37,7 @@ namespace MazeOfEgos.Runtime
         private SessionPhase shownPhase = (SessionPhase)(-1);
         private readonly Color ink = new Color(0.95f, 0.94f, 0.86f);
         private readonly Color panelColor = new Color(0.055f, 0.10f, 0.12f, 1);
+        private readonly Color coverColor = new Color(.012f, .039f, .063f, 1);
 
         public GameHud(GameApp app)
         {
@@ -44,11 +51,18 @@ namespace MazeOfEgos.Runtime
                 var events = new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
                 events.GetComponent<InputSystemUIInputModule>().AssignDefaultActions();
             }
+            backdrop = Panel("Menu backdrop", root.transform, panelColor);
+            backdropRect = (RectTransform)backdrop.transform;
+            RectTransform artworkRect = Rect("Menu artwork", backdrop.transform, new Vector2(0, .5f), new Vector2(0, .5f), Vector2.zero, Vector2.zero);
+            artworkRect.pivot = new Vector2(0, .5f);
+            menuArtwork = artworkRect.gameObject.AddComponent<RawImage>();
+            menuArtwork.texture = Resources.Load<Texture2D>("Brand/MenuBackground");
+            menuArtwork.raycastTarget = false;
+            RectTransform fade = Rect("Cover right edge", backdrop.transform, new Vector2(0, .5f), new Vector2(0, .5f), Vector2.zero, Vector2.zero);
+            fade.pivot = new Vector2(0, .5f);
+            menuFade = fade.gameObject.AddComponent<MenuEdgeFade>(); menuFade.color = coverColor; menuFade.raycastTarget = false;
             safe = Rect("Safe area", root.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             controls = Rect("Gameplay", safe, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero).gameObject;
-            RectTransform lookRect = Rect("Look area", controls.transform, new Vector2(0.5f, 0), Vector2.one, Vector2.zero, Vector2.zero);
-            var lookImage = lookRect.gameObject.AddComponent<Image>(); lookImage.color = new Color(0, 0, 0, 0.001f);
-            Look = lookRect.gameObject.AddComponent<TouchControls>();
             RectTransform joystickRect = Rect("Movement joystick", controls.transform, Vector2.zero, Vector2.zero, new Vector2(150, 155), new Vector2(300, 300));
             Image joystickImage = joystickRect.gameObject.AddComponent<Image>(); joystickImage.color = new Color(0, 0, 0, 0.001f);
             Joystick = joystickRect.gameObject.AddComponent<TouchControls>(); Joystick.joystick = true;
@@ -58,9 +72,13 @@ namespace MazeOfEgos.Runtime
             RectTransform knob = Rect("Joystick thumb", stickArt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(76, 76));
             Artwork(knob, TouchArtwork.Shape.Thumb, new Color(1, 0.88f, 0.59f));
             Joystick.knob = knob;
-            Label("GÅ", stickArt, new Vector2(0.5f, 0.5f), new Vector2(0, -125), new Vector2(150, 35), 18, TextAnchor.MiddleCenter);
+            Label("TURN", stickArt, new Vector2(0.5f, 0.5f), new Vector2(0, -125), new Vector2(150, 35), 18, TextAnchor.MiddleCenter);
             stats = Label("", controls.transform, new Vector2(0, 1), new Vector2(190, -42), new Vector2(330, 65), 29);
-            hearts = Label("", controls.transform, Vector2.one, new Vector2(-320, -42), new Vector2(380, 65), 29, TextAnchor.MiddleRight);
+            hearts = Label("", controls.transform, Vector2.one, new Vector2(-320, -65), new Vector2(380, 35), 29, TextAnchor.MiddleRight);
+            RectTransform lives = Rect("Life hearts", controls.transform, Vector2.one, Vector2.one, new Vector2(-320, -26), new Vector2(380, 38));
+            livesLabel = Label("Lives:", lives, new Vector2(1, .5f), Vector2.zero, new Vector2(80, 38), 29, TextAnchor.MiddleRight);
+            for (int i = 0; i < lifeHearts.Length; i++)
+                lifeHearts[i] = Artwork(Rect("Life " + (i + 1), lives, new Vector2(1, .5f), new Vector2(1, .5f), Vector2.zero, new Vector2(29, 29)), TouchArtwork.Shape.Heart, new Color(.96f, .16f, .30f));
             Button("Ⅱ", controls.transform, Vector2.one, new Vector2(-65, -55), new Vector2(80, 70), app.TogglePause);
             center = Label("", controls.transform, new Vector2(0.5f, 0.5f), new Vector2(0, 70), new Vector2(900, 160), 47, TextAnchor.MiddleCenter);
             effects = Label("", controls.transform, new Vector2(0.5f, 1), new Vector2(0, -45), new Vector2(600, 60), 26, TextAnchor.MiddleCenter);
@@ -73,66 +91,65 @@ namespace MazeOfEgos.Runtime
             itemButton.onClick.AddListener(app.UseItem);
             RectTransform iconRect = Rect("Item icon", useRect, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(92, 92));
             itemIcon = Artwork(iconRect, TouchArtwork.Shape.Empty, ink);
-            itemText = Label("GENSTAND", useRect, new Vector2(0.5f, 0.5f), new Vector2(0, -115), new Vector2(240, 45), 19, TextAnchor.MiddleCenter);
+            itemText = Label("ITEM", useRect, new Vector2(0.5f, 0.5f), new Vector2(0, -115), new Vector2(240, 45), 19, TextAnchor.MiddleCenter);
             toast = Label("", safe, new Vector2(0.5f, 0), new Vector2(0, 60), new Vector2(900, 90), 27, TextAnchor.MiddleCenter);
-            menu = Panel("Main menu", safe, panelColor);
-            Label("MAZE OF EGOS", menu.transform, new Vector2(0.5f, 1), new Vector2(0, -110), new Vector2(1000, 100), 68, TextAnchor.MiddleCenter);
-            Label("Saml hjerter. Undvig store egoer.", menu.transform, new Vector2(0.5f, 1), new Vector2(0, -195), new Vector2(950, 70), 29, TextAnchor.MiddleCenter);
-            Portrait("zelenskyy", menu.transform, new Vector2(0.5f, 0.5f), new Vector2(-330, 0), new Vector2(225, 260));
-            Label("ZELENSKYJ", menu.transform, new Vector2(0.5f, 0.5f), new Vector2(-330, -165), new Vector2(270, 50), 28, TextAnchor.MiddleCenter);
-            Button("SPIL", menu.transform, new Vector2(0.5f, 0.5f), new Vector2(45, 60), new Vector2(390, 85), app.NewGame);
-            resumeButton = Button("FORTSÆT GEMT SPIL", menu.transform, new Vector2(0.5f, 0.5f), new Vector2(45, -45), new Vector2(390, 75), app.ContinueSaved);
-            Button("INDSTILLINGER", menu.transform, new Vector2(0.5f, 0.5f), new Vector2(45, -140), new Vector2(390, 65), () => settings.SetActive(true));
-            record = Label("", menu.transform, new Vector2(0.5f, 0.5f), new Vector2(45, 160), new Vector2(400, 50), 25, TextAnchor.MiddleCenter);
-            string[] ids = { "putin", "xi", "kim", "trump" };
-            string[] names = { "Putin", "Xi", "Kim", "Trump" };
-            for (int i = 0; i < 4; i++)
-            {
-                Portrait(ids[i], menu.transform, new Vector2(1, 0.5f), new Vector2(-180, 175 - i * 115), new Vector2(78, 92));
-                Label(names[i], menu.transform, new Vector2(1, 0.5f), new Vector2(-78, 175 - i * 115), new Vector2(110, 50), 24);
-            }
-            Button("HJÆLP / OM SPILLET", menu.transform, new Vector2(0.5f, 0), new Vector2(0, 85), new Vector2(430, 55), () => {
-                Notify("Saml alle hjerter. Joystick: gå · Træk til højre: kig · Knap: brug genstand.\nFiktiv politisk satire uden tilknytning til de afbildede personer.", 12);
-                toast.transform.SetAsLastSibling();
-            });
+            menu = Rect("Main menu", safe, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero).gameObject;
+            RectTransform actions = Rect("Main menu actions", menu.transform, new Vector2(.64f, 0), new Vector2(.96f, 1), Vector2.zero, Vector2.zero);
+            MenuButton("PLAY", actions, 96, 86, app.NewGame, true);
+            resumeButton = MenuButton("CONTINUE SAVED GAME", actions, -10, 78, app.ContinueSaved);
+            resumeText = resumeButton.GetComponentInChildren<Text>();
+            MenuButton("HELP", actions, -112, 68, () => help.SetActive(true));
+            hero = new HeroPresentation();
+            var victoryRect = Rect("Hero celebration", controls.transform, new Vector2(.5f, .5f), new Vector2(.5f, .5f), new Vector2(0, -145), new Vector2(150, 200));
+            celebration = victoryRect.gameObject.AddComponent<RawImage>(); celebration.texture = hero.Texture; celebration.raycastTarget = false;
             pause = Panel("Pause", safe, panelColor);
-            Label("PAUSE", pause.transform, new Vector2(0.5f, 0.5f), new Vector2(0, 190), new Vector2(700, 90), 58, TextAnchor.MiddleCenter);
-            Button("FORTSÆT", pause.transform, new Vector2(0.5f, 0.5f), new Vector2(0, 75), new Vector2(420, 80), app.TogglePause);
-            Button("INDSTILLINGER", pause.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -25), new Vector2(420, 70), () => settings.SetActive(true));
-            Button("NYT SPIL", pause.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -120), new Vector2(420, 70), app.NewGame);
-            Button("HOVEDMENU", pause.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -210), new Vector2(420, 65), app.GoToMenu);
+            Label("PAUSED", pause.transform, new Vector2(0.5f, 0.5f), new Vector2(0, 190), new Vector2(700, 90), 58, TextAnchor.MiddleCenter);
+            Button("RESUME", pause.transform, new Vector2(0.5f, 0.5f), new Vector2(0, 75), new Vector2(420, 80), app.TogglePause);
+            Button("SETTINGS", pause.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -25), new Vector2(420, 70), () => settings.SetActive(true));
+            Button("NEW GAME", pause.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -120), new Vector2(420, 70), app.NewGame);
+            Button("MAIN MENU", pause.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -210), new Vector2(420, 65), app.GoToMenu);
             results = Panel("Game Over", safe, panelColor);
             resultText = Label("", results.transform, new Vector2(0.5f, 0.5f), new Vector2(0, 140), new Vector2(900, 220), 45, TextAnchor.MiddleCenter);
-            Button("SPIL IGEN", results.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -50), new Vector2(420, 80), app.NewGame);
-            Button("HOVEDMENU", results.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -155), new Vector2(420, 70), app.GoToMenu);
+            Button("PLAY AGAIN", results.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -50), new Vector2(420, 80), app.NewGame);
+            Button("MAIN MENU", results.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -155), new Vector2(420, 70), app.GoToMenu);
             settings = Panel("Settings", safe, panelColor);
             BuildSettings();
+            help = Panel("Help and privacy", safe, panelColor);
+            Label("HOW TO PLAY", help.transform, new Vector2(.5f, .5f), new Vector2(0, 320), new Vector2(1000, 75), 44, TextAnchor.MiddleCenter);
+            Label("Collect all hearts to reach the next level. You start with three lives.\n\nYou move automatically along the center of each corridor. The camera follows.\nStick left/right: queue the next turn · up: go straight · down: turn around.\nRelease the stick to keep moving. A turn is remembered until it is possible.\nDesktop: WASD/arrows: choose direction · Space: use item · Esc: pause.\n\nA large Power Heart turns the chase around. Catch the blue pursuers!\nBananas land ahead. Oil drops behind you. Boost makes you faster.\nYellow floor lights warn that a mechanical shortcut is about to open.",
+                help.transform, new Vector2(.5f, .5f), new Vector2(0, 65), new Vector2(1120, 400), 25, TextAnchor.UpperLeft);
+            Label("Fictional political satire. Not affiliated with the people depicted.\nPlay offline. Your best score, settings and saved game stay on this device.\nNo ads, analytics or accounts. Support opens your browser.",
+                help.transform, new Vector2(.5f, .5f), new Vector2(0, -180), new Vector2(1120, 140), 24, TextAnchor.MiddleCenter);
+            Button("SUPPORT", help.transform, new Vector2(.5f, .5f), new Vector2(-220, -320), new Vector2(370, 65), () => Application.OpenURL("https://donkeytrump-api-p.azurewebsites.net/support"));
+            Button("BACK", help.transform, new Vector2(.5f, .5f), new Vector2(220, -320), new Vector2(370, 65), () => help.SetActive(false));
+            help.SetActive(false);
             RectTransform flash = Rect("Encounter flash", safe, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             scare = flash.gameObject.AddComponent<Image>(); scare.color = Color.clear; scare.raycastTarget = false;
             // The notice is visible only in development builds, as required for temporary assets.
             if (Debug.isDebugBuild || Application.isEditor)
-                prototype = Label("PROTOTYPE · midlertidige 3D-figurer", safe, new Vector2(0.5f, 1), new Vector2(0, -28), new Vector2(700, 35), 17, TextAnchor.MiddleCenter);
+                prototype = Label("PROTOTYPE · temporary 3D characters", safe, new Vector2(0.5f, 1), new Vector2(0, -28), new Vector2(700, 35), 17, TextAnchor.MiddleCenter);
             menu.SetActive(true); pause.SetActive(false); results.SetActive(false); settings.SetActive(false); controls.SetActive(false);
             RefreshSafeArea(); ApplyHandedness();
         }
 
         private void BuildSettings()
         {
-            Label("INDSTILLINGER", settings.transform, new Vector2(0.5f, 0.5f), new Vector2(0, 320), new Vector2(900, 80), 48, TextAnchor.MiddleCenter);
-            ToggleRow("Lyd", 225, () => app.Settings.sound, value => app.Settings.sound = value);
-            ToggleRow("Musik", 145, () => app.Settings.music, value => app.Settings.music = value);
-            ToggleRow("Haptik", 65, () => app.Settings.haptics, value => app.Settings.haptics = value);
-            ToggleRow("Dæmp forskrækkelser / reduceret bevægelse", -15, () => app.Settings.reducedMotion, value => app.Settings.reducedMotion = value);
-            ToggleRow("Venstrehåndslayout", -95, () => app.Settings.leftHanded, value => { app.Settings.leftHanded = value; ApplyHandedness(); });
-            Button("SYNSFELT −", settings.transform, new Vector2(0.5f, 0.5f), new Vector2(-180, -185), new Vector2(300, 60), () => { app.Settings.fov = Mathf.Max(70, app.Settings.fov - 5); app.SaveSettings(); Notify("Synsfelt: " + app.Settings.fov + "°"); });
-            Button("SYNSFELT +", settings.transform, new Vector2(0.5f, 0.5f), new Vector2(180, -185), new Vector2(300, 60), () => { app.Settings.fov = Mathf.Min(95, app.Settings.fov + 5); app.SaveSettings(); Notify("Synsfelt: " + app.Settings.fov + "°"); });
-            Button("TILBAGE", settings.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -290), new Vector2(420, 70), () => { settings.SetActive(false); app.SaveSettings(); });
+            Label("SETTINGS", settings.transform, new Vector2(0.5f, 0.5f), new Vector2(0, 320), new Vector2(900, 80), 48, TextAnchor.MiddleCenter);
+            ToggleRow("Sound", 235, () => app.Settings.sound, value => app.Settings.sound = value);
+            ToggleRow("Music", 165, () => app.Settings.music, value => app.Settings.music = value);
+            ToggleRow("Haptics", 95, () => app.Settings.haptics, value => app.Settings.haptics = value);
+            ToggleRow("Reduce scares / motion", 25, () => app.Settings.reducedMotion, value => app.Settings.reducedMotion = value);
+            ToggleRow("Left-handed layout", -45, () => app.Settings.leftHanded, value => { app.Settings.leftHanded = value; ApplyHandedness(); });
+            ToggleRow("Low graphics mode", -115, () => app.Settings.economyGraphics, value => { app.Settings.economyGraphics = value; GraphicsProfile.Apply(value); });
+            Button("FIELD OF VIEW −", settings.transform, new Vector2(0.5f, 0.5f), new Vector2(-180, -185), new Vector2(300, 60), () => { app.Settings.fov = Mathf.Max(70, app.Settings.fov - 5); app.SaveSettings(); Notify("Field of view: " + app.Settings.fov.ToString("0", CultureInfo.InvariantCulture) + "°"); });
+            Button("FIELD OF VIEW +", settings.transform, new Vector2(0.5f, 0.5f), new Vector2(180, -185), new Vector2(300, 60), () => { app.Settings.fov = Mathf.Min(95, app.Settings.fov + 5); app.SaveSettings(); Notify("Field of view: " + app.Settings.fov.ToString("0", CultureInfo.InvariantCulture) + "°"); });
+            Button("BACK", settings.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -290), new Vector2(420, 70), () => { settings.SetActive(false); app.SaveSettings(); });
         }
         private void ToggleRow(string title, float y, Func<bool> read, Action<bool> write)
         {
             Button button = null;
-            button = Button(title + ": " + (read() ? "TIL" : "FRA"), settings.transform, new Vector2(0.5f, 0.5f), new Vector2(0, y), new Vector2(840, 60), () => {
-                write(!read()); button.GetComponentInChildren<Text>().text = title + ": " + (read() ? "TIL" : "FRA"); app.SaveSettings();
+            button = Button(title + ": " + (read() ? "ON" : "OFF"), settings.transform, new Vector2(0.5f, 0.5f), new Vector2(0, y), new Vector2(840, 60), () => {
+                write(!read()); button.GetComponentInChildren<Text>().text = title + ": " + (read() ? "ON" : "OFF"); app.SaveSettings();
             });
         }
         public void ApplyHandedness()
@@ -144,12 +161,10 @@ namespace MazeOfEgos.Runtime
             RectTransform use = (RectTransform)itemButton.transform;
             use.anchorMin = use.anchorMax = new Vector2(left ? 0 : 1, 0);
             use.anchoredPosition = new Vector2(left ? 150 : -150, 155);
-            RectTransform look = (RectTransform)Look.transform;
-            look.anchorMin = new Vector2(left ? 0 : 0.5f, 0); look.anchorMax = new Vector2(left ? 0.5f : 1, 1);
-            Joystick.Clear(); Look.Clear();
+            Joystick.Clear();
         }
-        public void Notify(string message, float seconds = 3)
-        { toast.text = message; toastUntil = UnityEngine.Time.unscaledTime + seconds; toast.transform.SetAsLastSibling(); }
+        public void Notify(string message, float seconds = 3, bool showInMenu = false)
+        { toast.text = message; menuNotice = showInMenu; toastUntil = UnityEngine.Time.unscaledTime + seconds; toast.transform.SetAsLastSibling(); }
         public void Encounter(string name)
         {
             Notify(name + "!", 1.0f);
@@ -158,26 +173,44 @@ namespace MazeOfEgos.Runtime
         public void Update(GameSession session, bool inMenu)
         {
             RefreshSafeArea();
+            bool celebrate = !inMenu && session.Phase == SessionPhase.LevelClear;
+            hero.Update(celebrate, celebrate, app.Settings.reducedMotion);
+            celebration.gameObject.SetActive(celebrate);
             bool isPaused = !inMenu && session.Phase == SessionPhase.Paused;
             menu.SetActive(inMenu); pause.SetActive(isPaused);
             bool gameOver = !inMenu && session.Phase == SessionPhase.GameOver;
-            if (prototype) prototype.rectTransform.anchoredPosition = new Vector2(0, inMenu || isPaused || gameOver || settings.activeSelf ? -28 : -105);
-            toast.gameObject.SetActive(!settings.activeSelf);
+            if (prototype)
+            {
+                prototype.gameObject.SetActive(!inMenu);
+                prototype.rectTransform.anchoredPosition = new Vector2(0, isPaused || gameOver || settings.activeSelf ? -28 : -105);
+            }
+            toast.gameObject.SetActive(!settings.activeSelf && (!inMenu || menuNotice));
             controls.SetActive(!inMenu && !isPaused && !gameOver && !settings.activeSelf);
             results.SetActive(gameOver);
+            backdrop.SetActive(inMenu || isPaused || gameOver || settings.activeSelf || help.activeSelf);
+            menuArtwork.gameObject.SetActive(inMenu && !settings.activeSelf && !help.activeSelf);
+            menuFade.gameObject.SetActive(menuArtwork.gameObject.activeSelf && menuArtwork.rectTransform.rect.width < backdropRect.rect.width - 1);
+            backdrop.GetComponent<Image>().color = menuArtwork.gameObject.activeSelf ? coverColor : panelColor;
             bool scoreChanged = shownScore != session.Score || shownLevel != session.Level;
             bool recordChanged = shownRecord != app.Settings.highScore;
             if (scoreChanged || recordChanged)
-                resultText.text = "SLUT FOR NU\nPoint: " + session.Score.ToString("N0") + " · Level " + session.Level + "\nRekord: " + app.Settings.highScore.ToString("N0");
-            if (recordChanged) { record.text = "Rekord: " + app.Settings.highScore.ToString("N0"); shownRecord = app.Settings.highScore; }
+                resultText.text = "GAME OVER\nScore: " + session.Score.ToString("N0", CultureInfo.InvariantCulture) + " · Level " + session.Level.ToString(CultureInfo.InvariantCulture) + "\nBest: " + app.Settings.highScore.ToString("N0", CultureInfo.InvariantCulture);
+            if (recordChanged) shownRecord = app.Settings.highScore;
             resumeButton.interactable = app.HasSavedGame;
+            resumeText.color = app.HasSavedGame ? ink : new Color(ink.r, ink.g, ink.b, .4f);
             if (UnityEngine.Time.unscaledTime > toastUntil) toast.text = "";
             float flash = Mathf.Clamp01((scareUntil - UnityEngine.Time.unscaledTime) / 0.25f);
             scare.color = new Color(1, 0.81f, 0.3f, flash * 0.12f);
-            if (scoreChanged) stats.text = "POINT " + session.Score.ToString("N0") + "\nLEVEL " + session.Level;
+            if (scoreChanged) stats.text = "SCORE " + session.Score.ToString("N0", CultureInfo.InvariantCulture) + "\nLEVEL " + session.Level.ToString(CultureInfo.InvariantCulture);
             if (shownChances != session.Chances || shownHearts != session.RemainingHearts)
-            { hearts.text = "Chancer × " + session.Chances + "\nHjerter tilbage: " + session.RemainingHearts; shownChances = session.Chances; shownHearts = session.RemainingHearts; }
-            itemText.text = session.Inventory == ItemKind.None ? "GENSTAND" : session.Inventory == ItemKind.BananaPeel ? "BANAN" : session.Inventory == ItemKind.OilSlick ? "OLIE" : "BOOST";
+            {
+                hearts.text = "Hearts left: " + session.RemainingHearts.ToString(CultureInfo.InvariantCulture);
+                livesLabel.rectTransform.anchoredPosition = new Vector2(-session.Chances * 34 - 40, 0);
+                for (int i = 0; i < lifeHearts.Length; i++)
+                { lifeHearts[i].gameObject.SetActive(i < session.Chances); lifeHearts[i].rectTransform.anchoredPosition = new Vector2(-16 - (session.Chances - 1 - i) * 34, 0); }
+                shownChances = session.Chances; shownHearts = session.RemainingHearts;
+            }
+            itemText.text = session.Inventory == ItemKind.None ? "ITEM" : session.Inventory == ItemKind.BananaPeel ? "BANANA" : session.Inventory == ItemKind.OilSlick ? "OIL" : "BOOST";
             itemIcon.Artwork = session.Inventory == ItemKind.BananaPeel ? TouchArtwork.Shape.Banana : session.Inventory == ItemKind.OilSlick ? TouchArtwork.Shape.Oil : session.Inventory == ItemKind.SpeedBoost ? TouchArtwork.Shape.Boost : TouchArtwork.Shape.Empty;
             itemIcon.color = session.Inventory == ItemKind.None ? new Color(1, 1, 1, 0.25f) : session.Inventory == ItemKind.BananaPeel ? new Color(1, 0.83f, 0.25f) : session.Inventory == ItemKind.OilSlick ? new Color(0.76f, 0.68f, 0.93f) : new Color(0.51f, 0.95f, 0.82f);
             itemButton.interactable = session.Phase == SessionPhase.Playing && session.Inventory != ItemKind.None;
@@ -185,16 +218,16 @@ namespace MazeOfEgos.Runtime
             int boostTenths = Mathf.Max(0, Mathf.CeilToInt((float)(session.BoostUntil - session.Time) * 10));
             if (shownPower != powerTenths || shownBoost != boostTenths)
             {
-                effects.text = (powerTenths > 0 ? "KRAFTHJERTE  " + (powerTenths / 10f).ToString("F1") + " s" : "") +
-                    (boostTenths > 0 ? "   BOOST " + (boostTenths / 10f).ToString("F1") + " s" : "");
+                effects.text = (powerTenths > 0 ? "POWER HEART  " + (powerTenths / 10f).ToString("F1", CultureInfo.InvariantCulture) + " s" : "") +
+                    (boostTenths > 0 ? "   BOOST " + (boostTenths / 10f).ToString("F1", CultureInfo.InvariantCulture) + " s" : "");
                 shownPower = powerTenths; shownBoost = boostTenths;
             }
             int countdown = Mathf.CeilToInt((float)session.PhaseRemaining);
             if (shownPhase != session.Phase || (session.Phase == SessionPhase.Countdown && shownCountdown != countdown) ||
                 (session.Phase == SessionPhase.GameOver && scoreChanged))
-                center.text = session.Phase == SessionPhase.Countdown ? "Saml alle hjerter\n" + countdown :
-                session.Phase == SessionPhase.Caught ? "Fanget! Prøv igen" : session.Phase == SessionPhase.LevelClear ? "Alle hjerter samlet!" :
-                session.Phase == SessionPhase.GameOver ? "SLUT FOR NU\nPoint: " + session.Score + "\nPause/menu: ESC eller Ⅱ" : "";
+                center.text = session.Phase == SessionPhase.Countdown ? "Collect all hearts\n" + countdown.ToString(CultureInfo.InvariantCulture) :
+                session.Phase == SessionPhase.Caught ? "Caught! Try again" : session.Phase == SessionPhase.LevelClear ? "All hearts collected!" :
+                session.Phase == SessionPhase.GameOver ? "GAME OVER\nScore: " + session.Score.ToString("N0", CultureInfo.InvariantCulture) + "\nPause/menu: ESC or Ⅱ" : "";
             shownScore = session.Score; shownLevel = session.Level; shownPhase = session.Phase; shownCountdown = countdown;
             string dangerText = "";
             if (session.Phase == SessionPhase.Playing)
@@ -209,7 +242,7 @@ namespace MazeOfEgos.Runtime
                 {
                     double side = Point2.Dot(offset.Normalized, Point2.Right(session.Yaw));
                     double ahead = Point2.Dot(offset.Normalized, Point2.Forward(session.Yaw));
-                    dangerText = side < -0.4 ? "‹ Fare i nærheden" : side > 0.4 ? "Fare i nærheden ›" : ahead < 0 ? "Fare bag dig" : "Fare i nærheden";
+                    dangerText = side < -0.4 ? "‹ Danger nearby" : side > 0.4 ? "Danger nearby ›" : ahead < 0 ? "Danger behind you" : "Danger nearby";
                 }
             }
             danger.text = dangerText;
@@ -221,7 +254,17 @@ namespace MazeOfEgos.Runtime
             safe.anchorMin = new Vector2(lastSafeArea.xMin / Screen.width, lastSafeArea.yMin / Screen.height);
             safe.anchorMax = new Vector2(lastSafeArea.xMax / Screen.width, lastSafeArea.yMax / Screen.height);
             safe.offsetMin = safe.offsetMax = Vector2.zero;
-            Joystick?.Clear(); Look?.Clear();
+            Joystick?.Clear();
+            Canvas.ForceUpdateCanvases();
+            // Fit the complete cover at its original aspect ratio. The dark backdrop
+            // extends its right side on wide screens; buttons use the safe area.
+            if (menuArtwork.texture)
+            {
+                float scale = Mathf.Min(backdropRect.rect.width / menuArtwork.texture.width, backdropRect.rect.height / menuArtwork.texture.height);
+                menuArtwork.rectTransform.sizeDelta = new Vector2(menuArtwork.texture.width * scale, menuArtwork.texture.height * scale);
+                menuFade.rectTransform.sizeDelta = new Vector2(menuArtwork.rectTransform.rect.width * .16f, menuArtwork.rectTransform.rect.height);
+                menuFade.rectTransform.anchoredPosition = new Vector2(menuArtwork.rectTransform.rect.width * .84f, 0);
+            }
         }
         private GameObject Panel(string name, Transform parent, Color color)
         {
@@ -252,13 +295,18 @@ namespace MazeOfEgos.Runtime
             Label(title, rect, new Vector2(0.5f, 0.5f), Vector2.zero, size - new Vector2(20, 6), 25, TextAnchor.MiddleCenter);
             return button;
         }
-        private void Portrait(string id, Transform parent, Vector2 anchor, Vector2 position, Vector2 size)
+        private Button MenuButton(string title, Transform parent, float y, float height, Action action, bool primary = false)
         {
-            var texture = Resources.Load<Texture2D>("Characters/" + id);
-            if (!texture) return;
-            RectTransform rect = Rect(id + " reference portrait", parent, anchor, anchor, position, size);
-            var image = rect.gameObject.AddComponent<RawImage>(); image.texture = texture;
-            image.uvRect = new Rect(0.32f, 0.075f, 0.215f, 0.395f); image.raycastTarget = false;
+            Button button = Button(title, parent, new Vector2(.5f, .5f), new Vector2(0, y), new Vector2(390, height), action);
+            var image = button.GetComponent<Image>();
+            image.color = primary ? new Color(.96f, .76f, .31f, 1) : new Color(.015f, .055f, .085f, 1);
+            ColorBlock colors = button.colors; colors.disabledColor = new Color(.45f, .45f, .45f, 1); button.colors = colors;
+            var outline = button.gameObject.AddComponent<Outline>();
+            outline.effectColor = new Color(.96f, .76f, .38f, primary ? 1 : .7f); outline.effectDistance = Vector2.one;
+            Text label = button.GetComponentInChildren<Text>(); label.fontSize = primary ? 32 : 25;
+            label.color = primary ? new Color(.025f, .065f, .085f) : ink;
+            if (primary) label.GetComponent<Shadow>().enabled = false;
+            return button;
         }
         private static RectTransform Rect(string name, Transform parent, Vector2 minimum, Vector2 maximum, Vector2 position, Vector2 size)
         {

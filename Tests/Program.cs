@@ -11,8 +11,15 @@ internal static class Program
     private static readonly string MazeJson = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "classic_reference.json"));
     private static int passed, failed;
     private static MazeDefinition Definition() => JsonSerializer.Deserialize<MazeDefinition>(MazeJson, Json);
-    private static GameSession Fresh(bool additions = false, uint seed = 42) => new GameSession(new MazeMap(Definition()), seed,
-        new RuleProfile { itemsEnabled = additions, movingWallsEnabled = additions, levelClearBonusEnabled = true }, false);
+    private static GameSession Fresh(bool additions = false, uint seed = 42)
+    {
+        var session = new GameSession(new MazeMap(Definition()), seed,
+            new RuleProfile { itemsEnabled = additions, movingWallsEnabled = additions, levelClearBonusEnabled = true }, false);
+        Hold(session); return session;
+    }
+    // Stationary rule fixtures isolate scoring, timers and contact from the automatic motor.
+    private static void Hold(GameSession session)
+    { var state = session.Snapshot(); state.autoMoving = false; state.queuedHeading = -1; Apply(session, state); }
     private static void Assert(bool condition, string message = "Assertion failed") { if (!condition) throw new Exception(message); }
     private static void Equal(double a, double b, double tolerance = 1e-7) => Assert(Math.Abs(a - b) <= tolerance, $"Expected {b}, got {a}");
     private static void Reject(Action action) { try { action(); } catch (ArgumentException) { return; } throw new Exception("Invalid data was accepted"); }
@@ -26,6 +33,7 @@ internal static class Program
     private static void Place(GameSession session, Point2 position, double yaw = 0)
     {
         SessionSnapshot state = session.Snapshot(); state.player = position; state.yaw = yaw; state.trail = new[] { position };
+        state.autoMoving = false; state.queuedHeading = -1;
         foreach (PursuerState p in state.pursuers) { p.life = PursuerLife.InHouse; p.releaseAt = 100000; }
         Apply(session, state);
     }
@@ -40,6 +48,15 @@ internal static class Program
     }
     private static int Main()
     {
+        Run("Item-use feedback identifies banana, oil and boost even during an existing boost", () => {
+            var session = Fresh(true); Place(session, new Point2(6, 5), 90);
+            foreach (ItemKind kind in new[] { ItemKind.SpeedBoost, ItemKind.BananaPeel, ItemKind.OilSlick })
+            {
+                var state = session.Snapshot(); state.inventory = kind; state.trail = new[] { new Point2(5.5, 5), new Point2(6, 5) }; Apply(session, state);
+                Assert(session.UseItem(), "Fixture could not use " + kind);
+                Assert(session.Events.Any(e => e.Kind == EventKind.ItemUsed && e.Actor == (int)kind), "Feedback misidentified " + kind);
+            }
+        });
         Run("Gait follows world distance across speed changes and freezes with simulation time", () => {
             var gait = new GaitClock(); gait.Update(0, 3.75);
             for (int i = 1; i <= 60; i++) gait.Update(i / 60.0, 3.75);
@@ -95,25 +112,83 @@ internal static class Program
             var d = Definition(); d.rows[0] = "#"; Reject(() => new MazeMap(d));
             d = Definition(); d.expectedSmallDots++; Reject(() => new MazeMap(d));
         });
-        Run("A03 tunnel preserves position offset, yaw, and movement", () => {
-            var s = Fresh(); Place(s, new Point2(-0.48, 14.08), 270); s.SetMovement(new Point2(0, 1)); s.Tick();
-            Assert(s.Player.x > 27.45 && s.Player.x < 27.5); Equal(s.Player.y, 14.08); Equal(s.Yaw, 270);
-            s.SetMovement(new Point2(0, -1)); s.Tick(); Assert(s.Player.x < -0.45);
+        Run("A03 tunnel wraps automatic centre-line movement in both directions", () => {
+            var s = Fresh(); Place(s, new Point2(-0.48, 14), 270); s.RequestTurn(RelativeTurn.Forward); s.Tick();
+            Assert(s.Player.x > 27.45 && s.Player.x < 27.5); Equal(s.Player.y, 14); Equal(s.Yaw, 270);
+            s.RequestTurn(RelativeTurn.Reverse); s.Tick(); Assert(s.Player.x < -0.45); Equal(s.Yaw, 90);
         });
-        Run("Free movement stops on release and cannot cross a wall", () => {
-            var s = Fresh(); Place(s, new Point2(13.5, 23)); s.SetMovement(new Point2(0, 1)); Advance(s, 120);
-            Assert(s.Player.y >= 22.75 && s.Player.y < 23); Assert(s.Maze.CanOccupy(s.Player));
-            Point2 stopped = s.Player; s.SetMovement(new Point2()); Advance(s, 60); Equal((s.Player - stopped).Length, 0);
+        Run("A04 a new game walks automatically and a wall stops it at the cell centre", () => {
+            var automatic = new GameSession(new MazeMap(Definition()), countdown: false);
+            Point2 before = automatic.Player; automatic.Tick(); Assert(automatic.Player.x < before.x && automatic.Pitch == 0);
+            var s = Fresh(); Place(s, new Point2(25, 5), 90); s.RequestTurn(RelativeTurn.Forward); Advance(s, 120);
+            Equal(s.Player.x, 26); Equal(s.Player.y, 5); Assert(s.Maze.CanOccupy(s.Player));
+            Point2 stopped = s.Player; Advance(s, 60); Equal((s.Player - stopped).Length, 0);
+            s.RequestTurn(RelativeTurn.Reverse); s.Tick(); Assert(s.Player.x < 26);
         });
-        Run("Analog diagonals do not move faster", () => {
-            var straight = Fresh(); var diagonal = Fresh();
-            Place(straight, new Point2(12, 5), 90); Place(diagonal, new Point2(12, 5), 90);
-            straight.SetMovement(new Point2(0, 1)); diagonal.SetMovement(new Point2(1, 1));
-            straight.Tick(); diagonal.Tick(); Equal((straight.Player - new Point2(12, 5)).Length, (diagonal.Player - new Point2(12, 5)).Length);
+        Run("A04 stick deflection issues one turn until released or another direction is selected", () => {
+            var latch = new JoystickTurnLatch();
+            Assert(latch.Read(new Point2(-.9, .1)) == RelativeTurn.Left);
+            for (int i = 0; i < 120; i++) Assert(latch.Read(new Point2(-1, 0)) == null);
+            Assert(latch.Read(new Point2(0, 1)) == RelativeTurn.Forward);
+            Assert(latch.Read(new Point2(0, .25)) == null);
+            Assert(latch.Read(new Point2()) == null);
+            Assert(latch.Read(new Point2(-.4, 0)) == RelativeTurn.Left);
+            Assert(latch.Read(new Point2(double.NaN, 0)) == null);
         });
-        Run("A04 updated input contract: small joystick magnitude gives proportional speed", () => {
-            var s = Fresh(); Place(s, new Point2(12, 5), 90); s.SetMovement(new Point2(0, 0.5)); s.Tick();
-            Equal(s.Player.x, 12 + LevelBalance.PlayerSpeed(1) * GameSession.FixedDelta * 0.5);
+        Run("A04 releasing the stick preserves full-speed automatic movement", () => {
+            var s = Fresh(); Place(s, new Point2(12, 5), 90); var latch = new JoystickTurnLatch();
+            s.RequestTurn(latch.Read(new Point2(0, .4)).Value); s.Tick();
+            Equal(s.Player.x, 12 + LevelBalance.PlayerSpeed(1) * GameSession.FixedDelta);
+            Assert(latch.Read(new Point2()) == null); Advance(s, 60);
+            Equal(s.Player.x, 12 + LevelBalance.PlayerSpeed(1) * GameSession.FixedDelta * 61); Equal(s.Player.y, 5);
+        });
+        Run("A04 queued left waits for the next legal junction and consumes the remaining movement budget", () => {
+            var map = new MazeMap(Definition()); var motor = new CorridorNavigation(); motor.Restore(1, -1, true);
+            motor.Request(RelativeTurn.Left);
+            Point2 position = motor.Advance(map, new Point2(10.25, 5), 2);
+            Equal(position.x, 12); Equal(position.y, 4.75); Assert(motor.Heading == 0 && motor.QueuedHeading == -1);
+            position = motor.Advance(map, position, .5); Equal(position.x, 12); Equal(position.y, 4.25);
+        });
+        Run("A04 newest command replaces a queued turn and forward cancels it", () => {
+            var map = new MazeMap(Definition()); var motor = new CorridorNavigation(); motor.Restore(1, -1, true);
+            motor.Request(RelativeTurn.Left); motor.Request(RelativeTurn.Right); Assert(motor.QueuedHeading == 2);
+            motor.Request(RelativeTurn.Forward); Assert(motor.QueuedHeading == 1);
+            Point2 position = motor.Advance(map, new Point2(7.25, 5), 2); Equal(position.x, 9.25); Equal(position.y, 5);
+            motor.Request(RelativeTurn.Reverse); position = motor.Advance(map, position, .1);
+            Equal(position.x, 9.15); Equal(position.y, 5); Assert(motor.Heading == 3 && motor.QueuedHeading == -1);
+        });
+        Run("A04 an automatic player waiting at a closed shortcut continues when it opens", () => {
+            var map = new MazeMap(Definition()); var motor = new CorridorNavigation(); motor.Restore(1, -1, true);
+            Point2 position = motor.Advance(map, new Point2(12, 1), .1); Equal(position.x, 12);
+            map.SetShortcut(0, true); position = motor.Advance(map, position, .1); Equal(position.x, 12.1);
+        });
+        Run("A14 shortcut retains the full navigation edge until the player reaches the exit centre", () => {
+            var s = Fresh(true); var state = s.Snapshot();
+            state.player = new Point2(14.83, 20); state.yaw = 90; state.autoMoving = true;
+            state.walls[2].phase = WallPhase.Open; state.walls[2].phaseUntil = 0;
+            foreach (var p in state.pursuers) { p.life = PursuerLife.InHouse; p.releaseAt = 10000; }
+            Apply(s, state); s.Tick(); Assert(s.Walls[2].phase == WallPhase.Open && s.PassageReserved(2));
+            Advance(s, 30); Assert(s.Player.x > 15 && s.Walls[2].phase == WallPhase.Closing);
+            Assert(CorridorNavigation.HasLegalPosition(s.Maze, s.Player, 1));
+        });
+        Run("A17 pause and JSON save preserve the queued turn and automatic motion", () => {
+            var s = Fresh(); Place(s, new Point2(10.25, 5), 90); s.RequestTurn(RelativeTurn.Left); s.Pause();
+            var state = JsonSerializer.Deserialize<SessionSnapshot>(JsonSerializer.Serialize(s.Snapshot(), Json), Json);
+            Advance(s, 120); Equal(s.Player.x, 10.25); Equal(s.Time, state.time);
+            var copy = Fresh(); copy.Restore(state); copy.Resume(.5); Advance(copy, 29); Equal(copy.Player.x, 10.25);
+            Advance(copy, 121); Assert(copy.Yaw == 0 && copy.Player.x == 12 && copy.Player.y < 5 && copy.Pitch == 0);
+        });
+        Run("A17 legacy free movement saves migrate to a legal centre line without losing progress", () => {
+            var s = Fresh(); var state = s.Snapshot(); state.version = 2; state.player = new Point2(7.25, 5.12); state.yaw = 76; state.pitch = 15;
+            state.score = 1230; state.time = 25; state.powerUntil = 29; state.boostUntil = 27;
+            Apply(s, state); Assert(s.Snapshot().version == 3 && s.Yaw == 90 && s.Pitch == 0 && s.AutoMoving);
+            Equal(s.Player.x, 7.25); Equal(s.Player.y, 5); Equal(s.Score, 1230); Equal(s.Time, 25);
+            Equal(s.PowerUntil, 29); Equal(s.BoostUntil, 27); Assert(s.RemainingHearts == state.remainingHearts);
+            string before = JsonSerializer.Serialize(s.Snapshot(), Json);
+            state = s.Snapshot(); state.player.y = 5.1; Reject(() => s.Restore(state));
+            state = s.Snapshot(); state.queuedHeading = 4; Reject(() => s.Restore(state));
+            state = s.Snapshot(); state.pitch = 1; Reject(() => s.Restore(state));
+            Assert(before == JsonSerializer.Serialize(s.Snapshot(), Json));
         });
         Run("Pursuer body blocks a corridor even at the player's maximum wall offset", () => {
             var s = Fresh(); Place(s, new Point2(5.76, 5));
@@ -186,9 +261,7 @@ internal static class Program
                 while (s.Phase == SessionPhase.Playing && (s.Maze.Near(target, s.Player) - s.Player).Length > 0.025)
                 {
                     Point2 difference = s.Maze.Near(target, s.Player) - s.Player;
-                    double speed = Math.Min(1, difference.Length / (s.PlayerSpeed * GameSession.FixedDelta));
-                    Point2 movement = difference.Normalized * speed;
-                    s.SetMovement(new Point2(movement.x, -movement.y)); s.Tick();
+                    s.RequestHeading(Math.Abs(difference.x) > Math.Abs(difference.y) ? (difference.x > 0 ? 1 : 3) : (difference.y > 0 ? 2 : 0)); s.Tick();
                     if (++ticks > 150000) throw new Exception("Traversal became stuck at " + s.Player + " toward " + target);
                     Assert(s.Maze.CanOccupy(s.Player), "Player entered a wall");
                 }
@@ -232,8 +305,8 @@ internal static class Program
             TrapState trap = s.Traps[0]; Equal(trap.position.x, 8); Equal(trap.position.y, 5);
             Equal(trap.landsAt, GameSession.BananaFlightDuration); Equal(trap.expiresAt - trap.landsAt, 20);
             Equal(trap.PositionAt(s.Maze, 0.18).x, 7);
-            s.SetMovement(new Point2(0, 1)); s.Tick(); Assert(s.Player.x > 6, "Throw locked player movement");
-            s.SetMovement(new Point2()); Advance(s, 1220); Assert(s.Traps.Count == 1);
+            s.RequestTurn(RelativeTurn.Forward); s.Tick(); Assert(s.Player.x > 6, "Throw locked player movement");
+            Hold(s); Advance(s, 1220); Assert(s.Traps.Count == 1);
             s.Tick(); Assert(s.Traps.Count == 0);
         });
         Run("Banana stops before a wall with clearance for its visible peel", () => {
@@ -273,7 +346,7 @@ internal static class Program
         Run("Build 2 version 1 saves migrate ground traps without replaying throws", () => {
             var s = Fresh(true); Place(s, new Point2(6, 5)); var state = s.Snapshot(); state.version = 1; state.nextTrapId = 1;
             state.traps = new[] { new TrapState { id = 1, kind = ItemKind.BananaPeel, position = new Point2(8, 5), expiresAt = 20 } };
-            Apply(s, state); Assert(s.Snapshot().version == 2 && s.Traps[0].FlightProgress(s.Time) == 1);
+            Apply(s, state); Assert(s.Snapshot().version == 3 && s.Traps[0].FlightProgress(s.Time) == 1);
             Equal(s.Traps[0].PositionAt(s.Maze, s.Time).x, 8); Equal(s.Traps[0].expiresAt, 20);
             Assert(state.version == 1 && state.traps[0].launchPosition.x == 0, "Restore modified source snapshot");
         });
@@ -284,7 +357,7 @@ internal static class Program
             state = s.Snapshot(); state.traps[0].launchPosition = new Point2(7, 4); Reject(() => s.Restore(state));
             state = s.Snapshot(); state.traps[0].kind = ItemKind.OilSlick; Reject(() => s.Restore(state));
             state = s.Snapshot(); state.traps[0].position = state.traps[0].launchPosition = new Point2(1e300, 14); Reject(() => s.Restore(state));
-            state = s.Snapshot(); state.version = 3; Reject(() => s.Restore(state));
+            state = s.Snapshot(); state.version = 4; Reject(() => s.Restore(state));
             Assert(before == JsonSerializer.Serialize(s.Snapshot(), Json));
         });
         Run("A throw through a shortcut reserves the passage until its landing trap expires", () => {
@@ -315,7 +388,7 @@ internal static class Program
         Run("A13 boost collects every crossed heart and is faster than threats", () => {
             var s = Fresh(true); Place(s, new Point2(1, 29), 90); var state = s.Snapshot(); state.inventory = ItemKind.SpeedBoost;
             Apply(s, state); Assert(s.UseItem()); Assert(s.PlayerSpeed > LevelBalance.PursuerSpeed(1));
-            s.SetMovement(new Point2(0, 1)); Advance(s, 180);
+            s.RequestTurn(RelativeTurn.Forward); Advance(s, 180);
             for (int x = 1; x <= 8; x++) Assert(s.Collected[s.Maze.Hearts.IndexOf(new Cell(x, 29))], "Skipped heart " + x);
         });
         Run("A13 swept contact detects actors exchanging sides", () => {
@@ -390,7 +463,7 @@ internal static class Program
         });
         Run("A18 same seed and inputs reproduce a full 60-second simulation", () => {
             var a = Fresh(true, 99); var b = Fresh(true, 99);
-            for (int i = 0; i < 3600; i++) { a.SetMovement(new Point2(0, i % 120 < 60 ? 0.7 : -0.7)); b.SetMovement(new Point2(0, i % 120 < 60 ? 0.7 : -0.7)); a.Tick(); b.Tick(); }
+            for (int i = 0; i < 3600; i++) { if (i % 60 == 0) { a.RequestTurn(RelativeTurn.Reverse); b.RequestTurn(RelativeTurn.Reverse); } a.Tick(); b.Tick(); }
             Assert(JsonSerializer.Serialize(a.Snapshot(), Json) == JsonSerializer.Serialize(b.Snapshot(), Json));
         });
         Run("A19 rendering at 30/60/120 fps produces identical fixed-tick state", () => {
@@ -432,7 +505,7 @@ internal static class Program
             Advance(s, 151); Equal(s.PursuerSpeed(s.Pursuers[0]), 1.5);
         });
         Run("Oil follows the actual movement trail rather than camera direction", () => {
-            var s = Fresh(true); Place(s, new Point2(6, 5), 90); s.SetMovement(new Point2(0, 1)); Advance(s, 30);
+            var s = Fresh(true); Place(s, new Point2(6, 5), 90); s.RequestTurn(RelativeTurn.Forward); Advance(s, 30);
             var state = s.Snapshot(); state.inventory = ItemKind.OilSlick; state.yaw = 270; Apply(s, state);
             Assert(s.UseItem()); Assert(s.Traps[0].position.x < s.Player.x); Equal(s.Player.x - s.Traps[0].position.x, 0.5, 0.01);
         });

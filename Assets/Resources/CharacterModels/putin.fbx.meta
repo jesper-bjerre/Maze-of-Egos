@@ -83,8 +83,8 @@ ModelImporter:
     clipAnimations:
     - serializedVersion: 16
       name: Chase
-      takeName: PutinPilotRig|Chase
-      internalID: 3802279469167205592
+      takeName: PutinRig|Chase
+      internalID: 7972018425957483949
       firstFrame: 0
       lastFrame: 40
       wrapMode: 2
@@ -112,8 +112,8 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Idle
-      takeName: PutinPilotRig|Idle
-      internalID: -7358348993638399168
+      takeName: PutinRig|Idle
+      internalID: 1151212085124777390
       firstFrame: 0
       lastFrame: 60
       wrapMode: 2
@@ -140,9 +140,67 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
+      name: Puff
+      takeName: PutinRig|Puff
+      internalID: -5977962020180095272
+      firstFrame: 0
+      lastFrame: 18
+      wrapMode: 8
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Recover
+      takeName: PutinRig|Recover
+      internalID: 133349828021053449
+      firstFrame: 0
+      lastFrame: 30
+      wrapMode: 8
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
       name: Return
-      takeName: PutinPilotRig|Return
-      internalID: -1956845510059166548
+      takeName: PutinRig|Return
+      internalID: -6857967624356871700
       firstFrame: 0
       lastFrame: 40
       wrapMode: 2
@@ -170,8 +228,8 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Slip
-      takeName: PutinPilotRig|Slip
-      internalID: 1745943406782099319
+      takeName: PutinRig|Slip
+      internalID: -1364846821634157003
       firstFrame: 0
       lastFrame: 36
       wrapMode: 8
@@ -199,8 +257,8 @@ ModelImporter:
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
       name: Surprise
-      takeName: PutinPilotRig|Surprise
-      internalID: 7831264983702653631
+      takeName: PutinRig|Surprise
+      internalID: -3921447665120542515
       firstFrame: 0
       lastFrame: 24
       wrapMode: 8

@@ -154,18 +154,18 @@ namespace MazeOfEgos.Runtime
         }
         // Invoked by GameApp before its normal fixed-tick simulation. It supplies
         // movement only: no teleporting, invulnerability, restored fixtures or frozen AI.
-        public static Vector2 ReadMovement(GameSession session, float delta)
+        public static void Drive(GameSession session, float delta)
         {
             DevelopmentPerformance run = instance;
-            if (!run || !run.timer.IsRunning || run.finished) return Vector2.zero;
+            if (!run || !run.timer.IsRunning || run.finished) return;
             if (session.Phase == SessionPhase.GameOver)
             {
                 run.app.NewGame(); run.rounds++; run.hasWaypoint = false;
                 run.lastGameplayProgress = run.timer.Elapsed.TotalSeconds;
                 run.previousHearts = run.app.Session.RemainingHearts; run.previousChances = run.app.Session.Chances;
-                return Vector2.zero;
+                return;
             }
-            if (session.Phase != SessionPhase.Playing) { run.hasWaypoint = false; return Vector2.zero; }
+            if (session.Phase != SessionPhase.Playing) { run.hasWaypoint = false; return; }
             if (session.Inventory != ItemKind.None && session.Time >= run.nextItemAttempt)
             {
                 if (session.UseItem()) { run.usedItems++; run.app.ProcessAutomationEvents(); }
@@ -180,12 +180,9 @@ namespace MazeOfEgos.Runtime
                 run.hasWaypoint = true;
             }
             Point2 difference = session.Maze.Near(run.waypoint, session.Player) - session.Player;
-            if (difference.Length < 1e-8) return Vector2.zero;
-            double yaw = Math.Atan2(difference.x, -difference.y) * 180 / Math.PI;
-            session.Yaw = Mathf.MoveTowardsAngle((float)session.Yaw, (float)yaw, 150 * delta);
-            session.Pitch = Math.Sin(session.Time * 0.3) * 8;
-            Point2 movement = difference.Normalized * Math.Min(1, difference.Length / Math.Max(0.001, session.PlayerSpeed * delta));
-            return new Vector2((float)Point2.Dot(movement, Point2.Right(session.Yaw)), (float)Point2.Dot(movement, Point2.Forward(session.Yaw)));
+            if (difference.Length < 1e-8) return;
+            int heading = Math.Abs(difference.x) > Math.Abs(difference.y) ? (difference.x > 0 ? 1 : 3) : (difference.y > 0 ? 2 : 0);
+            session.RequestHeading(heading);
         }
         private double nextItemAttempt;
         private Cell NextStep(GameSession session, Cell start)

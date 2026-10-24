@@ -1,5 +1,6 @@
 #if DEVELOPMENT_BUILD || UNITY_EDITOR
 using System;
+using System.Globalization;
 using System.Collections;
 using System.IO;
 using MazeOfEgos.Core;
@@ -27,6 +28,9 @@ namespace MazeOfEgos.Runtime
         }
         private void Start()
         {
+            // Exercise the English product on a Danish system locale too.
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("da-DK");
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("da-DK");
             Debug.Log("RUNTIME SMOKE ENABLED");
             string[] args = Environment.GetCommandLineArgs();
             int index = Array.IndexOf(args, "--maze-smoke-output");
@@ -60,7 +64,7 @@ namespace MazeOfEgos.Runtime
                 if (!more) break;
                 yield return next;
             }
-            File.WriteAllText(Path.Combine(output, "result.txt"), "PASS native rendering, portraits, menu, three-touch controls in both layouts, release, pause, settings, save/resume, banana flight/hand/landing, mid-flight save/resume, reduced motion, banana/oil visuals, shortcut signals/opening/reservation/closure, pursuer gates, rigged Putin chase/ground contact/pause/slip/power/return/profile/back, level transition, Game Over and replay.\nSynthetic touch and controlled scene fixtures; manual device testing, full rounds against AI and performance remain separate.\n");
+            File.WriteAllText(Path.Combine(output, "result.txt"), "PASS native rendering, supplied cover/right-side three-button menu, joystick/item controls in both layouts, automatic motion on release and fixed camera, pause, settings, save/resume, banana flight/hand/landing, mid-flight save/resume, reduced motion, banana/oil visuals, shortcut signals/opening/reservation/closure, pursuer gates, all four rigged pursuers: chase/ground contact/pause/slip/power/return/profile/back; hero celebration/throw rigs; help/privacy and graphics profiles; landscape orientation/safe area (mobile only), level transition, Game Over and replay.\nSynthetic touch and controlled scene fixtures; manual device testing, full rounds against AI and performance remain separate.\n");
             Debug.Log("RUNTIME SMOKE PASSED"); Application.Quit(0);
         }
         private IEnumerator Run()
@@ -68,17 +72,34 @@ namespace MazeOfEgos.Runtime
             yield return new WaitForSecondsRealtime(1);
             GameApp app = FindFirstObjectByType<GameApp>();
             Require(app && app.Session != null, "Application did not boot.");
+            Require(PlatformAudio.PlaybackPolicyActive, "iOS audio session does not allow sound with the Silent switch.");
             Require(GameObject.Find("Main menu"), "Main menu is missing.");
-            Require(FindObjectsByType<RawImage>(FindObjectsSortMode.None).Length == 5, "Five menu portraits were not rendered.");
+            RequireMainMenu();
+            app.Settings.highScore = 12345;
+            yield return null;
+
             foreach (Renderer renderer in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
                 foreach (Material material in renderer.sharedMaterials)
                     Require(material && material.shader && material.shader.isSupported && !material.shader.name.Contains("InternalError"), "Unsupported scene material.");
             screen = InputSystem.AddDevice<Touchscreen>();
             yield return new WaitForEndOfFrame(); Capture("01-menu.png");
-            Vector2 play = ButtonPosition("SPIL"); Touch(1, TouchPhase.Began, play);
+            Vector2 helpButton = ButtonPosition("HELP"); Touch(201, TouchPhase.Began, helpButton);
+            yield return new WaitForSecondsRealtime(.1f); Touch(201, TouchPhase.Ended, helpButton);
+            yield return new WaitForSecondsRealtime(.1f);
+            Require(GameObject.Find("Help and privacy"), "Help/privacy screen did not open.");
+            yield return new WaitForEndOfFrame(); Capture("20-help.png");
+            Vector2 helpBack = ButtonPosition("BACK"); Touch(202, TouchPhase.Began, helpBack);
+            yield return new WaitForSecondsRealtime(.1f); Touch(202, TouchPhase.Ended, helpBack);
+            yield return new WaitForSecondsRealtime(.1f); RequireMainMenu();
+            IEnumerator orientationSteps = CheckOrientations();
+            while (orientationSteps.MoveNext()) yield return orientationSteps.Current;
+            GraphicsProfile.Apply(true); yield return null;
+            Require(((UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset)UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline).renderScale == .75f, "Economy profile did not apply.");
+            GraphicsProfile.Apply(false);
+            Vector2 play = ButtonPosition("PLAY"); Touch(1, TouchPhase.Began, play);
             yield return new WaitForSecondsRealtime(0.1f); Touch(1, TouchPhase.Ended, play);
             yield return new WaitForSecondsRealtime(3.6f);
-            Require(app.Session.Phase == SessionPhase.Playing && !GameObject.Find("Main menu"), "Touch on SPIL did not start gameplay.");
+            Require(app.Session.Phase == SessionPhase.Playing && !GameObject.Find("Main menu"), "Touch on PLAY did not start gameplay.");
 
             // A controlled fixture gives an item and delays threats while testing the actual UI/input pipeline.
             SessionSnapshot fixture = app.Session.Snapshot(); fixture.inventory = ItemKind.SpeedBoost;
@@ -95,7 +116,7 @@ namespace MazeOfEgos.Runtime
             yield return new WaitForSecondsRealtime(0.1f);
             Touch(3, TouchPhase.Moved, look + Vector2.right * (30 * scale));
             yield return new WaitForSecondsRealtime(0.1f);
-            Require(joystick.Movement.sqrMagnitude > 0.1f && Math.Abs(app.Session.Yaw - yaw) > 1, "Simultaneous movement and look failed.");
+            Require(joystick.Movement.sqrMagnitude > 0.1f && app.Session.Yaw == yaw && app.Session.Pitch == 0, "Automatic movement or fixed camera failed.");
             double afterLook = app.Session.Yaw;
             Vector2 use = ButtonPosition("", "BOOST"); Touch(4, TouchPhase.Began, use);
             yield return new WaitForSecondsRealtime(0.1f); Touch(4, TouchPhase.Ended, use);
@@ -111,7 +132,7 @@ namespace MazeOfEgos.Runtime
             Touch(2, TouchPhase.Ended, joyUp); Touch(3, TouchPhase.Ended, look + Vector2.right * (30 * scale));
             yield return new WaitForSecondsRealtime(0.15f); Point2 stopped = app.Session.Player;
             yield return new WaitForSecondsRealtime(0.2f);
-            Require(joystick.Movement == Vector2.zero && (app.Session.Player - stopped).Length < 0.001, "Release did not stop the player.");
+            Require(joystick.Movement == Vector2.zero && (app.Session.Player - stopped).Length > .1, "Releasing the stick stopped automatic movement.");
             RequireHud(app.Session);
             yield return new WaitForEndOfFrame(); Capture("02-gameplay.png");
 
@@ -119,40 +140,42 @@ namespace MazeOfEgos.Runtime
             yield return new WaitForSecondsRealtime(0.1f); Touch(5, TouchPhase.Ended, pause);
             yield return new WaitForSecondsRealtime(0.15f); double pausedAt = app.Session.Time;
             Require(app.Session.Phase == SessionPhase.Paused, "Pause button failed.");
+            stopped = app.Session.Player;
             yield return new WaitForSecondsRealtime(0.3f);
             Require(app.Session.Time == pausedAt, "Paused simulation advanced.");
-            Vector2 settings = ButtonPosition("INDSTILLINGER"); Touch(6, TouchPhase.Began, settings);
+            Vector2 settings = ButtonPosition("SETTINGS"); Touch(6, TouchPhase.Began, settings);
             yield return new WaitForSecondsRealtime(0.1f); Touch(6, TouchPhase.Ended, settings);
             yield return new WaitForSecondsRealtime(0.2f);
             Require(GameObject.Find("Settings"), "Settings did not open.");
             yield return new WaitForEndOfFrame(); Capture("03-settings.png");
-            Vector2 sound = ButtonPosition("", "Lyd:"); bool wasSound = app.Settings.sound;
+            Vector2 sound = ButtonPosition("", "Sound:"); bool wasSound = app.Settings.sound;
             Touch(7, TouchPhase.Began, sound);
             yield return new WaitForSecondsRealtime(0.1f); Touch(7, TouchPhase.Ended, sound);
             yield return new WaitForSecondsRealtime(0.15f);
             Require(app.Settings.sound != wasSound, "Settings touch did not change sound.");
-            Vector2 back = ButtonPosition("TILBAGE"); Touch(8, TouchPhase.Began, back);
+            Vector2 back = ButtonPosition("BACK"); Touch(8, TouchPhase.Began, back);
             yield return new WaitForSecondsRealtime(0.1f); Touch(8, TouchPhase.Ended, back);
             yield return new WaitForSecondsRealtime(0.15f);
-            Vector2 menu = ButtonPosition("HOVEDMENU"); Touch(9, TouchPhase.Began, menu);
+            Vector2 menu = ButtonPosition("MAIN MENU"); Touch(9, TouchPhase.Began, menu);
             yield return new WaitForSecondsRealtime(0.1f); Touch(9, TouchPhase.Ended, menu);
             yield return new WaitForSecondsRealtime(0.15f);
             Require(app.HasSavedGame, "Pause/menu did not save the run.");
-            Vector2 resume = ButtonPosition("FORTSÆT GEMT SPIL"); Touch(10, TouchPhase.Began, resume);
+            RequireMainMenu(); yield return new WaitForEndOfFrame(); Capture("42-menu-saved.png");
+            Vector2 resume = ButtonPosition("CONTINUE SAVED GAME"); Touch(10, TouchPhase.Began, resume);
             yield return new WaitForSecondsRealtime(0.1f); Touch(10, TouchPhase.Ended, resume);
             yield return new WaitForSecondsRealtime(0.15f);
             Require(app.Session.Phase == SessionPhase.Paused && app.Session.Time == pausedAt && (app.Session.Player - stopped).Length < 0.001, "Saved game did not restore paused at the same position/time.");
             Require(File.Exists(Path.Combine(StorageDirectory, "session-v1.json")), "No snapshot was written.");
 
             // Change the layout through the actual settings button and repeat all three touches.
-            Vector2 mirroredSettings = ButtonPosition("INDSTILLINGER"); Touch(11, TouchPhase.Began, mirroredSettings);
+            Vector2 mirroredSettings = ButtonPosition("SETTINGS"); Touch(11, TouchPhase.Began, mirroredSettings);
             yield return new WaitForSecondsRealtime(0.1f); Touch(11, TouchPhase.Ended, mirroredSettings);
             yield return new WaitForSecondsRealtime(0.1f);
-            Vector2 handedness = ButtonPosition("", "Venstrehåndslayout:"); Touch(12, TouchPhase.Began, handedness);
+            Vector2 handedness = ButtonPosition("", "Left-handed layout:"); Touch(12, TouchPhase.Began, handedness);
             yield return new WaitForSecondsRealtime(0.1f); Touch(12, TouchPhase.Ended, handedness);
             yield return new WaitForSecondsRealtime(0.1f);
             Require(app.Settings.leftHanded, "Left-handed setting did not change.");
-            back = ButtonPosition("TILBAGE"); Touch(13, TouchPhase.Began, back);
+            back = ButtonPosition("BACK"); Touch(13, TouchPhase.Began, back);
             yield return new WaitForSecondsRealtime(0.1f); Touch(13, TouchPhase.Ended, back);
             yield return new WaitForSecondsRealtime(0.1f);
             InstallFixture(app, ItemKind.BananaPeel, new Point2(6, 5), 90);
@@ -165,7 +188,7 @@ namespace MazeOfEgos.Runtime
             yield return new WaitForSecondsRealtime(0.1f);
             Touch(15, TouchPhase.Moved, look + Vector2.right * (20 * scale));
             yield return new WaitForSecondsRealtime(0.1f);
-            Require(joystick.Movement.sqrMagnitude > 0.1f && Math.Abs(app.Session.Yaw - yaw) > 1, "Mirrored movement/look failed.");
+            Require(joystick.Movement.sqrMagnitude > 0.1f && app.Session.Yaw == yaw && app.Session.Pitch == 0, "Mirrored automatic movement/fixed camera failed.");
             afterLook = app.Session.Yaw; use = ButtonPosition("Use item");
             Require(use.x < Screen.width * 0.5f, "Item button did not move to the left.");
             Touch(16, TouchPhase.Began, use);
@@ -176,12 +199,35 @@ namespace MazeOfEgos.Runtime
                 "Mirrored item touch interfered with movement/look.");
             Touch(14, TouchPhase.Ended, joyUp); Touch(15, TouchPhase.Ended, look + Vector2.right * (20 * scale));
             yield return new WaitForSecondsRealtime(0.1f);
-            Require(joystick.Movement == Vector2.zero, "Mirrored joystick did not stop on release.");
+            Require(joystick.Movement == Vector2.zero, "Mirrored joystick did not return to centre on release.");
             yield return new WaitForEndOfFrame(); Capture("04-left-handed.png");
 
             // The simulation clock drives the flight and hand as well as the trap.
             IEnumerator handednessSteps = ChangeHandedness(app, false);
             while (handednessSteps.MoveNext()) yield return handednessSteps.Current;
+            // A real touch requests one left turn before the junction. Release must preserve it.
+            InstallFixture(app, ItemKind.None, new Point2(10.25, 5), 90);
+            yield return null;
+            joy = RectTransformUtility.WorldToScreenPoint(null, joystick.transform.position);
+            Vector2 joyLeft = joy + Vector2.left * (70 * scale);
+            Touch(40, TouchPhase.Began, joyLeft); yield return new WaitForSecondsRealtime(.1f);
+            Touch(40, TouchPhase.Ended, joyLeft); yield return new WaitForSecondsRealtime(.1f);
+            Require(app.Session.QueuedHeading == 0 && app.Session.Yaw == 90 && app.Session.Player.y == 5,
+                "Left touch did not queue the relative turn before the junction.");
+            deadline = Time.realtimeSinceStartup + 5;
+            while (app.Session.Player.y > 4.75 && Time.realtimeSinceStartup < deadline) yield return null;
+            Require(app.Session.Yaw == 0 && app.Session.Player.x == 12 && app.Session.Player.y < 4.75 && app.Session.QueuedHeading == -1,
+                "Queued left turn failed to execute on the corridor centre line after release.");
+            yield return new WaitForEndOfFrame(); Capture("41-automatic-turn.png");
+            InstallFixture(app, ItemKind.None, new Point2(25.8, 5), 90);
+            app.Session.RequestTurn(RelativeTurn.Forward); yield return new WaitForSecondsRealtime(.5f);
+            Require(app.Session.Player.x == 26 && app.Session.Player.y == 5, "Automatic player did not stop at the wall centre.");
+            // Check all life symbols, including the fourth extra life and zero at Game Over.
+            foreach (int lives in new[] { 4, 2, 0, 3 })
+            {
+                var lifeState = app.Session.Snapshot(); lifeState.chances = lives;
+                app.Session.Restore(lifeState); app.Session.Resume(0); yield return null; RequireHud(app.Session);
+            }
             InstallFixture(app, ItemKind.BananaPeel, new Point2(6, 5), 90);
             yield return null;
             app.UseItem(); TrapState flight = app.Session.Traps[0];
@@ -190,7 +236,7 @@ namespace MazeOfEgos.Runtime
             Require(app.Session.Time < flight.landsAt, "Banana flight was not visible before landing.");
             yield return new WaitForEndOfFrame(); Capture("11-banana-flight.png");
             Transform flyingMesh = GameObject.Find("Banana peel").transform.parent;
-            Transform hand = GameObject.Find("Zelenskyj throwing hand (prototype)").transform;
+            Transform hand = GameObject.Find("Zelenskyy throwing hand").transform;
             Require(flyingMesh.position.y > 0.4f && hand, "Flight/hand geometry was not visible.");
             Camera firstPerson = hand.GetComponentInParent<Camera>(); float fieldOfView = firstPerson.fieldOfView;
             Require(firstPerson.WorldToViewportPoint(hand.position).x > 0.5f, "Standard layout used the wrong throwing hand.");
@@ -208,7 +254,7 @@ namespace MazeOfEgos.Runtime
             deadline = Time.realtimeSinceStartup + 5;
             while ((app.Session.Phase != SessionPhase.Playing || app.Session.Time < flight.landsAt + 0.1) && Time.realtimeSinceStartup < deadline) yield return null;
             Require(app.Session.Traps.Count == 1 && Math.Abs(flyingMesh.position.y) < 0.001 &&
-                !GameObject.Find("Zelenskyj throwing hand (prototype)"), "Banana did not settle on the floor after resume.");
+                !GameObject.Find("Zelenskyy throwing hand"), "Banana did not settle on the floor after resume.");
             Require(Math.Abs(firstPerson.fieldOfView - fieldOfView) < 0.001, "Throw changed the camera FOV.");
             yield return new WaitForEndOfFrame(); Capture("12-banana-landed.png");
 
@@ -222,7 +268,7 @@ namespace MazeOfEgos.Runtime
             while (flight.FlightProgress(app.Session.Time) < 0.33 && Time.realtimeSinceStartup < deadline) yield return null;
             yield return new WaitForEndOfFrame(); Capture("13-banana-reduced-motion.png");
             flyingMesh = GameObject.Find("Banana peel").transform.parent;
-            hand = GameObject.Find("Zelenskyj throwing hand (prototype)").transform;
+            hand = GameObject.Find("Zelenskyy throwing hand").transform;
             Require(app.Session.Time < flight.landsAt && Quaternion.Angle(flyingMesh.rotation, Quaternion.identity) < 0.01f &&
                 firstPerson.WorldToViewportPoint(hand.position).x < 0.5f, "Reduced-motion throw spun or used the wrong hand.");
             app.Settings.reducedMotion = false;
@@ -235,7 +281,7 @@ namespace MazeOfEgos.Runtime
             yield return new WaitForSecondsRealtime(0.15f);
             Require(app.Session.Inventory == ItemKind.None && app.Session.Traps.Count == 1 && app.Session.Traps[0].kind == ItemKind.OilSlick, "Oil button failed.");
             Require(GameObject.Find("Oil slick"), "Oil pool did not appear.");
-            SessionSnapshot gallery = app.Session.Snapshot(); gallery.player = new Point2(6, 5); gallery.yaw = 90; gallery.pitch = -12;
+            SessionSnapshot gallery = app.Session.Snapshot(); gallery.player = new Point2(6, 5); gallery.yaw = 90; gallery.pitch = 0;
             gallery.traps = new[] {
                 new TrapState { id = 100, kind = ItemKind.BananaPeel, position = new Point2(7.5, 5), expiresAt = gallery.time + 30 },
                 new TrapState { id = 101, kind = ItemKind.OilSlick, position = new Point2(9, 5), expiresAt = gallery.time + 30 } };
@@ -247,7 +293,7 @@ namespace MazeOfEgos.Runtime
 
             InstallFixture(app, ItemKind.None, new Point2(11, 1), 90);
             SessionSnapshot shortcut = app.Session.Snapshot(); shortcut.nextWallAttempt = shortcut.time + 999;
-            shortcut.pitch = -10;
+            shortcut.pitch = 0;
             shortcut.walls[0].phase = WallPhase.Warning; shortcut.walls[0].phaseUntil = shortcut.time + 0.5;
             app.Session.Restore(shortcut); app.Session.Resume(0);
             yield return new WaitForSecondsRealtime(0.2f);
@@ -283,8 +329,11 @@ namespace MazeOfEgos.Runtime
             yield return new WaitForSecondsRealtime(0.6f);
             Require(Mathf.Abs(Mathf.DeltaAngle(GameObject.Find("Pursuer gate 0").transform.localEulerAngles.y, 0)) < 1, "Pursuer gate did not close.");
 
-            IEnumerator characterSteps = CheckCharacter(app);
-            while (characterSteps.MoveNext()) yield return characterSteps.Current;
+            for (int character = 0; character < 4; character++)
+            {
+                IEnumerator characterSteps = CheckCharacter(app, character);
+                while (characterSteps.MoveNext()) yield return characterSteps.Current;
+            }
 
             InstallFixture(app, ItemKind.None, new Point2(1, 29), 90);
             SessionSnapshot ending = app.Session.Snapshot(); ending.score = 0;
@@ -294,6 +343,8 @@ namespace MazeOfEgos.Runtime
             yield return new WaitForSecondsRealtime(0.15f);
             Require(app.Session.Phase == SessionPhase.LevelClear && app.Session.RemainingHearts == 0 && app.Session.Score == 1010,
                 "Last-heart scene did not clear with the correct score.");
+            Require(GameObject.Find("Hero celebration").GetComponent<RawImage>().texture is RenderTexture,
+                "Hero celebration was removed together with the menu portrait.");
             yield return new WaitForEndOfFrame(); Capture("09-level-clear.png");
             deadline = Time.realtimeSinceStartup + 7;
             while ((app.Session.Level != 2 || app.Session.Phase != SessionPhase.Playing) && Time.realtimeSinceStartup < deadline) yield return null;
@@ -310,9 +361,9 @@ namespace MazeOfEgos.Runtime
             yield return null;
             Require(app.Session.Phase == SessionPhase.GameOver && app.Session.Chances == 0 && GameObject.Find("Game Over") && !app.HasSavedGame,
                 "Final capture did not show Game Over and clear the saved run.");
-            RequireVisibleText("SLUT FOR NU\nPoint: " + app.Session.Score.ToString("N0") + " · Level " + app.Session.Level + "\nRekord: " + app.Settings.highScore.ToString("N0"));
+            RequireVisibleText("GAME OVER\nScore: " + app.Session.Score.ToString("N0", CultureInfo.InvariantCulture) + " · Level " + app.Session.Level + "\nBest: " + app.Settings.highScore.ToString("N0", CultureInfo.InvariantCulture));
             yield return new WaitForEndOfFrame(); Capture("10-game-over.png");
-            Vector2 replay = ButtonPosition("SPIL IGEN"); Touch(18, TouchPhase.Began, replay);
+            Vector2 replay = ButtonPosition("PLAY AGAIN"); Touch(18, TouchPhase.Began, replay);
             yield return new WaitForSecondsRealtime(0.1f); Touch(18, TouchPhase.Ended, replay);
             yield return new WaitForSecondsRealtime(3.6f);
             Require(app.Session.Phase == SessionPhase.Playing && app.Session.Level == 1 && app.Session.Score == 0 && app.Session.Chances == 3 && app.Session.RemainingHearts == 244,
@@ -323,8 +374,12 @@ namespace MazeOfEgos.Runtime
                 Require(File.Exists(Path.Combine(output, name)), "Screenshot was not written: " + name);
             InputSystem.RemoveDevice(screen);
         }
-        private IEnumerator CheckCharacter(GameApp app)
+        private IEnumerator CheckCharacter(GameApp app, int index)
         {
+            string[] ids = { "putin", "xi", "kim", "trump" };
+            string id = ids[index], name = CharacterRoster.Get(id).displayName;
+            string rootName = index == 0 ? "Putin imported pilot" : name + " imported character";
+            string prefix = index == 0 ? "" : (21 + (index - 1) * 6).ToString() + "-";
             bool originalMotion = app.Settings.reducedMotion; app.Settings.reducedMotion = false;
             InstallFixture(app, ItemKind.None, new Point2(6, 5), 90);
             SessionSnapshot fixture = app.Session.Snapshot();
@@ -336,17 +391,17 @@ namespace MazeOfEgos.Runtime
                 if (cell.y == 5 && cell.x >= 4 && cell.x <= 11) fixture.collected[i] = true;
                 if (!fixture.collected[i]) fixture.remainingHearts++;
             }
-            PursuerState putin = fixture.pursuers[0]; putin.life = PursuerLife.Active;
+            PursuerState putin = fixture.pursuers[index]; putin.life = PursuerLife.Active;
             putin.from = new Cell(10, 5); putin.to = new Cell(9, 5); putin.progress = .4;
             putin.releaseAt = putin.stunUntil = putin.oilUntil = 0;
             app.Session.Restore(fixture); app.Session.Resume(0);
             yield return new WaitForSecondsRealtime(.2f);
-            Transform avatar = GameObject.Find("Putin imported pilot").transform;
+            Transform avatar = GameObject.Find(rootName).transform;
             SkinnedMeshRenderer skin = avatar.GetComponentInChildren<SkinnedMeshRenderer>();
             Require(skin && skin.bones.Length >= 17 && skin.sharedMesh, "Imported Putin rig/skin is missing.");
             Require(skin.bounds.size.y > 1.6f && skin.bounds.size.y < 2.4f, "Putin world scale is incorrect: " + skin.bounds.size);
             Animation animation = skin.GetComponentInParent<Animation>();
-            foreach (string clip in new[] { "Idle", "Chase", "Surprise", "Slip", "Return" })
+            foreach (string clip in new[] { "Idle", "Chase", "Surprise", "Slip", "Return", "Puff", "Recover" })
                 Require(animation && animation[clip] != null && animation[clip].length > .1f, "Missing Putin clip " + clip);
             Transform facing = Array.Find(avatar.GetComponentsInChildren<Transform>(), t => t.name == "FacingForward");
             Vector3 forward = (facing.position - animation.transform.position).normalized;
@@ -371,9 +426,17 @@ namespace MazeOfEgos.Runtime
             }
             Require(contactSamples >= 4 && contactError < .015f && liftedFoot,
                 "Imported gait lost planted/swing foot contact: samples=" + contactSamples + ", error=" + contactError);
-            File.WriteAllText(Path.Combine(output, "character-check.json"), JsonUtility.ToJson(new CharacterCheck {
+            File.WriteAllText(Path.Combine(output, id + "-character-check.json"), JsonUtility.ToJson(new CharacterCheck {
                 groundSamples = contactSamples, maxAnkleContactErrorMeters = contactError, swingFootObserved = liftedFoot }, true));
-            yield return new WaitForEndOfFrame(); Capture("14-putin-chase.png");
+            // Reframe after gait measurement: AI roles may turn at different junctions.
+            fixture = app.Session.Snapshot();
+            fixture.pursuers[index].from = new Cell(10, 5); fixture.pursuers[index].to = new Cell(9, 5); fixture.pursuers[index].progress = .4;
+            app.Session.Restore(fixture); app.Session.Resume(0); app.SynchronizeAutomationPresentation();
+            yield return null;
+            Camera camera = GameObject.Find("First person camera").GetComponent<Camera>();
+            Vector3 screenPoint = camera.WorldToViewportPoint(skin.bounds.center);
+            Require(screenPoint.z > 0 && screenPoint.x > .1f && screenPoint.x < .9f && app.Session.Maze.HasLineOfSight(app.Session.Player, app.Session.Pursuers[index].Position(app.Session.Maze)), "Review character is outside the visible corridor: " + id);
+            yield return new WaitForEndOfFrame(); Capture(index == 0 ? "14-putin-chase.png" : prefix + id + "-chase.png");
             app.Session.Pause();
             yield return null;
             skin.BakeMesh(baked); before = baked.vertices; Vector3 root = avatar.position;
@@ -382,49 +445,49 @@ namespace MazeOfEgos.Runtime
             Require(VertexDifference(before, baked.vertices) < .00001f && Vector3.Distance(root, avatar.position) < .00001f,
                 "Paused Putin skeleton or root moved.");
             app.Session.Resume(0);
-            fixture = app.Session.Snapshot(); fixture.pursuers[0].stunUntil = fixture.time + 4;
+            fixture = app.Session.Snapshot(); fixture.pursuers[index].stunUntil = fixture.time + 4;
             app.Session.Restore(fixture); app.Session.Resume(0);
             yield return new WaitForSecondsRealtime(.15f);
             skin.BakeMesh(baked); Vector3[] slip = baked.vertices;
             Require(VertexDifference(before, slip) > .01f, "Slip did not change the skeletal pose.");
-            yield return new WaitForEndOfFrame(); Capture("15-putin-slip.png");
+            yield return new WaitForEndOfFrame(); Capture(index == 0 ? "15-putin-slip.png" : prefix + id + "-slip.png");
             app.Settings.reducedMotion = true;
             yield return null;
             skin.BakeMesh(baked); before = baked.vertices;
             yield return new WaitForSecondsRealtime(.15f);
             skin.BakeMesh(baked);
             Require(VertexDifference(before, baked.vertices) < .00001f, "Reduced-motion slip still wobbled.");
-            fixture = app.Session.Snapshot(); fixture.pursuers[0].stunUntil = 0;
+            fixture = app.Session.Snapshot(); fixture.pursuers[index].stunUntil = 0;
             fixture.powerUntil = fixture.time + 5; fixture.powerId++;
             app.Settings.reducedMotion = false;
             app.Session.Restore(fixture); app.Session.Resume(0);
             yield return new WaitForSecondsRealtime(.15f);
             MaterialPropertyBlock tint = new MaterialPropertyBlock(); bool blueSuit = false;
             for (int i = 0; i < skin.sharedMaterials.Length; i++)
-                if (skin.sharedMaterials[i].name == "Putin-SuitNavy")
+                if (skin.sharedMaterials[i].name == name + "-SuitNavy")
                 { skin.GetPropertyBlock(tint, i); blueSuit = tint.GetColor("_BaseColor").b > .8f; }
             Require(blueSuit, "Power did not tint Putin's suit.");
-            yield return new WaitForEndOfFrame(); Capture("16-putin-power.png");
-            fixture = app.Session.Snapshot(); fixture.pursuers[0].life = PursuerLife.Returning;
+            yield return new WaitForEndOfFrame(); Capture(index == 0 ? "16-putin-power.png" : prefix + id + "-power.png");
+            fixture = app.Session.Snapshot(); fixture.pursuers[index].life = PursuerLife.Returning;
             app.Session.Restore(fixture); app.Session.Resume(0);
             yield return new WaitForSecondsRealtime(.1f);
             Require(Math.Abs(avatar.localScale.x - .38f) < .001f && avatar.Find("Return bubble").gameObject.activeSelf,
                 "Return did not miniaturise the imported model with its bubble.");
-            yield return new WaitForEndOfFrame(); Capture("17-putin-return.png");
+            yield return new WaitForEndOfFrame(); Capture(index == 0 ? "17-putin-return.png" : prefix + id + "-return.png");
             // Held, controlled idle poses provide comparable native profile/back views.
             InstallFixture(app, ItemKind.None, new Point2(4, 5), 90);
-            fixture = app.Session.Snapshot(); putin = fixture.pursuers[0];
+            fixture = app.Session.Snapshot(); putin = fixture.pursuers[index];
             putin.life = PursuerLife.Recovering; putin.recoverUntil = fixture.time + 120;
             putin.stunUntil = putin.oilUntil = 0;
             putin.from = new Cell(6, 4); putin.to = new Cell(6, 5); putin.progress = 1;
             app.Session.Restore(fixture); app.Session.Resume(0);
             yield return new WaitForSecondsRealtime(.1f);
             Require(animation["Idle"].weight > .5f, "Recovered character kept its earlier surprise pose.");
-            yield return new WaitForEndOfFrame(); Capture("18-putin-profile.png");
-            fixture = app.Session.Snapshot(); fixture.pursuers[0].from = new Cell(5, 5);
+            yield return new WaitForEndOfFrame(); Capture(index == 0 ? "18-putin-profile.png" : prefix + id + "-profile.png");
+            fixture = app.Session.Snapshot(); fixture.pursuers[index].from = new Cell(5, 5);
             app.Session.Restore(fixture); app.Session.Resume(0);
             yield return new WaitForSecondsRealtime(.1f);
-            yield return new WaitForEndOfFrame(); Capture("19-putin-back.png");
+            yield return new WaitForEndOfFrame(); Capture(index == 0 ? "19-putin-back.png" : prefix + id + "-back.png");
             app.Settings.reducedMotion = originalMotion; Destroy(baked);
         }
         [Serializable] private sealed class CharacterCheck
@@ -444,24 +507,48 @@ namespace MazeOfEgos.Runtime
         {
             SessionSnapshot state = app.Session.Snapshot(); state.phase = state.resumePhase = SessionPhase.Playing;
             state.phaseRemaining = state.savedPhaseRemaining = 0; state.player = position; state.yaw = yaw; state.pitch = 0;
+            state.autoMoving = false; state.queuedHeading = -1;
             state.inventory = item; state.boostUntil = state.powerUntil = state.time;
             state.trail = new[] { position - Point2.Forward(yaw) * 0.5, position }; state.traps = Array.Empty<TrapState>();
             for (int i = 0; i < state.itemAvailable.Length; i++) state.itemAvailable[i] = false;
-            foreach (PursuerState pursuer in state.pursuers) { pursuer.releaseAt = state.time + 120; pursuer.stunUntil = state.time + 120; }
+            var fresh = new GameSession(app.Session.Maze);
+            for (int i = 0; i < state.pursuers.Length; i++)
+            { state.pursuers[i] = fresh.Pursuers[i].Copy(); state.pursuers[i].life = PursuerLife.InHouse; state.pursuers[i].releaseAt = state.time + 120; state.pursuers[i].stunUntil = state.time + 120; }
             foreach (WallState wall in state.walls) { wall.phase = WallPhase.Closed; wall.phaseUntil = 0; }
             state.nextWallAttempt = state.time + 999;
-            app.Session.Restore(state); app.Session.Resume(0);
+            app.Session.Restore(state); app.Session.Resume(0); app.SynchronizeAutomationPresentation();
         }
         private void Touch(int id, TouchPhase phase, Vector2 position)
         {
             InputSystem.QueueStateEvent(screen, new TouchState { touchId = id, phase = phase, position = position, pressure = 1 });
+        }
+        private IEnumerator CheckOrientations()
+        {
+            if (!Application.isMobilePlatform) yield break;
+            foreach (ScreenOrientation orientation in new[] { ScreenOrientation.LandscapeLeft, ScreenOrientation.LandscapeRight })
+            {
+                Screen.orientation = orientation;
+                float until = Time.realtimeSinceStartup + 8;
+                while (Screen.orientation != orientation && Time.realtimeSinceStartup < until) yield return null;
+                yield return new WaitForSecondsRealtime(.6f);
+                Require(Screen.orientation == orientation && Screen.width > Screen.height, "Physical orientation did not settle: " + orientation);
+                Canvas.ForceUpdateCanvases();
+                RectTransform safe = GameObject.Find("Safe area").GetComponent<RectTransform>();
+                Vector3[] corners = new Vector3[4]; safe.GetWorldCorners(corners);
+                Rect area = Screen.safeArea;
+                Require(Mathf.Abs(corners[0].x - area.xMin) < 2 && Mathf.Abs(corners[2].x - area.xMax) < 2 &&
+                    Mathf.Abs(corners[0].y - area.yMin) < 2 && Mathf.Abs(corners[2].y - area.yMax) < 2, "Safe area did not track physical orientation.");
+                RequireMainMenu();
+                yield return new WaitForEndOfFrame(); Capture("orientation-" + orientation + ".png");
+            }
+            Screen.orientation = ScreenOrientation.AutoRotation;
         }
         private IEnumerator ChangeHandedness(GameApp app, bool left)
         {
             if (app.Settings.leftHanded == left) yield break;
             app.TogglePause();
             yield return new WaitForSecondsRealtime(0.1f); // HUD constructs the pause controls on its next update.
-            foreach (string label in new[] { "INDSTILLINGER", "Venstrehåndslayout:", "TILBAGE" })
+            foreach (string label in new[] { "SETTINGS", "Left-handed layout:", "BACK" })
             {
                 Vector2 button = label.EndsWith(":", StringComparison.Ordinal) ? ButtonPosition("", label) : ButtonPosition(label);
                 Touch(200, TouchPhase.Began, button);
@@ -470,6 +557,32 @@ namespace MazeOfEgos.Runtime
             }
             Require(app.Settings.leftHanded == left, "Handedness did not change through the settings UI.");
             app.TogglePause(); // Also dismiss the restored-game toast as a real resume does.
+        }
+        private static void RequireMainMenu()
+        {
+            GameObject menu = GameObject.Find("Main menu"); Require(menu, "Main menu is missing.");
+            Button[] buttons = menu.GetComponentsInChildren<Button>();
+            Require(buttons.Length == 3, "The start menu must have exactly three actions.");
+            string[] names = { "PLAY", "CONTINUE SAVED GAME", "HELP" };
+            float previousY = float.PositiveInfinity;
+            foreach (string name in names)
+            {
+                Button button = Array.Find(buttons, b => b.name == name);
+                Require(button, "Missing start action: " + name);
+                var corners = new Vector3[4]; ((RectTransform)button.transform).GetWorldCorners(corners);
+                Rect safe = Screen.safeArea;
+                Require(corners[0].x >= Screen.width * .6f && corners[0].x >= safe.xMin && corners[2].x <= safe.xMax &&
+                    corners[0].y >= safe.yMin && corners[2].y <= safe.yMax, "Start action is outside the dark right side/safe area: " + name);
+                Require(button.transform.position.y < previousY, "Help must follow the other start actions."); previousY = button.transform.position.y;
+            }
+            Require(FindObjectsByType<Text>(FindObjectsSortMode.None).Length == 3, "Extra text remains on the start screen.");
+            Require(menu.GetComponentsInChildren<RawImage>().Length == 0 && !GameObject.Find("Zelenskyy 3D avatar"), "Extra characters remain on the start screen.");
+            RawImage cover = GameObject.Find("Menu artwork").GetComponent<RawImage>();
+            Require(cover.texture == Resources.Load<Texture2D>("Brand/MenuBackground"), "Start screen did not load the supplied cover.");
+            Rect size = cover.rectTransform.rect;
+            Require(Mathf.Abs(size.width / size.height - (float)cover.texture.width / cover.texture.height) < .001f,
+                "Start artwork lost its original proportions.");
+            Require(!GameObject.Find("Hero portrait camera").GetComponent<Camera>().enabled, "Unused menu hero camera is still rendering.");
         }
         private static Vector2 ButtonPosition(string name, string textPrefix = null)
         {
@@ -480,6 +593,9 @@ namespace MazeOfEgos.Runtime
         }
         private void Capture(string name)
         {
+            foreach (Text text in FindObjectsByType<Text>(FindObjectsSortMode.None))
+                Require(text.preferredHeight <= text.rectTransform.rect.height + 4,
+                    "English text exceeds its layout: " + text.text);
             // CaptureScreenshot(filename) prepends Documents on iOS even for absolute paths.
             // Write the actual framebuffer texture ourselves to keep the destination portable.
             Texture2D capture = ScreenCapture.CaptureScreenshotAsTexture();
@@ -489,8 +605,13 @@ namespace MazeOfEgos.Runtime
         private static void Require(bool condition, string message) { if (!condition) throw new InvalidOperationException(message); }
         private static void RequireHud(GameSession session)
         {
-            RequireVisibleText("POINT " + session.Score.ToString("N0") + "\nLEVEL " + session.Level);
-            RequireVisibleText("Chancer × " + session.Chances + "\nHjerter tilbage: " + session.RemainingHearts);
+            RequireVisibleText("SCORE " + session.Score.ToString("N0", CultureInfo.InvariantCulture) + "\nLEVEL " + session.Level);
+            RequireVisibleText("Lives:"); RequireVisibleText("Hearts left: " + session.RemainingHearts);
+            foreach (Text text in FindObjectsByType<Text>(FindObjectsSortMode.None))
+                if (text.text.Contains("BOOST ") || text.text.Contains("POWER HEART "))
+                    Require(System.Text.RegularExpressions.Regex.IsMatch(text.text, @"\d+\.\d s"), "Effect timer must use an English decimal point.");
+            int lives = 0; foreach (TouchArtwork icon in FindObjectsByType<TouchArtwork>(FindObjectsSortMode.None)) if (icon.Artwork == TouchArtwork.Shape.Heart) lives++;
+            Require(lives == session.Chances, "Heart life icons do not match lives.");
         }
         private static void RequireVisibleText(string expected)
         {

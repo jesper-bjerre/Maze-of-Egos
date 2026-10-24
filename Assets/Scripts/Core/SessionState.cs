@@ -57,7 +57,9 @@ namespace MazeOfEgos.Core
     [Serializable]
     public sealed class SessionSnapshot
     {
-        public int version = 2;
+        public int version = 3;
+        public bool autoMoving = true;
+        public int queuedHeading = -1;
         public string mazeId, mazeFingerprint;
         public RuleProfile rules;
         public SessionPhase phase, resumePhase;

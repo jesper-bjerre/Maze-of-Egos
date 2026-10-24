@@ -18,19 +18,19 @@ namespace MazeOfEgos.Runtime
         private readonly Material[] shortcutSignals;
         private readonly Transform[] gates;
         private readonly Transform throwingHand;
-        private readonly Material banana, oil, frightened, returnMaterial;
+        private readonly ImportedCharacterPose handPose;
+        private readonly Material banana, oil, returnMaterial;
         private readonly Mesh heartMesh;
         private readonly Font labelFont;
         private readonly Material labelMaterial;
-        private readonly Material[] clothes = new Material[4];
         private readonly bool[] seen = new bool[4];
-        private double nextScare;
+        private double nextScare, previousCameraTime;
+        private float cameraYaw = 270;
         private readonly GameApp app;
         public readonly Camera Camera;
         private sealed class Avatar
         {
-            public Transform root, body, head, leftArm, rightArm, leftLeg, rightLeg, bubble;
-            public Renderer jacket;
+            public Transform root, bubble;
             public TextMesh label;
             public ImportedCharacterPose imported;
         }
@@ -44,7 +44,7 @@ namespace MazeOfEgos.Runtime
             labelMaterial.mainTexture = labelFont.material.mainTexture;
             root = new GameObject("Mechanical garden").transform;
             var cameraObject = new GameObject("First person camera", typeof(Camera), typeof(AudioListener));
-            Camera = cameraObject.GetComponent<Camera>(); Camera.nearClipPlane = 0.06f; Camera.farClipPlane = 100;
+            Camera = cameraObject.GetComponent<Camera>(); Camera.cullingMask &= ~(1 << 30); Camera.nearClipPlane = 0.06f; Camera.farClipPlane = 100;
             Camera.backgroundColor = new Color(0.58f, 0.73f, 0.76f); Camera.clearFlags = CameraClearFlags.SolidColor;
             Camera.transform.position = World(new Point2(maze.Definition.playerStart.x, maze.Definition.playerStart.y), 1.55f);
             RenderSettings.ambientMode = AmbientMode.Trilight;
@@ -125,8 +125,9 @@ namespace MazeOfEgos.Runtime
             sign.x += 0.5; sign.y -= 0.1;
             Material signBacking = SceneMeshes.Material("Base sign enamel", new Color(0.06f, 0.13f, 0.11f), 0.15f, 0.35f);
             SceneMeshes.Primitive("Base sign", staticRoot, PrimitiveType.Cube, signBacking, World(sign, 2.3f), new Vector3(3.2f, 0.48f, 0.10f));
-            TextMesh gateSign = Label("KUN STORE EGOER", root, World(sign, 2.3f) + Vector3.forward * 0.065f, 0.025f, new Color(1, 0.88f, 0.54f));
+            TextMesh gateSign = Label("BIG EGOS ONLY", root, World(sign, 2.3f) + Vector3.forward * 0.065f, 0.025f, new Color(1, 0.88f, 0.54f));
             gateSign.transform.rotation = Quaternion.Euler(0, 180, 0);
+            GardenDressing.Build(maze, staticRoot);
             StaticBatchingUtility.Combine(staticRoot.gameObject);
             heartMesh = SceneMeshes.Heart(); hearts = new Transform[maze.Hearts.Count];
             Material small = SceneMeshes.Material("Pink heart", new Color(0.96f, 0.16f, 0.30f), 0.05f, 0.7f, true);
@@ -149,14 +150,20 @@ namespace MazeOfEgos.Runtime
             banana.SetFloat("_Cull", 0);
             banana.EnableKeyword("_EMISSION"); banana.SetColor("_EmissionColor", new Color(0.12f, 0.08f, 0.005f));
             oil = SceneMeshes.Material("Cartoon oil", new Color(0.14f, 0.09f, 0.24f), 0.35f, 0.95f);
-            frightened = SceneMeshes.Material("Power surprise", new Color(0.40f, 0.57f, 0.90f), 0, 0.45f);
             returnMaterial = SceneMeshes.Material("Pause bubble", new Color(0.66f, 0.87f, 0.96f), 0.15f, 0.9f);
-            Color[] suitColors = { new Color(0.15f, 0.19f, 0.24f), new Color(0.16f, 0.20f, 0.29f), new Color(0.14f, 0.16f, 0.19f), new Color(0.13f, 0.23f, 0.40f) };
             Mesh peelMesh = SceneMeshes.BananaPeel();
-            throwingHand = BuildThrowingHand();
+            throwingHand = new GameObject("Zelenskyy throwing hand").transform;
+            throwingHand.SetParent(Camera.transform, false);
+            handPose = new ImportedCharacterPose(throwingHand, Resources.Load<GameObject>("CharacterModels/zelenskyy-hand"), "zelenskyy");
+            Transform palm = Array.Find(handPose.Instance.GetComponentsInChildren<Transform>(), t => t.name == "HandAnchor");
+            handPose.Instance.transform.localPosition = -throwingHand.InverseTransformPoint(palm.position);
+            Transform mount = new GameObject("Arm mount").transform; mount.SetParent(throwingHand, false);
+            handPose.Instance.transform.SetParent(mount, false); mount.localRotation = Quaternion.Euler(0, 0, 180);
+            foreach (Renderer renderer in throwingHand.GetComponentsInChildren<Renderer>())
+            { renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false; }
+            throwingHand.gameObject.SetActive(false);
             for (int i = 0; i < 4; i++)
             {
-                clothes[i] = SceneMeshes.Material("Suit " + i, suitColors[i]);
                 avatars[i] = BuildAvatar(i); tunnelAvatars[i] = BuildAvatar(i); tunnelAvatars[i].root.gameObject.SetActive(false);
                 trapRoots[i] = new GameObject("Reusable trap " + i).transform; trapRoots[i].SetParent(root, false);
                 bananaViews[i] = SceneMeshes.MeshObject("Banana peel", trapRoots[i], peelMesh, banana, Vector3.zero, Vector3.one);
@@ -168,77 +175,17 @@ namespace MazeOfEgos.Runtime
             }
         }
 
-        private Transform BuildThrowingHand()
-        {
-            Transform hand = new GameObject("Zelenskyj throwing hand (prototype)").transform;
-            hand.SetParent(Camera.transform, false);
-            Material sleeve = SceneMeshes.Material("Hero olive sleeve", new Color(0.29f, 0.34f, 0.21f));
-            Material skin = SceneMeshes.Material("Hero hand", new Color(0.85f, 0.66f, 0.49f), 0, 0.3f);
-            Transform arm = SceneMeshes.Primitive("Olive sleeve", hand, PrimitiveType.Capsule, sleeve,
-                new Vector3(0, -0.16f, -0.13f), new Vector3(0.105f, 0.19f, 0.105f));
-            arm.localRotation = Quaternion.Euler(45, 0, 0);
-            SceneMeshes.MeshObject("Palm", hand, SceneMeshes.RoundedBox(new Vector3(0.10f, 0.065f, 0.13f), 0.02f),
-                skin, Vector3.zero, Vector3.one);
-            for (int finger = 0; finger < 4; finger++)
-                SceneMeshes.Primitive("Finger", hand, PrimitiveType.Capsule, skin,
-                    new Vector3((finger - 1.5f) * 0.024f, 0.005f, 0.072f), new Vector3(0.026f, 0.038f, 0.027f)).localRotation = Quaternion.Euler(70, 0, 0);
-            SceneMeshes.Primitive("Thumb", hand, PrimitiveType.Sphere, skin, new Vector3(-0.06f, 0, 0.015f), new Vector3(0.05f, 0.05f, 0.08f));
-            foreach (Renderer renderer in hand.GetComponentsInChildren<Renderer>())
-            { renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false; }
-            hand.gameObject.SetActive(false); return hand;
-        }
-
         private Avatar BuildAvatar(int index)
         {
+            string[] ids = { "putin", "xi", "kim", "trump" };
             string[] names = { "Putin", "Xi", "Kim", "Trump" };
-            Transform avatarRoot = new GameObject(names[index] + " temporary full-body model").transform; avatarRoot.SetParent(root);
-            var a = new Avatar { root = avatarRoot };
-            if (index == 0)
-            {
-                avatarRoot.name = "Putin imported pilot";
-                a.imported = new ImportedCharacterPose(avatarRoot, Resources.Load<GameObject>("CharacterModels/putin"));
-                a.label = Label(names[index], avatarRoot, new Vector3(0, 2.22f, 0), 0.065f, new Color(1, .92f, .65f));
-                a.bubble = SceneMeshes.Primitive("Return bubble", avatarRoot, PrimitiveType.Sphere, returnMaterial, new Vector3(0, .55f, 0), Vector3.one * .85f);
-                a.bubble.gameObject.SetActive(false); return a;
-            }
-            Material skin = SceneMeshes.Material("Skin " + index, index == 3 ? new Color(0.91f, 0.58f, 0.35f) : new Color(0.88f, 0.69f, 0.53f), 0, 0.35f);
-            Material hair = SceneMeshes.Material("Hair " + index, index == 3 ? new Color(0.94f, 0.67f, 0.22f) : index == 0 ? new Color(0.35f, 0.29f, 0.22f) : new Color(0.075f, 0.065f, 0.06f));
-            Material black = SceneMeshes.Material("Eyes/shoes " + index, new Color(0.055f, 0.05f, 0.04f));
-            Material white = SceneMeshes.Material("Shirt/eyes " + index, new Color(0.96f, 0.93f, 0.85f));
-            Material tie = SceneMeshes.Material("Tie " + index, index == 3 ? new Color(0.8f, 0.08f, 0.08f) : new Color(0.35f, 0.13f, 0.2f));
-            float width = index >= 2 ? 0.75f : 0.60f;
-            a.body = SceneMeshes.Primitive("Jacket", avatarRoot, PrimitiveType.Capsule, clothes[index], new Vector3(0, 0.98f, 0), new Vector3(width, 0.48f, 0.48f));
-            a.jacket = a.body.GetComponent<Renderer>();
-            SceneMeshes.Primitive("Shirt", avatarRoot, PrimitiveType.Cube, white, new Vector3(0, 1.17f, 0.25f), new Vector3(0.23f, 0.31f, 0.035f));
-            if (index != 2) SceneMeshes.Primitive("Tie", avatarRoot, PrimitiveType.Cube, tie, new Vector3(0, 1.10f, 0.28f), new Vector3(0.09f, index == 3 ? 0.5f : 0.27f, 0.04f));
-            a.head = SceneMeshes.Primitive("Head", avatarRoot, PrimitiveType.Sphere, skin, new Vector3(0, 1.62f, 0.01f), new Vector3(0.62f, 0.67f, 0.57f));
-            Transform hairPiece = SceneMeshes.Primitive("Recognizable hair silhouette", avatarRoot, index == 2 ? PrimitiveType.Cube : PrimitiveType.Sphere,
-                hair, new Vector3(index == 3 ? -0.06f : 0, index == 0 ? 1.84f : 1.90f, -0.04f),
-                new Vector3(index == 3 ? 0.72f : 0.56f, index == 0 ? 0.12f : index == 2 ? 0.22f : 0.27f, 0.50f));
-            if (index == 3) hairPiece.localRotation = Quaternion.Euler(0, 0, -12);
-            for (int side = -1; side <= 1; side += 2)
-            {
-                SceneMeshes.Primitive("Eye white", avatarRoot, PrimitiveType.Sphere, white, new Vector3(side * 0.115f, 1.67f, 0.263f), new Vector3(0.13f, 0.11f, 0.055f));
-                SceneMeshes.Primitive("Eye", avatarRoot, PrimitiveType.Sphere, black, new Vector3(side * 0.115f, 1.67f, 0.29f), new Vector3(0.055f, 0.067f, 0.025f));
-                Transform brow = SceneMeshes.Primitive("Eyebrow", avatarRoot, PrimitiveType.Cube, hair, new Vector3(side * 0.12f, 1.76f, 0.26f), new Vector3(0.15f, 0.035f, 0.04f));
-                brow.localRotation = Quaternion.Euler(0, 0, side * 15);
-            }
-            SceneMeshes.Primitive("Nose", avatarRoot, PrimitiveType.Sphere, skin, new Vector3(0, 1.60f, 0.30f), new Vector3(0.12f, 0.14f, 0.14f));
-            SceneMeshes.Primitive("Mouth", avatarRoot, PrimitiveType.Cube, black, new Vector3(0, 1.48f, 0.26f), new Vector3(0.18f, 0.025f, 0.025f));
-            a.leftArm = Limb("Left arm", avatarRoot, clothes[index], new Vector3(-width * 0.58f, 1.22f, 0), new Vector3(0.15f, 0.43f, 0.17f), skin);
-            a.rightArm = Limb("Right arm", avatarRoot, clothes[index], new Vector3(width * 0.58f, 1.22f, 0), new Vector3(0.15f, 0.43f, 0.17f), skin);
-            a.leftLeg = Limb("Left leg", avatarRoot, clothes[index], new Vector3(-0.17f, 0.62f, 0), new Vector3(0.18f, 0.46f, 0.2f), black);
-            a.rightLeg = Limb("Right leg", avatarRoot, clothes[index], new Vector3(0.17f, 0.62f, 0), new Vector3(0.18f, 0.46f, 0.2f), black);
-            a.label = Label(names[index], avatarRoot, new Vector3(0, 2.22f, 0), 0.065f, new Color(1, 0.92f, 0.65f));
-            a.bubble = SceneMeshes.Primitive("Return bubble", avatarRoot, PrimitiveType.Sphere, returnMaterial, new Vector3(0, 0.55f, 0), Vector3.one * 0.85f);
+            Transform avatarRoot = new GameObject(index == 0 ? "Putin imported pilot" : names[index] + " imported character").transform;
+            avatarRoot.SetParent(root);
+            var a = new Avatar { root = avatarRoot,
+                imported = new ImportedCharacterPose(avatarRoot, Resources.Load<GameObject>("CharacterModels/" + ids[index]), ids[index]) };
+            a.label = Label(names[index], avatarRoot, new Vector3(0, 2.22f, 0), .065f, new Color(1, .92f, .65f));
+            a.bubble = SceneMeshes.Primitive("Return bubble", avatarRoot, PrimitiveType.Sphere, returnMaterial, new Vector3(0, .55f, 0), Vector3.one * .85f);
             a.bubble.gameObject.SetActive(false); return a;
-        }
-        private static Transform Limb(string name, Transform parent, Material clothing, Vector3 pivot, Vector3 size, Material tip)
-        {
-            Transform root = new GameObject(name + " pivot").transform; root.SetParent(parent, false); root.localPosition = pivot;
-            SceneMeshes.Primitive(name, root, PrimitiveType.Capsule, clothing, new Vector3(0, -size.y * 0.48f, 0), new Vector3(size.x, size.y * 0.5f, size.z));
-            SceneMeshes.Primitive("Hand/shoe", root, PrimitiveType.Sphere, tip, new Vector3(0, -size.y, 0.03f), new Vector3(size.x * 1.2f, size.x, size.z * 1.35f));
-            return root;
         }
         private TextMesh Label(string text, Transform parent, Vector3 position, float size, Color color)
         {
@@ -248,9 +195,10 @@ namespace MazeOfEgos.Runtime
             label.font = labelFont; label.GetComponent<Renderer>().sharedMaterial = labelMaterial;
             return label;
         }
+        public void ResetCamera() { cameraYaw = (float)app.Session.Yaw; previousCameraTime = app.Session.Time; }
         public void ResetEncounters()
         {
-            Array.Clear(seen, 0, seen.Length); nextScare = 0;
+            ResetCamera(); Array.Clear(seen, 0, seen.Length); nextScare = 0;
             foreach (Avatar avatar in avatars) avatar.imported?.Reset();
             foreach (Avatar avatar in tunnelAvatars) avatar.imported?.Reset();
         }
@@ -262,7 +210,10 @@ namespace MazeOfEgos.Runtime
             Point2 end = maze.Near(session.Player, previousPlayer);
             Point2 cameraPosition = (end - previousPlayer).Length > 2 ? session.Player : Point2.Lerp(previousPlayer, end, alpha);
             Camera.transform.position = World(cameraPosition, 1.55f);
-            Camera.transform.rotation = Quaternion.Euler((float)-session.Pitch, (float)session.Yaw, 0);
+            if (session.Time < previousCameraTime || app.Settings.reducedMotion) cameraYaw = (float)session.Yaw;
+            else cameraYaw = Mathf.MoveTowardsAngle(cameraYaw, (float)session.Yaw, (float)(session.Time - previousCameraTime) * 720);
+            previousCameraTime = session.Time;
+            Camera.transform.rotation = Quaternion.Euler(0, cameraYaw, 0);
             Camera.fieldOfView = Camera.HorizontalToVerticalFieldOfView(app.Settings.fov, Camera.aspect);
             float time = (float)session.Time;
             for (int i = 0; i < hearts.Length; i++)
@@ -345,6 +296,7 @@ namespace MazeOfEgos.Runtime
             if (thrown != null)
             {
                 float progress = (float)thrown.FlightProgress(session.Time);
+                handPose.Preview("Throw", app.Settings.reducedMotion ? .15f : progress * .36f);
                 float gesture = app.Settings.reducedMotion ? 0 : Mathf.Sin(progress * Mathf.PI);
                 // Anchor inside the lower frame at every supported FOV/aspect ratio.
                 float side = app.Settings.leftHanded ? -1 : 1;
@@ -360,18 +312,9 @@ namespace MazeOfEgos.Runtime
             avatar.root.localScale = Vector3.one * (returning ? 0.38f : 1);
             Point2 direction = maze.Near(state.to.Position, state.from.Position) - state.from.Position;
             if (direction.LengthSquared > 0) avatar.root.rotation = Quaternion.Euler(0, (float)(Math.Atan2(direction.x, -direction.y) * 180 / Math.PI), 0);
-            float walk = (float)session.PursuerSpeed(state) > 0 ? Mathf.Sin(time * 12 + index) * 28 : 0;
-            bool slip = session.Time < state.stunUntil || session.Time < state.oilUntil;
             bool vulnerable = session.IsFrightened(state);
-            if (avatar.imported != null) avatar.imported.Render(session, state, app.Settings.reducedMotion);
-            else
-            {
-                avatar.leftLeg.localRotation = Quaternion.Euler(walk, 0, 0); avatar.rightLeg.localRotation = Quaternion.Euler(-walk, 0, 0);
-                avatar.leftArm.localRotation = Quaternion.Euler(-walk, 0, slip ? -35 : 7); avatar.rightArm.localRotation = Quaternion.Euler(walk, 0, slip ? 35 : -7);
-                avatar.head.localRotation = Quaternion.Euler(0, 0, slip ? Mathf.Sin(time * 18) * 18 : 0);
-                avatar.jacket.sharedMaterial = vulnerable ? frightened : clothes[index];
-            }
-            avatar.label.text = vulnerable ? "!" : returning ? "Til pause" : state.id == "putin" ? "Putin" : state.id == "xi" ? "Xi" : state.id == "kim" ? "Kim" : "Trump";
+            avatar.imported.Render(session, state, app.Settings.reducedMotion);
+            avatar.label.text = vulnerable ? "!" : returning ? "On a break" : state.id == "putin" ? "Putin" : state.id == "xi" ? "Xi" : state.id == "kim" ? "Kim" : "Trump";
             avatar.label.transform.rotation = Camera.transform.rotation;
             avatar.label.gameObject.SetActive((Camera.transform.position - avatar.label.transform.position).sqrMagnitude > 9);
             avatar.bubble.gameObject.SetActive(returning);

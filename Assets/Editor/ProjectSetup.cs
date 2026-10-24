@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Xml;
 using MazeOfEgos.Core;
 using Newtonsoft.Json;
 using UnityEditor;
@@ -33,16 +34,22 @@ namespace MazeOfEgos.Editor
             GraphicsSettings.defaultRenderPipeline = pipeline; QualitySettings.renderPipeline = pipeline;
             QualitySettings.vSyncCount = 0;
             PlayerSettings.productName = "Maze of Egos"; PlayerSettings.companyName = "Maze of Egos";
-            PlayerSettings.bundleVersion = "0.1.0";
+            PlayerSettings.bundleVersion = "0.2.0";
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS, "dk.mazeofegos.game");
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.iOS, ScriptingImplementation.IL2CPP);
             PlayerSettings.iOS.targetOSVersionString = "17.0";
-            PlayerSettings.iOS.buildNumber = "6";
+            PlayerSettings.iOS.buildNumber = "12";
             PlayerSettings.iOS.appleEnableAutomaticSigning = true;
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
             PlayerSettings.allowedAutorotateToLandscapeLeft = PlayerSettings.allowedAutorotateToLandscapeRight = true;
             PlayerSettings.allowedAutorotateToPortrait = PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
             PlayerSettings.runInBackground = false;
+            Texture2D icon = Resources.Load<Texture2D>("Brand/AppIcon");
+            if (!icon) throw new InvalidOperationException("Missing original app icon.");
+            PlayerSettings.SetIcons(NamedBuildTarget.Unknown, new[] { icon }, IconKind.Any);
+            int[] sizes = PlayerSettings.GetIconSizes(NamedBuildTarget.iOS, IconKind.Any);
+            var icons = new Texture2D[sizes.Length]; for (int i = 0; i < icons.Length; i++) icons[i] = icon;
+            PlayerSettings.SetIcons(NamedBuildTarget.iOS, icons, IconKind.Any);
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(Scene, true) };
             var settingsAssets = AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/ProjectSettings.asset");
             if (settingsAssets.Length > 0)
@@ -68,6 +75,15 @@ namespace MazeOfEgos.Editor
                     importer.SaveAndReimport();
                 }
             }
+            var menuArt = AssetImporter.GetAtPath("Assets/Resources/Brand/MenuBackground.png") as TextureImporter;
+            if (menuArt && (menuArt.maxTextureSize != 2048 || menuArt.mipmapEnabled || menuArt.npotScale != TextureImporterNPOTScale.None ||
+                menuArt.textureCompression != TextureImporterCompression.CompressedHQ || menuArt.wrapMode != TextureWrapMode.Clamp))
+            {
+                menuArt.textureType = TextureImporterType.Default; menuArt.textureShape = TextureImporterShape.Texture2D;
+                menuArt.maxTextureSize = 2048; menuArt.mipmapEnabled = false; menuArt.npotScale = TextureImporterNPOTScale.None;
+                menuArt.wrapMode = TextureWrapMode.Clamp; menuArt.textureCompression = TextureImporterCompression.CompressedHQ;
+                menuArt.SaveAndReimport();
+            }
             // Resource materials retain the actual lit/emissive/instancing variants.
             if (!Resources.Load<Material>("Materials/GardenLit") || !Resources.Load<Material>("Materials/GardenEmissive"))
                 throw new InvalidOperationException("Missing runtime material resources.");
@@ -87,6 +103,7 @@ namespace MazeOfEgos.Editor
             session.Restore(roundTrip);
             foreach (string id in new[] { "zelenskyy", "putin", "xi", "kim", "trump" })
                 if (!Resources.Load<Texture2D>("Characters/" + id)) throw new InvalidOperationException("Missing character reference " + id);
+            if (!Resources.Load<Texture2D>("Brand/MenuBackground")) throw new InvalidOperationException("Missing menu cover art.");
             if (!AssetDatabase.LoadAssetAtPath<SceneAsset>(Scene)) throw new InvalidOperationException("Missing playable scene.");
             CharacterModelSetup.Validate();
             Debug.Log("CONTENT VALIDATION PASSED: 244 hearts, save roundtrip, five references, playable scene.");
@@ -100,15 +117,39 @@ namespace MazeOfEgos.Editor
         public static void BuildWindows() => Build(BuildTarget.StandaloneWindows64, "Builds/Windows/Maze of Egos.exe");
         public static void BuildIOSPerformance() => Build(BuildTarget.iOS, "Builds/iOS-Performance", true);
         public static void BuildMacPerformance() => Build(BuildTarget.StandaloneOSX, "Builds/macOS-Performance/Maze of Egos.app", true);
-        private static void Build(BuildTarget target, string output, bool performance = false)
+        public static void BuildIOSRelease() => Build(BuildTarget.iOS, "Builds/iOS-Release", release: true);
+        private static void Build(BuildTarget target, string output, bool performance = false, bool release = false)
         {
             Configure(); Validate(); Directory.CreateDirectory(Path.GetDirectoryName(output));
             BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
                 scenes = new[] { Scene }, locationPathName = output, target = target,
-                options = performance ? BuildOptions.None : BuildOptions.Development,
+                options = performance || release ? BuildOptions.None : BuildOptions.Development,
                 extraScriptingDefines = performance ? new[] { "MAZE_PERFORMANCE" } : Array.Empty<string>() });
             if (report.summary.result != BuildResult.Succeeded)
                 throw new InvalidOperationException("Build failed: " + report.summary.result + ", errors: " + report.summary.totalErrors);
+            if (target == BuildTarget.iOS)
+            {
+                // The product UI and shipped localization are English.
+                string infoPath = Path.Combine(output, "Info.plist");
+                var info = new XmlDocument { XmlResolver = null }; info.Load(infoPath);
+                info.SelectSingleNode("/plist/dict/key[text()='CFBundleDevelopmentRegion']/following-sibling::*[1]").InnerText = "en";
+                XmlNode dictionary = info.SelectSingleNode("/plist/dict");
+                // Replacing this value also makes repeated exports safe.
+                XmlNode oldKey = dictionary.SelectSingleNode("key[text()='CFBundleLocalizations']");
+                if (oldKey != null)
+                {
+                    XmlNode oldValue = oldKey.NextSibling;
+                    if (oldValue != null) dictionary.RemoveChild(oldValue);
+                    dictionary.RemoveChild(oldKey);
+                }
+                XmlElement key = info.CreateElement("key"); key.InnerText = "CFBundleLocalizations"; dictionary.AppendChild(key);
+                XmlElement list = info.CreateElement("array"), language = info.CreateElement("string"); language.InnerText = "en";
+                list.AppendChild(language); dictionary.AppendChild(list);
+                // Mono serializes an empty DTD subset as [] which Apple's plist parser rejects.
+                // XML property lists do not require a DOCTYPE declaration.
+                if (info.DocumentType != null) info.RemoveChild(info.DocumentType);
+                info.Save(infoPath);
+            }
             Debug.Log("BUILD SUCCEEDED: " + Path.GetFullPath(output));
         }
     }

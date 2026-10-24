@@ -1,0 +1,608 @@
+{
+  "characters": [
+    {
+      "id": "putin",
+      "displayName": "Putin",
+      "bodyWidth": 1,
+      "headWidth": 1,
+      "hair": "receding",
+      "costume": "suit",
+      "nose": 1,
+      "armSwing": 24,
+      "slip": 1,
+      "faceCenter": 689,
+      "faceTop": 540,
+      "faceBottom": 824,
+      "portraitWidths": [
+        10,
+        44,
+        72,
+        88,
+        91,
+        85,
+        70,
+        45,
+        3
+      ],
+      "referenceSource": "docs/images/Putin character reference sheet.png",
+      "materials": [
+        {
+          "name": "SuitNavy",
+          "color": [
+            0.075,
+            0.1,
+            0.15,
+            1
+          ]
+        },
+        {
+          "name": "SuitLapel",
+          "color": [
+            0.105,
+            0.135,
+            0.19,
+            1
+          ]
+        },
+        {
+          "name": "ShirtIvory",
+          "color": [
+            0.91,
+            0.9,
+            0.84,
+            1
+          ]
+        },
+        {
+          "name": "TieBurgundy",
+          "color": [
+            0.38,
+            0.035,
+            0.055,
+            1
+          ]
+        },
+        {
+          "name": "Leather",
+          "color": [
+            0.035,
+            0.028,
+            0.025,
+            1
+          ]
+        },
+        {
+          "name": "Skin",
+          "color": [
+            0.78,
+            0.55,
+            0.4,
+            1
+          ]
+        },
+        {
+          "name": "Hair",
+          "color": [
+            0.28,
+            0.18,
+            0.1,
+            1
+          ]
+        },
+        {
+          "name": "HairHighlight",
+          "color": [
+            0.38,
+            0.26,
+            0.16,
+            1
+          ]
+        },
+        {
+          "name": "Metal",
+          "color": [
+            0.52,
+            0.35,
+            0.13,
+            1
+          ]
+        },
+        {
+          "name": "FaceReference",
+          "color": [
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "strideMeters": 0.88
+    },
+    {
+      "id": "xi",
+      "displayName": "Xi",
+      "bodyWidth": 1.08,
+      "headWidth": 1.12,
+      "hair": "swept",
+      "costume": "suit",
+      "nose": 0.65,
+      "armSwing": 16,
+      "slip": 0.7,
+      "faceCenter": 690,
+      "faceTop": 540,
+      "faceBottom": 830,
+      "portraitWidths": [
+        10,
+        45,
+        78,
+        93,
+        98,
+        92,
+        78,
+        50,
+        3
+      ],
+      "referenceSource": "docs/images/Xi Jinping character reference sheet.png",
+      "materials": [
+        {
+          "name": "SuitNavy",
+          "color": [
+            0.075,
+            0.1,
+            0.15,
+            1
+          ]
+        },
+        {
+          "name": "SuitLapel",
+          "color": [
+            0.105,
+            0.135,
+            0.19,
+            1
+          ]
+        },
+        {
+          "name": "ShirtIvory",
+          "color": [
+            0.91,
+            0.9,
+            0.84,
+            1
+          ]
+        },
+        {
+          "name": "TieBurgundy",
+          "color": [
+            0.12,
+            0.24,
+            0.46,
+            1
+          ]
+        },
+        {
+          "name": "Leather",
+          "color": [
+            0.035,
+            0.028,
+            0.025,
+            1
+          ]
+        },
+        {
+          "name": "Skin",
+          "color": [
+            0.8,
+            0.56,
+            0.39,
+            1
+          ]
+        },
+        {
+          "name": "Hair",
+          "color": [
+            0.065,
+            0.055,
+            0.05,
+            1
+          ]
+        },
+        {
+          "name": "HairHighlight",
+          "color": [
+            0.14,
+            0.12,
+            0.1,
+            1
+          ]
+        },
+        {
+          "name": "Metal",
+          "color": [
+            0.52,
+            0.35,
+            0.13,
+            1
+          ]
+        },
+        {
+          "name": "FaceReference",
+          "color": [
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "strideMeters": 0.88
+    },
+    {
+      "id": "kim",
+      "displayName": "Kim",
+      "bodyWidth": 1.22,
+      "headWidth": 1.19,
+      "hair": "flat",
+      "costume": "tunic",
+      "nose": 0.44,
+      "armSwing": 30,
+      "slip": 1.35,
+      "faceCenter": 693,
+      "faceTop": 540,
+      "faceBottom": 830,
+      "portraitWidths": [
+        15,
+        55,
+        83,
+        99,
+        102,
+        96,
+        80,
+        50,
+        3
+      ],
+      "referenceSource": "docs/images/Kim Jong-un character reference sheet.png",
+      "materials": [
+        {
+          "name": "SuitNavy",
+          "color": [
+            0.095,
+            0.1,
+            0.105,
+            1
+          ]
+        },
+        {
+          "name": "SuitLapel",
+          "color": [
+            0.13,
+            0.14,
+            0.145,
+            1
+          ]
+        },
+        {
+          "name": "ShirtIvory",
+          "color": [
+            0.91,
+            0.9,
+            0.84,
+            1
+          ]
+        },
+        {
+          "name": "TieBurgundy",
+          "color": [
+            0.38,
+            0.035,
+            0.055,
+            1
+          ]
+        },
+        {
+          "name": "Leather",
+          "color": [
+            0.035,
+            0.028,
+            0.025,
+            1
+          ]
+        },
+        {
+          "name": "Skin",
+          "color": [
+            0.83,
+            0.58,
+            0.42,
+            1
+          ]
+        },
+        {
+          "name": "Hair",
+          "color": [
+            0.025,
+            0.025,
+            0.03,
+            1
+          ]
+        },
+        {
+          "name": "HairHighlight",
+          "color": [
+            0.07,
+            0.065,
+            0.065,
+            1
+          ]
+        },
+        {
+          "name": "Metal",
+          "color": [
+            0.52,
+            0.35,
+            0.13,
+            1
+          ]
+        },
+        {
+          "name": "FaceReference",
+          "color": [
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "strideMeters": 0.88
+    },
+    {
+      "id": "trump",
+      "displayName": "Trump",
+      "bodyWidth": 1.2,
+      "headWidth": 1.15,
+      "hair": "quiff",
+      "costume": "suit",
+      "nose": 0.72,
+      "armSwing": 36,
+      "slip": 1.25,
+      "faceCenter": 692,
+      "faceTop": 540,
+      "faceBottom": 835,
+      "portraitWidths": [
+        15,
+        50,
+        80,
+        96,
+        101,
+        95,
+        80,
+        54,
+        3
+      ],
+      "referenceSource": "docs/images/Donald Trump character reference sheet.png",
+      "materials": [
+        {
+          "name": "SuitNavy",
+          "color": [
+            0.075,
+            0.16,
+            0.29,
+            1
+          ]
+        },
+        {
+          "name": "SuitLapel",
+          "color": [
+            0.11,
+            0.21,
+            0.36,
+            1
+          ]
+        },
+        {
+          "name": "ShirtIvory",
+          "color": [
+            0.91,
+            0.9,
+            0.84,
+            1
+          ]
+        },
+        {
+          "name": "TieBurgundy",
+          "color": [
+            0.73,
+            0.045,
+            0.055,
+            1
+          ]
+        },
+        {
+          "name": "Leather",
+          "color": [
+            0.035,
+            0.028,
+            0.025,
+            1
+          ]
+        },
+        {
+          "name": "Skin",
+          "color": [
+            0.88,
+            0.47,
+            0.26,
+            1
+          ]
+        },
+        {
+          "name": "Hair",
+          "color": [
+            0.76,
+            0.49,
+            0.18,
+            1
+          ]
+        },
+        {
+          "name": "HairHighlight",
+          "color": [
+            0.95,
+            0.72,
+            0.36,
+            1
+          ]
+        },
+        {
+          "name": "Metal",
+          "color": [
+            0.52,
+            0.35,
+            0.13,
+            1
+          ]
+        },
+        {
+          "name": "FaceReference",
+          "color": [
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "strideMeters": 0.88
+    },
+    {
+      "id": "zelenskyy",
+      "displayName": "Zelenskyy",
+      "bodyWidth": 0.96,
+      "headWidth": 0.97,
+      "hair": "short",
+      "costume": "tshirt",
+      "nose": 0.6,
+      "armSwing": 28,
+      "slip": 0.8,
+      "faceCenter": 668,
+      "faceTop": 535,
+      "faceBottom": 841,
+      "portraitWidths": [
+        10,
+        48,
+        79,
+        96,
+        100,
+        95,
+        83,
+        55,
+        3
+      ],
+      "referenceSource": "docs/images/Zelenskyy character reference sheet.png",
+      "materials": [
+        {
+          "name": "SuitNavy",
+          "color": [
+            0.27,
+            0.32,
+            0.18,
+            1
+          ]
+        },
+        {
+          "name": "SuitLapel",
+          "color": [
+            0.21,
+            0.26,
+            0.15,
+            1
+          ]
+        },
+        {
+          "name": "ShirtIvory",
+          "color": [
+            0.91,
+            0.9,
+            0.84,
+            1
+          ]
+        },
+        {
+          "name": "TieBurgundy",
+          "color": [
+            0.38,
+            0.035,
+            0.055,
+            1
+          ]
+        },
+        {
+          "name": "Leather",
+          "color": [
+            0.035,
+            0.028,
+            0.025,
+            1
+          ]
+        },
+        {
+          "name": "Skin",
+          "color": [
+            0.8,
+            0.59,
+            0.43,
+            1
+          ]
+        },
+        {
+          "name": "Hair",
+          "color": [
+            0.12,
+            0.085,
+            0.06,
+            1
+          ]
+        },
+        {
+          "name": "HairHighlight",
+          "color": [
+            0.2,
+            0.15,
+            0.1,
+            1
+          ]
+        },
+        {
+          "name": "Metal",
+          "color": [
+            0.52,
+            0.35,
+            0.13,
+            1
+          ]
+        },
+        {
+          "name": "FaceReference",
+          "color": [
+            1,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "TrousersOlive",
+          "color": [
+            0.19,
+            0.23,
+            0.13,
+            1
+          ]
+        }
+      ],
+      "strideMeters": 0.88
+    }
+  ]
+}

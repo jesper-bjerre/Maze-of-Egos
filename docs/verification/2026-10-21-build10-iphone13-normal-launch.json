@@ -1,0 +1,10 @@
+{
+  "version": "0.2.0",
+  "build": "10",
+  "installedFrom": "Builds/Archives/MazeOfEgos-0.2.0-10.xcarchive",
+  "bundleId": "dk.mazeofegos.game",
+  "launchedWithoutTestFlags": true,
+  "runningProcessVerified": true,
+  "processIdentifier": 32541,
+  "checkedUtc": "2026-10-21T19:21:17.544393+00:00"
+}

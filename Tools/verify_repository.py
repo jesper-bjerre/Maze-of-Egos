@@ -19,10 +19,19 @@ def main():
         source = (ROOT / asset["source"]).read_bytes()
         runtime = (ROOT / asset["runtimeCopy"]).read_bytes()
         assert source == runtime and hashlib.sha256(source).hexdigest() == asset["sha256"], asset["id"]
-    pilot = json.loads((ROOT / "art/characters/putin/manifest.json").read_text())
-    assert hashlib.sha256((ROOT / pilot["sourceReference"]).read_bytes()).hexdigest() == pilot["sourceSha256"], "Pilot source reference changed"
-    assert hashlib.sha256((ROOT / pilot["runtimeModel"]).read_bytes()).hexdigest() == pilot["runtimeSha256"], "Pilot FBX differs from its manifest"
-    assert (ROOT / pilot["editableSource"]).is_file(), "Editable Blender source missing"
+    assert (ROOT / "docs/images/Jagten gennem egoernes labyrint.png").read_bytes() == (ROOT / "Assets/Resources/Brand/MenuBackground.png").read_bytes(), "Menu cover differs from supplied original"
+    roster = json.loads((ROOT / "Assets/Resources/Data/characters.json").read_text())["characters"]
+    assert {c["id"] for c in roster} == {a["id"] for a in assets}
+    for character in roster:
+        pilot = json.loads((ROOT / "art/characters" / character["id"] / "manifest.json").read_text())
+        assert hashlib.sha256((ROOT / pilot["sourceReference"]).read_bytes()).hexdigest() == pilot["sourceSha256"], "Character reference changed"
+        assert hashlib.sha256((ROOT / pilot["runtimeModel"]).read_bytes()).hexdigest() == pilot["runtimeSha256"], "Character FBX differs from manifest"
+        assert (ROOT / pilot["editableSource"]).is_file(), "Editable Blender source missing"
+        assert pilot["bones"] == 17 and pilot["triangles"] <= 20000
+        assert {"Idle", "Chase", "Surprise", "Slip", "Return", "Puff", "Recover"}.issubset(pilot["clips"])
+        assert pilot["geometryValidation"]["maxShoeContactErrorMeters"] < .008
+        assert pilot["finalArtAccepted"] is False, "Art acceptance must be recorded through manual review"
+    assert (ROOT / "Assets/Resources/CharacterModels/zelenskyy-hand.fbx").is_file()
     guids = {}
     for path in (ROOT / "Assets").rglob("*"):
         if path.suffix == ".meta":
@@ -37,7 +46,7 @@ def main():
     expected = {"MazeOfEgos.Core", "Unity.InputSystem", "UnityEngine.UI", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime"}
     runtime = json.loads((ROOT / "Assets/Scripts/Runtime/MazeOfEgos.Runtime.asmdef").read_text())
     assert set(runtime["references"]) == expected, "Assembly references do not match the pinned Unity packages"
-    print(f"PASS source maze equality, five exact reference copies, pilot source/FBX hashes and editable source, {len(guids)} unique Unity GUIDs, package/assembly JSON and references.")
+    print(f"PASS source maze equality, five exact reference copies, five character source/FBX hashes, editable sources, rig/clip/geometry budgets and imported hero arm, {len(guids)} unique Unity GUIDs, package/assembly JSON and references.")
     return 0
 
 

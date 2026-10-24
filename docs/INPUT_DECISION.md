@@ -1,46 +1,77 @@
-# Valg af touchstyring — 21. oktober 2026
+# Valg af touchstyring — opdateret 24. oktober 2026, build 12
 
-Brugeren har overladt valget til implementeringen efter at have gjort opmærksom
-på Apples virtuelle controller. Vi bruger et spiltilpasset Unity-overlay med
-Input System til joystick, kameratræk og genstandsknap.
+## Ny aftale efter designquizzen
 
-## Begrundelse
+Den planlagte alle-mod-alle-version har et lokalt, højt kamera med fast retning.
+Automatisk midterlinjegang bevares, men joysticket peger mod den ønskede gang
+**på skærmen**, og retningsønsket gemmes, indtil svinget er muligt. Genstande
+bruges i figurens gangretning med tydelig markering. Alle fem bruger samme
+bevægelsesregler. Dette er aftalt, men endnu ikke implementeret eller afprøvet.
+Se [regler og implementeringstrin](IMPLEMENTATION_PLAN.md).
 
-Spillet kombinerer analog bevægelse med frit kameratræk, en genstandsafhængig
-knap og et spejlet venstrehåndslayout. Disse handlinger skal kunne bruges
-samtidigt og være ens på iOS 17+, iPad og desktop under udvikling. Den eksisterende
-inputvej er allerede automatisk afprøvet på fysisk iPhone 13, og brugeren har
-bekræftet joystick og kamera med to fingre.
+## Historisk rettelse — implementeret i build 12
+
+Efter fysisk afprøvning var fri analog bevægelse og frit kamera for svært at
+styre. Brugeren valgte eksplicit **relativt joystick med automatisk gang** blandt
+alternativerne relativt joystick, absolut firevejsstyring og swipe.
+Denne beslutning erstatter build 1–9's frie bevægelse og kameratræk.
+
+- Figuren går automatisk efter startnedtællingen og bliver på gangens midterlinje.
+  Ingen sidelæns bevægelse eller hastighedsstyring med joystickets udslag.
+- **Venstre/højre:** bestil ét sving ved næste lovlige mulighed i den valgte side.
+  Svinget huskes, indtil det kan udføres, også hvis en væg standser figuren først.
+- **Op:** fortsæt ligeud og erstat et eventuelt gemt sving.
+- **Ned:** vend 180 grader, også mellem to feltcentre.
+- Ét udslag giver én kommando. At holde venstre giver ikke flere venstresving.
+  Slip og vælg igen, eller skift direkte til en anden retning, for en ny kommando.
+- Slip fortsætter automatisk gang. En væg stopper ved sidste gangfelts centrum.
+  En ny lovlig retning eller en åbnet genvej kan sætte figuren i gang igen.
+- Kameraet følger gangretningen vandret. Ingen lodret kamerastyring eller
+  frit kameratræk. Normalt tager et 90-graders kameraskift ca. 0,125 sekund;
+  reduceret bevægelse bruger øjeblikkeligt skift. Pause fryser kamera og simulation.
+- Pause, baggrund og genoptagelsesnedtælling fryser bevægelse og effekter.
+  Gemte spil bevarer retningen og det bestilte sving; pointerdata ryddes.
+- Genstandsknappen er separat og kan bruges, mens joysticket holdes.
+  Venstrehåndslayout spejler joystick og genstand. Desktop: WASD/piletaster med
+  samme relative betydning; gamepad bruger venstre pind.
+
+## Teknik og videreførelse
+
+Det spiltilpassede Unity-overlay og Input System bevares. Det giver samme
+kommandoer, touchmål, genstandssymboler og spejlede layout på iOS 17+, iPad og
+desktop. Bevægelsen følger den samme ganggraf som banens regler, men med
+kontinuerlig position og hastighed langs gangen. Sving sker ved feltcentre.
+
+Snapshotformat 3 gemmer automatisk bevægelse og det ventende sving.
+Version 1 og 2 kan fortsat læses: positionen justeres til en lovlig midterlinje,
+retningen afrundes til nærmeste af de fire gangretninger, og lodret kig nulstilles.
+Score, hjerter, effekttider, genstande og tilfældighed bevares. Gemte spil åbner i
+pause. Filnavnet er uændret, så den eksisterende lokale save kan findes.
 
 Apples [GCVirtualController](https://developer.apple.com/documentation/gamecontroller/gcvirtualcontroller)
-er en brugbar iOS-mulighed. Den stiller systemkontroller til rådighed og kan
-også kobles til appens egne kontroller. Apples
-[vejledning](https://developer.apple.com/documentation/gamecontroller/adding-virtual-controls-to-games-that-support-game-controllers-in-ios)
-beskriver også egne berøringsområder og egen tegning.
-Det nyere [Touch Controller](https://developer.apple.com/documentation/touchcontroller)
-kan tilpasses mere og integreres i Metal, men kræver iOS 26. Den installerede
-Xcode 27.1-SDK angiver dette i `TCTouchController.h`.
+blev vurderet ved det tidligere valg. Et native overlay ændrer ikke i sig selv
+bevægelsesmodellen. Unity-overlayet bruges nu til fire relative kommandoer.
+Ingen netværkstjeneste eller ekstra abonnement er involveret.
 
-For dette spil vælger vi én samlet inputvej i Unity. Den giver direkte kontrol
-over berøringsområder, kameratræk, symbolerne for banan/olie/boost og indstillingerne
-uden forskellige kontrolsystemer afhængigt af iOS-version. Dette er en
-projektvurdering; Apples native controllere er fortsat relevante i andre layouts.
+## Lyd og liv
 
-## Konkret udformning
-
-- Fast, rund joystickbase med analogt udslag og samme startplacering som den
-  manuelt bekræftede prototype. Berøringsområdet er 300 × 300 UI-enheder; den
-  synlige base er 220 × 220 og tommelfingerens vandring er 76 enheder.
-- Joysticket er diskret i hvile og tydeligere, mens det bruges. Slip stopper straks.
-- Kameratræk har sin egen pointer. Genstandsknappen har rund hit-test og viser
-  banan-, olie- eller boosts-symbol efter inventaret.
-- Venstrehåndslayout spejler bevægelse og genstand, mens kameraområdet flyttes.
-- Pause, fokusændringer og ændret safe area rydder aktive bevægelsesdata.
-- Ingen netværkstjeneste eller ekstra abonnement er involveret.
+- Fra build 11 er alle spillertekster på engelsk. HUD viser **Lives:** og op til fire tegnede hjertesymboler. Resterende samlehjerter
+  vises separat. Et mistet liv fjerner et symbol; ekstra liv tilføjer et.
+- iOS bruger AVAudioSession Playback med MixWithOthers, så Ring/Silent-knappen
+  ikke slukker spillets musik og effekter. Spillets egne lydindstillinger og
+  enhedens medielydstyrke gælder fortsat. Ingen mikrofon eller baggrundsafspilning.
+  Politikken genetableres ved forgrund og afsluttet lydafbrydelse.
+  Se [Apples Playback-dokumentation](https://developer.apple.com/documentation/avfaudio/avaudiosession/category-swift.struct/playback).
 
 ## Verifikation
 
-Build 2 er automatisk kontrolleret med tre samtidige syntetiske touchpunkter
-på Mac og fysisk iPhone 13, inklusive spejlet layout. Alle kontroller består.
-Den tidligere manuelle bekræftelse vedrører build 1; ny manuel accept registreres særskilt.
-Se [testrapporten](TEST_REPORT.md) og [implementeringsplanen](IMPLEMENTATION_PLAN.md).
+Build 10 testes særskilt i [testrapporten](TEST_REPORT.md). Build 9's tidligere
+skærmbilleder og 15-minutters måling er historisk evidens for det build.
+Brugeren har 21. oktober bekræftet både musik og effekter med fysisk
+Ring/Silent-knap på lydløs som svar på build 10-spørgsmålet. Den præcise build
+under lytningen er ikke særskilt verificeret. Se [manuelt lydbevis](verification/2026-10-21-manual-silent-switch-audio.json).
+Brugeren har 24. oktober svaret **“Styringen fungerer godt”** på spørgsmålet om
+automatisk gang og relative sving i build 12 på iPhone. Styringsoplevelsen er
+dermed manuelt accepteret; [registreret tilbagemelding](verification/2026-10-24-build12-manual-controls.json).
+Det er ikke samtidig accept af en hel runde, startmenuens design eller den
+endelige visuelle og lydmæssige kvalitet.

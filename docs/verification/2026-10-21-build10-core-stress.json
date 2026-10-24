@@ -1,0 +1,67 @@
+{
+  "passed": true,
+  "seedCount": 10,
+  "fixedTicks": 540000,
+  "nominalSimulatedSeconds": 9000,
+  "playingSeconds": 8397.588888850762,
+  "hearts": 7564,
+  "captures": 235,
+  "items": 145,
+  "wallTransitions": 702,
+  "checkpoints": 900,
+  "restarts": 75,
+  "activeMask": 15,
+  "seeds": [
+    {
+      "seed": 1,
+      "nominalSeconds": 900,
+      "restarts": 9
+    },
+    {
+      "seed": 2,
+      "nominalSeconds": 900,
+      "restarts": 9
+    },
+    {
+      "seed": 3,
+      "nominalSeconds": 900,
+      "restarts": 8
+    },
+    {
+      "seed": 4,
+      "nominalSeconds": 900,
+      "restarts": 7
+    },
+    {
+      "seed": 5,
+      "nominalSeconds": 900,
+      "restarts": 9
+    },
+    {
+      "seed": 6,
+      "nominalSeconds": 900,
+      "restarts": 7
+    },
+    {
+      "seed": 7,
+      "nominalSeconds": 900,
+      "restarts": 6
+    },
+    {
+      "seed": 8,
+      "nominalSeconds": 900,
+      "restarts": 7
+    },
+    {
+      "seed": 9,
+      "nominalSeconds": 900,
+      "restarts": 6
+    },
+    {
+      "seed": 10,
+      "nominalSeconds": 900,
+      "restarts": 7
+    }
+  ],
+  "scope": "Core simulation with randomized legal junction routes, automatic centre-line movement and queued turns, live AI, normal captures/restarts and checkpoint roundtrips. No Unity rendering or physical-device claims."
+}
