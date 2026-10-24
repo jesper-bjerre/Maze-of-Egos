@@ -17,15 +17,16 @@ namespace MazeOfEgos.Runtime
         private readonly GameObject[] bananaViews = new GameObject[4], oilViews = new GameObject[4];
         private readonly Material[] shortcutSignals;
         private readonly Transform[] gates;
-        private readonly Transform throwingHand;
-        private readonly ImportedCharacterPose handPose;
+        private readonly Avatar player;
+        private readonly Transform listener;
         private readonly Material banana, oil, returnMaterial;
         private readonly Mesh heartMesh;
         private readonly Font labelFont;
         private readonly Material labelMaterial;
         private readonly bool[] seen = new bool[4];
-        private double nextScare, previousCameraTime;
-        private float cameraYaw = 270;
+        private double nextScare;
+        public const float WallHeight = 1.15f;
+        private const float CameraPitch = 55, CameraYaw = 25, ViewSize = 4.5f;
         private readonly GameApp app;
         public readonly Camera Camera;
         private sealed class Avatar
@@ -43,16 +44,17 @@ namespace MazeOfEgos.Runtime
             labelMaterial = new Material(Resources.Load<Material>("Materials/WorldText"));
             labelMaterial.mainTexture = labelFont.material.mainTexture;
             root = new GameObject("Mechanical garden").transform;
-            var cameraObject = new GameObject("First person camera", typeof(Camera), typeof(AudioListener));
+            var cameraObject = new GameObject("Local garden camera", typeof(Camera));
             Camera = cameraObject.GetComponent<Camera>(); Camera.cullingMask &= ~(1 << 30); Camera.nearClipPlane = 0.06f; Camera.farClipPlane = 100;
+            Camera.orthographic = true; Camera.orthographicSize = ViewSize;
             Camera.backgroundColor = new Color(0.58f, 0.73f, 0.76f); Camera.clearFlags = CameraClearFlags.SolidColor;
-            Camera.transform.position = World(new Point2(maze.Definition.playerStart.x, maze.Definition.playerStart.y), 1.55f);
+            listener = new GameObject("Player audio listener", typeof(AudioListener)).transform;
+            UpdateCamera(new Point2(maze.Definition.playerStart.x, maze.Definition.playerStart.y));
             RenderSettings.ambientMode = AmbientMode.Trilight;
             RenderSettings.ambientSkyColor = new Color(0.73f, 0.81f, 0.83f);
             RenderSettings.ambientEquatorColor = new Color(0.62f, 0.65f, 0.57f);
             RenderSettings.ambientGroundColor = new Color(0.33f, 0.35f, 0.29f);
-            RenderSettings.fog = true; RenderSettings.fogMode = FogMode.ExponentialSquared;
-            RenderSettings.fogColor = new Color(0.59f, 0.70f, 0.66f); RenderSettings.fogDensity = 0.018f;
+            RenderSettings.fog = false;
             Light sun = new GameObject("Warm afternoon", typeof(Light)).GetComponent<Light>();
             sun.type = LightType.Directional; sun.color = new Color(1, 0.86f, 0.65f); sun.intensity = 1.8f;
             sun.transform.rotation = Quaternion.Euler(48, -30, 0); sun.shadows = LightShadows.Soft;
@@ -64,10 +66,14 @@ namespace MazeOfEgos.Runtime
                 SceneMeshes.Material("West blue wood", new Color(0.30f, 0.44f, 0.52f)),
                 SceneMeshes.Material("South warm plaster", new Color(0.70f, 0.57f, 0.36f)) };
             var staticRoot = new GameObject("Static architecture").transform; staticRoot.SetParent(root);
+            Material grass = SceneMeshes.Material("Garden surroundings", new Color(.24f, .35f, .25f), 0, .12f);
+            SceneMeshes.Primitive("Garden surroundings", staticRoot, PrimitiveType.Cube, grass,
+                World(new Point2((maze.Definition.width - 1) / 2.0, (maze.Definition.height - 1) / 2.0), -.4f),
+                new Vector3((maze.Definition.width + 40) * 2.5f, .2f, (maze.Definition.height + 40) * 2.5f));
             SceneMeshes.Primitive("Garden floor", staticRoot, PrimitiveType.Cube, floor,
                 World(new Point2((maze.Definition.width - 1) / 2.0, (maze.Definition.height - 1) / 2.0), -0.15f),
                 new Vector3(maze.Definition.width * 2.5f, 0.30f, maze.Definition.height * 2.5f));
-            Mesh wallMesh = SceneMeshes.RoundedBox(new Vector3(3.2f, 4.5f, 3.2f), 0.10f);
+            Mesh wallMesh = SceneMeshes.RoundedBox(new Vector3(2.5f, WallHeight, 2.5f), 0.10f);
             walls = new Transform[maze.Definition.shortcutCandidates.Length][];
             shortcutSignals = new Material[walls.Length];
             var movingCells = new HashSet<Cell>();
@@ -81,14 +87,14 @@ namespace MazeOfEgos.Runtime
                 for (int j = 0; j < cells.Length; j++)
                 {
                     Cell cell = MazeMap.FromPair(cells[j]); movingCells.Add(cell);
-                    walls[i][j] = SceneMeshes.MeshObject("Retracting wall " + i, root, wallMesh, brass, World(cell.Position, 2.25f), Vector3.one).transform;
+                    walls[i][j] = SceneMeshes.MeshObject("Retracting wall " + i, root, wallMesh, brass, World(cell.Position, WallHeight / 2), Vector3.one).transform;
                     for (int side = -1; side <= 1; side += 2)
                     {
                         Vector3 stripe = World(cell.Position, 0.015f) + approach * (side * 1.77f);
                         SceneMeshes.Primitive("Shortcut floor signal " + i, root, PrimitiveType.Cube, shortcutSignals[i], stripe,
                             acrossX ? new Vector3(0.14f, 0.025f, 1.75f) : new Vector3(1.75f, 0.025f, 0.14f));
                         SceneMeshes.Primitive("Shortcut wall signal " + i, walls[i][j], PrimitiveType.Sphere, shortcutSignals[i],
-                            approach * (side * 1.62f) + Vector3.down * 0.65f, Vector3.one * 0.18f);
+                            approach * (side * 1.27f), Vector3.one * 0.18f);
                     }
                 }
             }
@@ -97,7 +103,7 @@ namespace MazeOfEgos.Runtime
                 Cell cell = new Cell(x, y);
                 if (maze.IsWalkable(cell, true) || movingCells.Contains(cell)) continue;
                 int zone = (y < 15 ? 0 : 2) + (x < 14 ? 0 : 1);
-                GameObject wall = SceneMeshes.MeshObject("Wall " + cell, staticRoot, wallMesh, wallMaterials[zone], World(cell.Position, 2.25f), Vector3.one);
+                GameObject wall = SceneMeshes.MeshObject("Wall " + cell, staticRoot, wallMesh, wallMaterials[zone], World(cell.Position, WallHeight / 2), Vector3.one);
                 wall.isStatic = true;
             }
             // Matching tunnel extensions mask the logical wrap; character copies preserve visibility.
@@ -105,9 +111,8 @@ namespace MazeOfEgos.Runtime
             {
                 int x = side == 0 ? -i : maze.Definition.width - 1 + i;
                 foreach (int y in new[] { 13, 15 })
-                    SceneMeshes.MeshObject("Tunnel wall", staticRoot, wallMesh, wallMaterials[y < 15 ? 0 : 2], World(new Point2(x, y), 2.25f), Vector3.one).isStatic = true;
+                    SceneMeshes.MeshObject("Tunnel wall", staticRoot, wallMesh, wallMaterials[y < 15 ? 0 : 2], World(new Point2(x, y), WallHeight / 2), Vector3.one).isStatic = true;
                 SceneMeshes.Primitive("Tunnel floor", staticRoot, PrimitiveType.Cube, floor, World(new Point2(x, 14), -0.15f), new Vector3(2.5f, 0.3f, 2.5f));
-                SceneMeshes.Primitive("Tunnel roof", staticRoot, PrimitiveType.Cube, wallMaterials[0], World(new Point2(x, 14), 4.6f), new Vector3(2.5f, 0.2f, 2.5f));
             }
             gates = new Transform[maze.Definition.ghostDoorCells.Length];
             for (int door = 0; door < gates.Length; door++)
@@ -152,16 +157,12 @@ namespace MazeOfEgos.Runtime
             oil = SceneMeshes.Material("Cartoon oil", new Color(0.14f, 0.09f, 0.24f), 0.35f, 0.95f);
             returnMaterial = SceneMeshes.Material("Pause bubble", new Color(0.66f, 0.87f, 0.96f), 0.15f, 0.9f);
             Mesh peelMesh = SceneMeshes.BananaPeel();
-            throwingHand = new GameObject("Zelenskyy throwing hand").transform;
-            throwingHand.SetParent(Camera.transform, false);
-            handPose = new ImportedCharacterPose(throwingHand, Resources.Load<GameObject>("CharacterModels/zelenskyy-hand"), "zelenskyy");
-            Transform palm = Array.Find(handPose.Instance.GetComponentsInChildren<Transform>(), t => t.name == "HandAnchor");
-            handPose.Instance.transform.localPosition = -throwingHand.InverseTransformPoint(palm.position);
-            Transform mount = new GameObject("Arm mount").transform; mount.SetParent(throwingHand, false);
-            handPose.Instance.transform.SetParent(mount, false); mount.localRotation = Quaternion.Euler(0, 0, 180);
-            foreach (Renderer renderer in throwingHand.GetComponentsInChildren<Renderer>())
-            { renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = false; }
-            throwingHand.gameObject.SetActive(false);
+            Transform playerRoot = new GameObject("Player character").transform; playerRoot.SetParent(root, false);
+            player = new Avatar { root = playerRoot,
+                imported = new ImportedCharacterPose(playerRoot, Resources.Load<GameObject>("CharacterModels/zelenskyy"), "zelenskyy") };
+            player.label = Label("YOU", playerRoot, new Vector3(0, 2.5f, 0), .065f, new Color(1, .88f, .4f));
+            Material marker = SceneMeshes.Material("Player marker gold", new Color(1, .72f, .16f), .2f, .35f, true);
+            SceneMeshes.Primitive("Player floor marker", playerRoot, PrimitiveType.Cylinder, marker, new Vector3(0, .025f, 0), new Vector3(1.15f, .012f, 1.15f));
             for (int i = 0; i < 4; i++)
             {
                 avatars[i] = BuildAvatar(i); tunnelAvatars[i] = BuildAvatar(i); tunnelAvatars[i].root.gameObject.SetActive(false);
@@ -195,26 +196,37 @@ namespace MazeOfEgos.Runtime
             label.font = labelFont; label.GetComponent<Renderer>().sharedMaterial = labelMaterial;
             return label;
         }
-        public void ResetCamera() { cameraYaw = (float)app.Session.Yaw; previousCameraTime = app.Session.Time; }
+        public void ResetCamera() => UpdateCamera(app.Session.Player);
+        public Point2 ScreenDirection(Point2 direction)
+        {
+            Vector3 origin = World(app.Session.Player);
+            Vector3 start = Camera.WorldToScreenPoint(origin), end = Camera.WorldToScreenPoint(origin + World(direction));
+            return new Point2(end.x - start.x, end.y - start.y);
+        }
+        private void UpdateCamera(Point2 position)
+        {
+            Camera.aspect = (float)Screen.width / Mathf.Max(1, Screen.height);
+            Quaternion rotation = Quaternion.Euler(CameraPitch, CameraYaw, 0);
+            Camera.transform.SetPositionAndRotation(World(position, .65f) - rotation * Vector3.forward * 35, rotation);
+            // Distance cues remain close to the player; the overhead camera must
+            // not move the listener tens of metres away from the action.
+            listener.position = World(position, 1.4f); listener.rotation = Quaternion.Euler(0, CameraYaw, 0);
+        }
         public void ResetEncounters()
         {
             ResetCamera(); Array.Clear(seen, 0, seen.Length); nextScare = 0;
+            player.imported.Reset();
             foreach (Avatar avatar in avatars) avatar.imported?.Reset();
             foreach (Avatar avatar in tunnelAvatars) avatar.imported?.Reset();
         }
 
-        public void Render(GameSession session, Point2 previousPlayer, Point2[] previousGhosts, float alpha, bool showHands)
+        public void Render(GameSession session, Point2 previousPlayer, Point2[] previousGhosts, float alpha, bool showPlayer)
         {
             // Dynamic font atlases may be replaced when UI glyphs are requested.
             labelMaterial.mainTexture = labelFont.material.mainTexture;
             Point2 end = maze.Near(session.Player, previousPlayer);
             Point2 cameraPosition = (end - previousPlayer).Length > 2 ? session.Player : Point2.Lerp(previousPlayer, end, alpha);
-            Camera.transform.position = World(cameraPosition, 1.55f);
-            if (session.Time < previousCameraTime || app.Settings.reducedMotion) cameraYaw = (float)session.Yaw;
-            else cameraYaw = Mathf.MoveTowardsAngle(cameraYaw, (float)session.Yaw, (float)(session.Time - previousCameraTime) * 720);
-            previousCameraTime = session.Time;
-            Camera.transform.rotation = Quaternion.Euler(0, cameraYaw, 0);
-            Camera.fieldOfView = Camera.HorizontalToVerticalFieldOfView(app.Settings.fov, Camera.aspect);
+            UpdateCamera(cameraPosition); Camera.enabled = showPlayer;
             float time = (float)session.Time;
             for (int i = 0; i < hearts.Length; i++)
             {
@@ -235,7 +247,7 @@ namespace MazeOfEgos.Runtime
                     wall.phase == WallPhase.Closing ? Mathf.Clamp01((float)(wall.phaseUntil - session.Time) / 1.25f) : 0;
                 fraction = Mathf.SmoothStep(0, 1, fraction);
                 foreach (Transform piece in walls[i])
-                { Vector3 position = piece.position; position.y = 2.25f - fraction * 4.8f; piece.position = position; }
+                { Vector3 position = piece.position; position.y = WallHeight / 2 - fraction * 3; piece.position = position; }
                 Color signal = wall.phase == WallPhase.Open ? new Color(0.28f, 0.82f, 0.59f) :
                     wall.phase == WallPhase.Closed ? new Color(0.36f, 0.26f, 0.12f) : new Color(1, 0.66f, 0.16f);
                 float pulse = wall.phase == WallPhase.Warning && !app.Settings.reducedMotion ? 0.65f + 0.35f * Mathf.Sin(time * 8) : 1;
@@ -291,19 +303,10 @@ namespace MazeOfEgos.Runtime
                 bananaViews[i].SetActive(isBanana); oilViews[i].SetActive(!isBanana);
                 if (airborne && (thrown == null || trap.id > thrown.id)) thrown = trap;
             }
-            throwingHand.gameObject.SetActive(showHands && thrown != null && session.Phase != SessionPhase.Caught &&
-                session.Phase != SessionPhase.GameOver && session.Phase != SessionPhase.LevelClear);
-            if (thrown != null)
-            {
-                float progress = (float)thrown.FlightProgress(session.Time);
-                handPose.Preview("Throw", app.Settings.reducedMotion ? .15f : progress * .36f);
-                float gesture = app.Settings.reducedMotion ? 0 : Mathf.Sin(progress * Mathf.PI);
-                // Anchor inside the lower frame at every supported FOV/aspect ratio.
-                float side = app.Settings.leftHanded ? -1 : 1;
-                throwingHand.position = Camera.ViewportToWorldPoint(new Vector3(0.5f + side * 0.13f, 0.10f + gesture * 0.08f, 0.65f + gesture * 0.12f));
-                throwingHand.localRotation = Quaternion.Euler(-gesture * 20, -side * 10, side * gesture * 10);
-                throwingHand.localScale = new Vector3(side, 1, 1);
-            }
+            player.root.gameObject.SetActive(showPlayer);
+            player.root.position = World(cameraPosition); player.root.rotation = Quaternion.Euler(0, (float)session.Yaw, 0);
+            player.label.transform.rotation = Camera.transform.rotation;
+            player.imported.RenderPlayer(session, thrown, app.Settings.reducedMotion);
         }
         private void RenderAvatar(Avatar avatar, GameSession session, int index, Point2 position, float time)
         {

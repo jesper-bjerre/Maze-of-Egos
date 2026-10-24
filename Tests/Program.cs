@@ -48,6 +48,34 @@ internal static class Program
     }
     private static int Main()
     {
+        Run("Screen input follows projected corridors at different camera angles and scales", () => {
+            foreach (double pitch in new[] { 35.0, 55.0, 70.0 })
+            for (int yaw = -90; yaw <= 360; yaw += 25)
+            {
+                double a = yaw * Math.PI / 180, p = pitch * Math.PI / 180;
+                Point2 n = new Point2(-Math.Sin(a), Math.Sin(p) * Math.Cos(a));
+                Point2 e = new Point2(Math.Cos(a), Math.Sin(p) * Math.Sin(a));
+                Assert(ScreenHeadingInput.HeadingFor(n, n, e) == 0);
+                Assert(ScreenHeadingInput.HeadingFor(e, n, e) == 1);
+                Assert(ScreenHeadingInput.HeadingFor(n * -1, n, e) == 2);
+                Assert(ScreenHeadingInput.HeadingFor(e * -1, n, e) == 3);
+                Assert(ScreenHeadingInput.HeadingFor(e, n * 3, e * .7) == 1);
+            }
+            Reject(() => ScreenHeadingInput.HeadingFor(new Point2(1, 0), new Point2(), new Point2(1, 0)));
+        });
+        Run("Screen stick latches a world heading until release or a different direction", () => {
+            var latch = new ScreenHeadingInput(); Point2 n = new Point2(-.4, .8), e = new Point2(.8, .4);
+            Assert(latch.Read(n, n, e) == 0 && latch.Read(n, n, e) == null);
+            Assert(latch.Read(e, n, e) == 1 && latch.Read(e, n, e) == null);
+            Assert(latch.Read(new Point2(), n, e) == null && latch.Read(e, n, e) == 1);
+            latch.Clear(); Assert(latch.Read(e, n, e) == 1);
+        });
+        Run("A screen-selected world turn remains queued through a change of heading", () => {
+            var s = Fresh(); Place(s, new Point2(10.25, 5), 90);
+            int north = ScreenHeadingInput.HeadingFor(new Point2(-.4, .8), new Point2(-.4, .8), new Point2(.8, .4));
+            s.RequestHeading(north); Advance(s, 95);
+            Equal(s.Player.x, 12); Assert(s.Player.y < 5 && s.Yaw == 0 && s.QueuedHeading == -1);
+        });
         Run("Item-use feedback identifies banana, oil and boost even during an existing boost", () => {
             var session = Fresh(true); Place(session, new Point2(6, 5), 90);
             foreach (ItemKind kind in new[] { ItemKind.SpeedBoost, ItemKind.BananaPeel, ItemKind.OilSlick })

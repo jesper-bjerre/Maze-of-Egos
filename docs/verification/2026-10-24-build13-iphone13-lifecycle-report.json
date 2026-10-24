@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "realOsPause": true,
+  "realOsResume": true,
+  "backgroundSeconds": 9.309871,
+  "frozenSimulationTime": 0.74999999999999833,
+  "powerRemaining": 39.25,
+  "boostRemaining": 29.25,
+  "warningRemaining": 19.25,
+  "checkpointVerified": true,
+  "playbackAudioAfterForeground": true
+}

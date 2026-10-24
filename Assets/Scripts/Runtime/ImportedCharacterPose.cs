@@ -19,6 +19,8 @@ namespace MazeOfEgos.Runtime
         private double surpriseStarted = double.NegativeInfinity;
         private PursuerLife previousLife;
         private double puffStarted = double.NegativeInfinity;
+        private double playerTime = double.NaN;
+        private Point2 playerPosition;
         public GameObject Instance { get; }
         public string CurrentClip { get; private set; }
         public ImportedCharacterPose(Transform parent, GameObject model, string id = "putin")
@@ -48,7 +50,7 @@ namespace MazeOfEgos.Runtime
             for (int i = 0; i < jacket.Length; i++) jacket[i] = skin.sharedMaterials[i].name == prefix + "-SuitNavy" || skin.sharedMaterials[i].name == prefix + "-SuitLapel";
             frightened.SetColor("_BaseColor", new Color(.40f, .57f, .90f));
         }
-        public void Reset() { wasFrightened = false; surpriseStarted = double.NegativeInfinity; gait.Reset(); puffStarted = double.NegativeInfinity; previousLife = PursuerLife.Recovering; }
+        public void Reset() { wasFrightened = false; surpriseStarted = double.NegativeInfinity; gait.Reset(); puffStarted = double.NegativeInfinity; previousLife = PursuerLife.Recovering; playerTime = double.NaN; }
         public void Surprise(double time) => surpriseStarted = time;
         public void Render(GameSession session, PursuerState state, bool reducedMotion)
         {
@@ -75,6 +77,20 @@ namespace MazeOfEgos.Runtime
         }
         public void Preview(string clip, float time)
         { int index = Array.IndexOf(ClipNames, clip); if (index < 0 || clips[index] == null) throw new ArgumentException("Unknown clip " + clip); Sample(index, time); }
+        public void RenderPlayer(GameSession session, TrapState thrown, bool reducedMotion)
+        {
+            // Actual distance keeps the feet idle at a wall. No wall-clock animation
+            // leaks into pause, menu or the resume countdown.
+            if (playerTime == session.Time) return;
+            double elapsed = session.Time - playerTime;
+            double distance = (session.Maze.Near(session.Player, playerPosition) - playerPosition).Length;
+            double speed = elapsed > 0 && distance < 2 ? distance / elapsed * MazeMap.GridMeters : 0;
+            gait.Update(session.Time, speed);
+            int clip = thrown != null ? 7 : speed > .01 ? 1 : 0;
+            float time = clip == 7 ? (reducedMotion ? .15f : (float)(session.Time - thrown.launchedAt)) :
+                clip == 1 ? (float)(gait.Cycles % 1) * clips[1].length : (float)session.Time;
+            Sample(clip, time); playerTime = session.Time; playerPosition = session.Player;
+        }
         private void Sample(int index, float time)
         {
             for (int i = 0; i < clips.Length; i++) { if (clips[i] != null) { clips[i].enabled = false; clips[i].weight = 0; } }

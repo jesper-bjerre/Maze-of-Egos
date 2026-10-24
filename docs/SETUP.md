@@ -171,11 +171,15 @@ uafhængigt af enhedens sprog. Spil-/settingsfilernes format og navne er uændre
 Den native kontrol tvinger `da-DK` kultur, så engelsk tekst og formatering også
 kontrolleres på en dansk enhed. Ved hver optagelse kontrolleres tekstens højde.
 
-## Aktuel test og Release-kandidat fra build 12
+## Aktuel test og perspektivprototype fra build 14
 
 Alle figurer er nu importerede FBX-modeller; Unity kræver stadig ikke Blender.
 Læs den seneste status i planen, da ældre Build 1–6-beskrivelser ovenfor er
-historiske. Den udvidede kontrol producerer 40 PNG'er på Mac og 42 på iPhone.
+historiske. N1 viser hele spilleren fra et lokalt, højt kamera og bruger
+joysticket efter gangene på skærmen. Build 14 har en markant tættere visning:
+9 meter i billedhøjde mod build 13's 17 meter. Det er stadig den gamle regelsimulation;
+konkurrence/figurvalg/angreb kommer i N2–N5. Den udvidede kontrol producerer
+43 PNG'er pr. Mac-format og 47 på iPhone.
 Fire separate `*-character-check.json` indeholder fodmålingerne. Begge fysiske
 landscape-retninger og safe area testes på iOS; desktop springer netop den
 fysiske rotationskontrol over.
@@ -184,10 +188,10 @@ fysiske rotationskontrol over.
 python3 Tools/unity.py smoke-mac --width 1600 --height 1200
 python3 Tools/unity.py smoke-mac --width 2400 --height 1080
 # Efter installation af den signerede Debug-app på din egen enhed:
-python3 Tools/ios_test.py smoke --device DIN_IPHONE --label build12
-python3 Tools/ios_test.py lifecycle --device DIN_IPHONE --label build12
+python3 Tools/ios_test.py smoke --device DIN_IPHONE --label build14
+python3 Tools/ios_test.py lifecycle --device DIN_IPHONE --label build14
 # Efter installation af den særskilte signerede Release-performanceapp:
-python3 Tools/ios_test.py performance --device DIN_IPHONE --seconds 60 --label build12
+python3 Tools/ios_test.py performance --device DIN_IPHONE --seconds 60 --label build14
 # Normal Release-eksport uden testharness:
 python3 Tools/unity.py build-ios-release
 ```
@@ -197,14 +201,30 @@ aktiverer den samme kørende app igen. Den kræver faktiske OS-callbacks og
 kontrollerer frosne timere, disk-checkpoint og resume-nedtælling. Kun den
 udtrykkeligt startede test bruger dette forløb; normal gameplay gør ikke.
 Runneren kræver en frisk lokal outputmappe og bevarer tidligere evidens.
-Brug en ny `--label`/`--output` ved gentagelser. Build 12 gentager menu-, tekst- og funktionskontrollen. Der er ikke optaget en ny
-performancekørsel; brug `--seconds 60` eller `--seconds 900` ved behov.
+Brug en ny `--label`/`--output` ved gentagelser. Fra build 13 kontrolleres desuden
+fast kameravinkel, hel spiller, projektion af alle fire retninger, begge
+tunnelovergange og gameplay i begge landscape-retninger. Der er ikke optaget
+en ny performancekørsel; en performancekommando kræver først en frisk,
+særskilt performanceeksport og signering. De gamle build 10-performancefiler
+må ikke bruges som måling af build 14.
 
 En normal Release-eksport har hverken `DevelopmentSmoke`, `DevelopmentLifecycle`
 eller `DevelopmentPerformance` i den genererede spilassembly. Den signerede
 lokale archive ligger under `Builds/Archives/`, som er ignoreret. Dens signering
 er til lokal enhedsafprøvning; App Store-distribution og upload udføres særskilt
 efter review. Brug dit eget udviklerteam ved signering på en ny Mac.
+
+Normal archive for den tættere visning: `Builds/Archives/MazeOfEgos-0.2.0-14.xcarchive`.
+Audit: `python3 Tools/verify_ios_release.py --build 14`.
+Luk Xcode før Unitys iOS-eksport, hvis Unity bliver stående ved
+`Closing open Unity projects in Xcode`; genåbn først efter eksporten. Xcode
+kan derefter bygge det genererede `Builds/iOS-Release/Unity-iPhone.xcodeproj`.
+I build 14 lykkedes eksporten også med Xcode åbent ved først at flytte de
+tidligere genererede `Builds/iOS` og `Builds/iOS-Release` til en lokal backup
+under `.artifacts/build14-previous-exports/` og eksportere til de nu tomme
+placeringer. Bevar gamle eksportmapper frem for at slette eventuelle lokale
+Xcode-ændringer. Unitys forsøg på at lukke et eksisterende projekt blev derved
+undgået; kildeprojektet og de tidligere archives blev bevaret.
 
 Mac 4:3 og bredformat validerer layout og input i de faktiske renderstørrelser;
 de erstatter ikke fysisk iPad-accept. Fuld testdokumentation og afgrænsninger

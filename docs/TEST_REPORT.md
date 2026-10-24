@@ -1,5 +1,139 @@
 # Verifikation — senest opdateret 24. oktober 2026
 
+## Closer N1 camera — 0.2.0 (14), October 24, 2026
+
+User feedback on build 13: **“Kameraet skal markant tættere på karakteren”.**
+Build 14 reduces the orthographic half-height from 8.5 to 4.5 m, giving a
+9 m image height instead of 17 m. Characters and world details appear about
+**1.89 times larger in each screen direction**. Pitch 55°, yaw 25°, full-player
+rendering, fixed rotation and screen-oriented corridor input are retained.
+This is a zoom change; moving an orthographic camera closer alone would not
+enlarge the character. The visible local area is smaller and needs manual
+assessment for the balance between character size and warning time.
+
+Fresh verification for this change:
+
+- Managed Unity compilation passed with **0 warnings and 0 errors**.
+- Repository validation passed with **139 unique GUIDs**, unchanged reference
+  art, menu artwork, models/manifests, maze and rig/clip budgets.
+- Native Mac checks passed at **1600×900, 2400×1080 and 1600×1200**, with
+  **43 PNGs per format**. Full player, fixed camera, all four screen directions,
+  queued/released turns, tunnel wraps, both hand layouts and item use pass.
+- Physical iPhone 13 Debug checks passed with **47 PNGs at 2532×1170**,
+  including both actual landscape directions, safe area and gameplay views.
+- The first run found a review NPC placed outside the smaller camera frame.
+  The character-review fixture now reframes closer after its gait measurement,
+  and the local-view example places the neighbour two cells away. Visibility
+  assertions were retained; this changes test staging, not AI/game rules.
+- Core/input rules and serialization are unchanged from the earlier build 13
+  run (**65/65** Core tests and actual Unity Newtonsoft checks). These counts
+  are retained baseline evidence, not a newly executed rule suite for this zoom.
+
+The Mac [16:9 view](verification/2026-10-24-build14-mac-16x9-45-local-garden.png)
+and [4:3 view](verification/2026-10-24-build14-mac-4x3-45-local-garden.png)
+were visually inspected. Reports and new captures use the
+`2026-10-24-build14-` prefix; build 13 evidence is preserved separately.
+The [iPhone view](verification/2026-10-24-build14-iphone13-view-LandscapeLeft.png)
+was also inspected for the larger full player, nearby opponent, corridors and
+HUD clearance. The [opposite orientation](verification/2026-10-24-build14-iphone13-view-LandscapeRight.png)
+is captured separately.
+
+The normal **0.2.0 (14)** Release archive passed signature, version, English
+language, orientations, icon/privacy and test-harness-absence audit. It was
+installed and launched on the physical iPhone without test flags, preserving
+normal player storage. The installed version and running process were verified
+after eight seconds. See [normal launch evidence](verification/2026-10-24-build14-iphone13-normal-launch.json)
+and [archive audit](verification/2026-10-24-build14-release-audit.json).
+
+Both iOS exports succeeded with Xcode still open by preserving the previous
+generated export folders under `.artifacts/build14-previous-exports/` and
+exporting into fresh locations. This avoided Unity's attempt to inspect/close
+an existing Xcode project when the GUI tool could not connect. No permanent
+build-tool change or game-code workaround was needed.
+
+This remains the N1 classic-rule perspective prototype; N2–N5 are pending.
+There is no new long-run performance/stress measurement or physical iPad test.
+User feedback requests the closer camera; it does not yet accept build 14.
+
+## N1 — local 3D camera and screen-oriented controls, 0.2.0 (13)
+
+Implemented October 24, 2026. This is the perspective prototype requested for
+N1. It retains the classic simulation, including lives, power hearts, levels,
+four pursuers and the existing save format. Five equal competitors, character
+selection, timed rounds, trophies and new attacks remain N2–N5 work.
+
+The camera is orthographic, follows the interpolated player position, and
+keeps pitch 55°, yaw 25° and half-height 8.5 m. Walls are 1.15 m high; low
+garden dressing and open tunnel roofs expose neighbouring corridors. Wall
+tiles no longer overlap at the top, and coping is separated from the wall
+surface to remove the z-fighting found in the first visual check. Zelenskyy
+is a full rigged character with a gold marker and YOU label. Movement drives
+the gait; the full-body Throw animation replaces the visible first-person
+hand. The audio listener stays at the player, with the camera's horizontal
+orientation. Shadow distance/resolution now cover the overhead view.
+
+Joystick input is matched to the actual pixel projections of the four maze
+directions. It stores a world heading once per deflection. Release retains
+automatic movement and a pending turn; a changed direction replaces it.
+Keyboard/gamepad use the same conversion. Help/tutorial and MOVE label are
+English; the ineffective perspective FOV buttons are removed.
+
+| Check | Actual result |
+| --- | --- |
+| Core rules/navigation/measurement/animation | **65 passed, 0 failed**; three new tests cover projected directions across angles/scales, command latching, and a world-heading queue through a junction |
+| Unity managed compilation | Passed, 0 errors and 0 warnings |
+| Actual Unity Newtonsoft JSON | Passed roundtrip, paused restore, queued heading, airborne banana/landing and v1 migration |
+| Repository/assets | Passed, 139 unique Unity GUIDs; maze equality, original reference copies, menu artwork, model/source hashes and rig budgets preserved |
+| Mac 1600×900 | Native PASS, 43 framebuffer PNGs |
+| Mac 2400×1080 | Native PASS, 43 framebuffer PNGs |
+| Mac 1600×1200 | Native PASS, 43 framebuffer PNGs |
+| Physical iPhone 13 Debug | Native PASS, 47 PNGs at 2532×1170; both actual landscape orientations, safe area and gameplay captures |
+| Physical iPhone background/resume | Passed actual OS callbacks, 9.31 s background interval, frozen timers, disk checkpoint, resume countdown and native Playback policy after foreground |
+| Normal Release archive | Signed 0.2.0 (13) audit passed; English language, iPhone/iPad family, iOS 17 minimum, orientations, privacy declarations and absence of all three test harness classes |
+
+New native checks exercise all four projected headings while facing the
+opposite direction, a queued turn after release, fixed camera rotation,
+local floor footprint, full-player visibility, player-local audio listener,
+both tunnel wraps, full-player throwing/frozen pose and both gameplay
+orientations on iPhone. Existing functional checks for the supplied menu,
+mirrored multitouch, settings, old rules/items/walls, imported NPC rigs,
+save/resume mid-flight, level completion and replay also pass. These are
+controlled fixtures with synthetic touch, not a manually played round.
+
+Selected captures were inspected for composition, local visibility, full
+player, low walls, stable wall tops and tunnel rendering. See the
+[iPhone view](verification/2026-10-24-build13-iphone13-view-LandscapeLeft.png),
+[opposite orientation](verification/2026-10-24-build13-iphone13-view-LandscapeRight.png),
+[Mac 4:3 view](verification/2026-10-24-build13-mac-4x3-45-local-garden.png),
+[Mac wide view](verification/2026-10-24-build13-mac-wide-45-local-garden.png),
+[queued turn](verification/2026-10-24-build13-iphone13-41-automatic-turn.png)
+and [tunnel wrap](verification/2026-10-24-build13-iphone13-43-tunnel-wrap.png).
+PASS reports, lifecycle JSON and the signed archive audit are saved beside
+these captures with the `2026-10-24-build13-` prefix.
+
+The audited normal Release 0.2.0 (13) was then installed and launched on the
+physical iPhone without test arguments or MAZE test environment variables.
+The installed app list confirms the version; process 39848 remained running
+after eight seconds. Normal player storage was not reset. See the
+[normal launch evidence](verification/2026-10-24-build13-iphone13-normal-launch.json).
+The matching source inventory excludes generated bin/obj/cache/build files.
+
+The first iOS export crashed in Unity/Burst's Mono child domain during target
+import; the next stalled while closing the open Xcode project. After stopping
+that batch process and the user closing Xcode, both final Debug and Release
+exports succeeded. The local diagnostic is retained in
+`Logs/build13-ios-import-crash.log`. No game-code workaround was required.
+Xcode emits generated Unity/libc++ platform and script-phase warnings.
+The Debug iPhone smoke also emits a persistent allocation warning at shutdown;
+the same warning is present in the build 12 log. The functional PASS does not
+establish absence of memory leaks or long-run stability.
+
+Manual acceptance of this new camera and input is pending. The user's
+build 12 controls feedback applies to relative first-person turns, not N1.
+No new performance/stress run or physical iPad test is claimed. Final art,
+camera balance and the competitive gameplay still require their planned
+review. Build 9/10 measurements remain historical evidence for those builds.
+
 ## Existing build 12 redeployed — October 24, 2026
 
 Opened `Builds/iOS-Release/Unity-iPhone.xcodeproj` in Xcode 27.1 (27A9275),

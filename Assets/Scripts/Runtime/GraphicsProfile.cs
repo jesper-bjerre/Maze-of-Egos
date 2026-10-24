@@ -15,7 +15,8 @@ namespace MazeOfEgos.Runtime
                 GraphicsSettings.defaultRenderPipeline = runtime; QualitySettings.renderPipeline = runtime;
             }
             runtime.renderScale = economy ? .75f : 1;
-            runtime.shadowDistance = economy ? 12 : 25;
+            runtime.shadowDistance = economy ? 45 : 60;
+            runtime.mainLightShadowmapResolution = economy ? 1024 : 2048;
             runtime.msaaSampleCount = economy ? 1 : 2;
         }
     }

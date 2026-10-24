@@ -28,7 +28,9 @@ namespace MazeOfEgos.Runtime
         private GameHud hud;
         private GameAudio audioView;
         private DesktopActions input;
-        private readonly JoystickTurnLatch turnInput = new JoystickTurnLatch();
+        private readonly ScreenHeadingInput turnInput = new ScreenHeadingInput();
+        public Camera GameCamera => view.Camera;
+        public Point2 ScreenDirection(Point2 direction) => view.ScreenDirection(direction);
         private bool inMenu = true;
         private SessionSnapshot savedGame;
         private string runPath, settingsPath;
@@ -109,7 +111,7 @@ namespace MazeOfEgos.Runtime
             hud.Joystick.Clear(); turnInput.Clear(); SaveRun();
             if (!Settings.tutorialSeen)
             {
-                hud.Notify("Collect all hearts.\nYou move automatically. Use the stick to choose your next turn.\nDown: turn around · Release: keep moving", 9);
+                hud.Notify("Collect all hearts.\nPoint the stick toward a corridor on the screen.\nRelease: keep moving · Turns are remembered", 9);
                 Settings.tutorialSeen = true; SaveSettings();
             }
         }
@@ -154,11 +156,12 @@ namespace MazeOfEgos.Runtime
             if (!inMenu && !hud.SettingsOpen && Session.Phase == SessionPhase.Playing)
             {
                 Vector2 stick = hud.Joystick.Movement + input.Move.ReadValue<Vector2>();
-                RelativeTurn? turn = turnInput.Read(new Point2(stick.x, stick.y));
+                int? heading = turnInput.Read(new Point2(stick.x, stick.y),
+                    view.ScreenDirection(CorridorNavigation.Direction(0)), view.ScreenDirection(CorridorNavigation.Direction(1)));
 #if DEVELOPMENT_BUILD || UNITY_EDITOR || MAZE_PERFORMANCE
-                if (!DevelopmentPerformance.Enabled && turn.HasValue) Session.RequestTurn(turn.Value);
+                if (!DevelopmentPerformance.Enabled && heading.HasValue) Session.RequestHeading(heading.Value);
 #else
-                if (turn.HasValue) Session.RequestTurn(turn.Value);
+                if (heading.HasValue) Session.RequestHeading(heading.Value);
 #endif
                 if (input.Use.WasPressedThisFrame()) UseItem();
             }

@@ -72,7 +72,7 @@ namespace MazeOfEgos.Runtime
             RectTransform knob = Rect("Joystick thumb", stickArt, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(76, 76));
             Artwork(knob, TouchArtwork.Shape.Thumb, new Color(1, 0.88f, 0.59f));
             Joystick.knob = knob;
-            Label("TURN", stickArt, new Vector2(0.5f, 0.5f), new Vector2(0, -125), new Vector2(150, 35), 18, TextAnchor.MiddleCenter);
+            Label("MOVE", stickArt, new Vector2(0.5f, 0.5f), new Vector2(0, -125), new Vector2(150, 35), 18, TextAnchor.MiddleCenter);
             stats = Label("", controls.transform, new Vector2(0, 1), new Vector2(190, -42), new Vector2(330, 65), 29);
             hearts = Label("", controls.transform, Vector2.one, new Vector2(-320, -65), new Vector2(380, 35), 29, TextAnchor.MiddleRight);
             RectTransform lives = Rect("Life hearts", controls.transform, Vector2.one, Vector2.one, new Vector2(-320, -26), new Vector2(380, 38));
@@ -116,7 +116,7 @@ namespace MazeOfEgos.Runtime
             BuildSettings();
             help = Panel("Help and privacy", safe, panelColor);
             Label("HOW TO PLAY", help.transform, new Vector2(.5f, .5f), new Vector2(0, 320), new Vector2(1000, 75), 44, TextAnchor.MiddleCenter);
-            Label("Collect all hearts to reach the next level. You start with three lives.\n\nYou move automatically along the center of each corridor. The camera follows.\nStick left/right: queue the next turn · up: go straight · down: turn around.\nRelease the stick to keep moving. A turn is remembered until it is possible.\nDesktop: WASD/arrows: choose direction · Space: use item · Esc: pause.\n\nA large Power Heart turns the chase around. Catch the blue pursuers!\nBananas land ahead. Oil drops behind you. Boost makes you faster.\nYellow floor lights warn that a mechanical shortcut is about to open.",
+            Label("Collect all hearts to reach the next level. You start with three lives.\n\nYou move automatically along the center of each corridor. A high camera shows nearby corridors.\nPoint the stick toward a corridor on the screen to choose your next direction.\nRelease the stick to keep moving. A turn is remembered until it is possible.\nDesktop: WASD/arrows: choose direction · Space: use item · Esc: pause.\n\nA large Power Heart turns the chase around. Catch the blue pursuers!\nBananas land ahead. Oil drops behind you. Boost makes you faster.\nYellow floor lights warn that a mechanical shortcut is about to open.",
                 help.transform, new Vector2(.5f, .5f), new Vector2(0, 65), new Vector2(1120, 400), 25, TextAnchor.UpperLeft);
             Label("Fictional political satire. Not affiliated with the people depicted.\nPlay offline. Your best score, settings and saved game stay on this device.\nNo ads, analytics or accounts. Support opens your browser.",
                 help.transform, new Vector2(.5f, .5f), new Vector2(0, -180), new Vector2(1120, 140), 24, TextAnchor.MiddleCenter);
@@ -141,8 +141,6 @@ namespace MazeOfEgos.Runtime
             ToggleRow("Reduce scares / motion", 25, () => app.Settings.reducedMotion, value => app.Settings.reducedMotion = value);
             ToggleRow("Left-handed layout", -45, () => app.Settings.leftHanded, value => { app.Settings.leftHanded = value; ApplyHandedness(); });
             ToggleRow("Low graphics mode", -115, () => app.Settings.economyGraphics, value => { app.Settings.economyGraphics = value; GraphicsProfile.Apply(value); });
-            Button("FIELD OF VIEW −", settings.transform, new Vector2(0.5f, 0.5f), new Vector2(-180, -185), new Vector2(300, 60), () => { app.Settings.fov = Mathf.Max(70, app.Settings.fov - 5); app.SaveSettings(); Notify("Field of view: " + app.Settings.fov.ToString("0", CultureInfo.InvariantCulture) + "°"); });
-            Button("FIELD OF VIEW +", settings.transform, new Vector2(0.5f, 0.5f), new Vector2(180, -185), new Vector2(300, 60), () => { app.Settings.fov = Mathf.Min(95, app.Settings.fov + 5); app.SaveSettings(); Notify("Field of view: " + app.Settings.fov.ToString("0", CultureInfo.InvariantCulture) + "°"); });
             Button("BACK", settings.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -290), new Vector2(420, 70), () => { settings.SetActive(false); app.SaveSettings(); });
         }
         private void ToggleRow(string title, float y, Func<bool> read, Action<bool> write)
@@ -240,9 +238,9 @@ namespace MazeOfEgos.Runtime
                 }
                 if (nearest < 4.5)
                 {
-                    double side = Point2.Dot(offset.Normalized, Point2.Right(session.Yaw));
-                    double ahead = Point2.Dot(offset.Normalized, Point2.Forward(session.Yaw));
-                    dangerText = side < -0.4 ? "‹ Danger nearby" : side > 0.4 ? "Danger nearby ›" : ahead < 0 ? "Danger behind you" : "Danger nearby";
+                    Point2 screenOffset = app.ScreenDirection(offset).Normalized;
+                    dangerText = Math.Abs(screenOffset.x) > .5 ? (screenOffset.x < 0 ? "‹ Danger nearby" : "Danger nearby ›") :
+                        screenOffset.y < 0 ? "Danger below you" : "Danger above you";
                 }
             }
             danger.text = dangerText;

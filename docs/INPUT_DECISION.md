@@ -1,13 +1,38 @@
-# Valg af touchstyring — opdateret 24. oktober 2026, build 12
+# Valg af touchstyring — opdateret 24. oktober 2026, build 14
 
-## Ny aftale efter designquizzen
+## Aktuel styring — N1 i build 14
 
-Den planlagte alle-mod-alle-version har et lokalt, højt kamera med fast retning.
-Automatisk midterlinjegang bevares, men joysticket peger mod den ønskede gang
-**på skærmen**, og retningsønsket gemmes, indtil svinget er muligt. Genstande
-bruges i figurens gangretning med tydelig markering. Alle fem bruger samme
-bevægelsesregler. Dette er aftalt, men endnu ikke implementeret eller afprøvet.
-Se [regler og implementeringstrin](IMPLEMENTATION_PLAN.md).
+N1 erstatter førsteperson med et lokalt, højt ortografisk kamera med fast
+retning. Hele spilleren vises; lave vægge afslører nabogange. Kameraet følger
+positionen, men roterer ikke med figuren. Aktuelle værdier: 55° hældning, 25° yaw,
+ortografisk halv højde 4,5 meter, væghøjde 1,15 meter. Udsnittet følger
+skærmformatet og viser et område omkring spilleren, ikke hele banen.
+
+Brugeren bad efter build 13 om kameraet **markant tættere på karakteren**.
+Build 14 reducerer derfor billedhøjden fra 17 til 9 meter. Det giver cirka
+1,89 gange større figurer på skærmen. Kameraet er ortografisk, så denne
+ændring laves med udsnittets størrelse frem for blot at flytte kameraet.
+
+- Peg mod den ønskede gang **på skærmen**. Input sammenlignes med kameraets
+  faktiske projektion af banens fire retninger og gemmes som en verdensretning.
+- Automatisk gang på midterlinjen bevares. Retningen huskes indtil næste
+  lovlige sving, også efter slip eller vægstop. En modsat retning vender straks.
+- Ét udslag giver én kommando; et holdt udslag gentager ikke sving. Slip
+  nulstiller inputlåsen, men annullerer ikke gang eller et ventende sving.
+  En anden retning erstatter det ventende ønske. Peg langs den nuværende gang
+  for at erstatte et ventende sidesving med fortsættelse ligeud.
+- Kameraet bliver fast ved alle fire retninger og tunnelpassage. Intet frit
+  kameratræk, lodret kig eller sidelæns gang. Gemt verdensretning ændres ikke
+  ved et andet skærmformat.
+- Joystick og genstandsknap virker samtidigt i begge håndlayouts. Tastatur
+  og controller bruger samme skærmorienterede valg. Genstande følger figurens
+  gangretning; lydlytteren følger spilleren med kameraets vandrette retning.
+- Pause/baggrund/genoptagelsesnedtælling fryser simulation og figurens animation.
+  Gemte spil beholder navigationen i det eksisterende snapshotformat 3.
+
+N1 beholder de gamle regler med liv, kraft og fire forfølgere. Ens regler
+for fem deltagere, nye angrebsmarkeringer og konkurrencesnapshot kommer i
+N2–N5; se [regler og implementeringstrin](IMPLEMENTATION_PLAN.md).
 
 ## Historisk rettelse — implementeret i build 12
 
@@ -50,7 +75,7 @@ pause. Filnavnet er uændret, så den eksisterende lokale save kan findes.
 
 Apples [GCVirtualController](https://developer.apple.com/documentation/gamecontroller/gcvirtualcontroller)
 blev vurderet ved det tidligere valg. Et native overlay ændrer ikke i sig selv
-bevægelsesmodellen. Unity-overlayet bruges nu til fire relative kommandoer.
+bevægelsesmodellen. Unity-overlayet bruges fra build 13 til skærmorienterede retningsvalg.
 Ingen netværkstjeneste eller ekstra abonnement er involveret.
 
 ## Lyd og liv
@@ -72,6 +97,9 @@ Ring/Silent-knap på lydløs som svar på build 10-spørgsmålet. Den præcise b
 under lytningen er ikke særskilt verificeret. Se [manuelt lydbevis](verification/2026-10-21-manual-silent-switch-audio.json).
 Brugeren har 24. oktober svaret **“Styringen fungerer godt”** på spørgsmålet om
 automatisk gang og relative sving i build 12 på iPhone. Styringsoplevelsen er
-dermed manuelt accepteret; [registreret tilbagemelding](verification/2026-10-24-build12-manual-controls.json).
+dermed manuelt accepteret for build 12; [registreret tilbagemelding](verification/2026-10-24-build12-manual-controls.json).
 Det er ikke samtidig accept af en hel runde, startmenuens design eller den
 endelige visuelle og lydmæssige kvalitet.
+Build 14's tættere kamera og skærmstyring kræver en ny manuel vurdering;
+tidligere accept af relative sving overføres ikke. Se den aktuelle automatiske
+verifikation i [testrapporten](TEST_REPORT.md).

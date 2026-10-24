@@ -1,36 +1,42 @@
-# Release readiness — Maze of Egos 0.2.0 (12)
+# Release readiness — Maze of Egos 0.2.0 (14), closer N1 camera
 
 Product direction changed on October 24: the completed design quiz specifies a
 local five-player free-for-all with a high camera, timed rounds, and trophies.
-See the [new implementation plan](../IMPLEMENTATION_PLAN.md). It is not yet
-implemented or verified. Build 12 and the table below are the historical
-first-person baseline; they do not establish readiness of the new game model.
+See the [new implementation plan](../IMPLEMENTATION_PLAN.md). Build 13
+implements N1: a local overhead 3D camera, full player avatar and
+screen-oriented controls. Build 14 responds to user feedback with a much
+closer view: orthographic half-height 4.5 m instead of 8.5 m, approximately
+1.89 times larger characters in each screen direction. It retains the classic rules as a perspective
+prototype. N2–N5 remain unimplemented; this is not a release-ready version of
+the competitive game.
 
-Reviewed October 24, 2026; build 12 verification remains dated October 21.
-Source hashes, the local archive executable hash, and repository assets still
-match the recorded evidence. No new device run or build was performed on resume.
-Historical local review candidate. No App Store Connect submission or
-TestFlight distribution has been performed. Build 12 replaces the start screen with the supplied cover art and a three-action
-column in its dark right area. The product and release copy remain English. Product acceptance and public release requirements
-remain separate from the local implementation.
+Verified October 24, 2026. New Mac and physical iPhone checks, source inventory,
+screenshots and signed normal Release archive audit are recorded for build 14.
+No App Store Connect submission or TestFlight distribution has been performed.
+The supplied cover art and three-action menu remain intact. Product copy is
+English; store drafts still describe the classic rules and must be rewritten
+after the competitive implementation. Product acceptance and public release
+requirements remain separate from this local implementation.
 
 | Deliverable | Status |
 | --- | --- |
+| Local 3D camera and screen-oriented movement | N1 implemented; build 14 closer view passes native checks. Manual assessment of the new zoom and controls pending |
 | Illustrated start screen | Original supplied artwork, PLAY / CONTINUE SAVED GAME / HELP on the right; no extra title, character overlays, or start Settings action |
 | English product copy | Menus, HUD, tutorials, events/errors, 3D signs, and character display names translated |
 | English formatting | Score grouping and decimal timers use invariant English formatting on all device languages |
 | iOS language declaration | English (`en`) development region and supported localization verified in the signed archive |
-| 62 rule/measurement/animation tests and Unity JSON | Passed again for build 12 |
-| Native functional and text layout checks | Passed on Mac wide/4:3 and physical iPhone 13, including empty/save menus, all three actions, both landscape directions and safe areas (42 iPhone captures) |
-| Normal Release without test harness | Build 12 signed archive/audit passed; normal Release installed and launched on iPhone without test flags |
+| 65 rule/measurement/animation tests and Unity JSON | Passed for build 13, including three new screen-input checks |
+| Native functional and text layout checks | Passed again for build 14 on Mac 16:9/wide/4:3 (43 captures each) and physical iPhone 13 (47 captures), including gameplay in both landscape directions and safe areas |
+| Actual iOS background/resume | Historical build 13 pass: frozen timers/checkpoint/countdown and native Playback policy after foreground, 9.31 s background interval; not repeated for camera zoom |
+| Normal Release without test harness | Build 14 signed archive/audit passed; normal Release installed/launched on physical iPhone without test flags; installed version and running process verified |
 | Historical build 10 simulation stress | 10 seeds / 540,000 ticks; 7,564 hearts, 235 captures, 145 items, 702 wall transitions, 900 checkpoints |
 | Historical build 10 short Release measurement | 60.0021 s, 60.00 fps, p95 18.00 ms, worst 20.40 ms; no frames over 33.33 ms |
-| Historical build 9 long Release measurement | 900.01 s, 59.95 fps; applies to build 9, not a new build 12 measurement |
+| Historical build 9 long Release measurement | 900.01 s, 59.95 fps; applies to build 9. No new build 14 performance measurement |
 | App icon | Original SVG and 1024px RGB PNG in Xcode's AppIcon catalog |
 | English store metadata and privacy policy | Review drafts in this folder |
 | Public support/privacy website | Existing URL concerns Donkey Trump 3D; game-specific English content still needs publication |
 | Physical iPad test | Not performed; user chose to continue without it |
-| Manual controls | User accepted automatic walking and relative turns in build 12 on October 24: “Styringen fungerer godt”; [recorded feedback](../verification/2026-10-24-build12-manual-controls.json) |
+| Manual controls/camera | User requested a much closer camera after build 13; build 14 zoom awaits review. Screen-oriented controls still await acceptance. Previous relative turns were accepted in build 12; [historical feedback](../verification/2026-10-24-build12-manual-controls.json) |
 | Complete hand-played round against AI | Awaiting confirmation; controls feedback does not confirm a complete round |
 | Sound with physical Ring/Silent switch set to silent | Native Playback policy verified in build 10; user confirmed both music/effects audible on October 21 in reply to the build 10 question (not a separately identified build 12 listening test) |
 | Final art/audio acceptance | Review models, faces/hair/materials, garden, and sound awaiting acceptance |
@@ -42,7 +48,7 @@ remain separate from the local implementation.
 - `Builds/macOS/Maze of Egos.app`: development app with opt-in functional checks.
 - `Builds/iOS/`: Xcode project for development checks.
 - `Builds/iOS-Release/`: normal Release without the three test harness classes.
-- `Builds/Archives/MazeOfEgos-0.2.0-12.xcarchive`: local development-signed archive, audited and installed.
+- `Builds/Archives/MazeOfEgos-0.2.0-14.xcarchive`: local development-signed normal archive, audited for the closer N1 view.
 - `Builds/iOS-Performance/`: the previous build 10 performance export.
 - `docs/verification`: immutable reports and selected framebuffer captures by build.
 - `art/characters`: editable Blender sources and SHA-256 manifests for all five characters.

@@ -1,6 +1,6 @@
 # Maze of Egos — implementeringsplan og overdragelse
 
-Senest opdateret: 24. oktober 2026, designquiz afsluttet og revideret implementeringsplan gemt. Senest implementerede version: build 12. Arbejdssprog: dansk. Spillets brugerflade og udgivelsestekster: engelsk.
+Senest opdateret: 24. oktober 2026, N1 justeret med markant tættere kamera i build 14 efter brugerens feedback. Manuel vurdering af den nye afstand afventer. Arbejdssprog: dansk. Spillets brugerflade og udgivelsestekster: engelsk.
 
 ## Læs først
 
@@ -150,7 +150,8 @@ Genvejene **åbner/lukker automatisk som i den nuværende version**.
 
 Quizzen er afsluttet. Reglerne ovenfor er brugerbeslutninger. Startværdier og
 udfyldende regler i prøveprofilen nedenfor er derimod forslag til afprøvning.
-Ingen produktkode er ændret til den nye model, og ingen konkurrencebuild er lavet.
+N1 er nu implementeret som perspektivprototype i build 13. Der er endnu ikke
+lavet en build med den nye konkurrencesimulation; N2–N5 er åbne.
 
 ## Revideret implementeringsplan — alle mod alle
 
@@ -281,6 +282,9 @@ en påstand om nye færdige builds.
   skærmens gangretninger. Genbrug eksisterende modeller og bane. Native kontrol
   i tre skærmformater og fysisk iPhone; manuel vurdering af udsyn og sving.
   N1 er en perspektivprototype, ikke det færdige konkurrencespil.
+  **Kode implementeret i build 13; tættere kamera i build 14.** Automatisk verifikation og begrænsninger
+  står i [testrapporten](TEST_REPORT.md). Afkrydsning af hele blokken afventer
+  brugerens manuelle vurdering af det nye udsyn og de skærmorienterede sving.
 - [ ] **N2 — fem deltagere og grundkonkurrence.** Fælles Core-tilstand, samme
   navigation for alle, dynamiske ens hjerter, genopfyldelige kasser,
   erstatningsinventar, 120-sekunders runder og regnskab til tre pokaler. Implementér
@@ -336,9 +340,9 @@ overskriv ikke tidligere beviser. Opdatér plan, acceptmatrix, testrapport og
 udgivelsesstatus efter hver implementeret blok. Ved fejl eller maskinskifte
 fortsættes fra sidste dokumenterede blok, ikke fra afkrydsede historiske M1–M6.
 
-**Status efter planarbejdet:** N1–N5 er alle åbne. Kun dokumentation er ændret.
-Senest dokumenterede installerede/testede version er build 12 med den tidligere
-spilmodel.
+**Aktuel blokstatus:** N1 er implementeret og under manuel vurdering; N2–N5
+er ikke implementeret. N1 bruger stadig den gamle regelsimulation og
+gamle gemte spil. Den er beregnet til at bedømme kamera og styring først.
 
 ## Implementeret grundlag og tidligere beslutninger — til og med build 12
 
@@ -510,7 +514,77 @@ TestFlight kan kræve eksterne oplysninger; de må ikke erklæres gennemført ud
 bevis. Ingen betalt tjeneste bestilles. Offentlig udgivelse/Apple-upload er
 ikke udført som del af lokal implementering og test.
 
-## Aktuel status — build 12
+## Aktuel status — build 14, tættere N1-kamera
+
+Brugeren bad efter build 13 om kameraet **markant tættere på karakteren**.
+Den ortografiske halve billedhøjde er derfor reduceret fra 8,5 til 4,5 meter:
+fuld billedhøjde fra 17 til 9 meter. Figuren bliver cirka 1,89 gange større
+i hver billedretning, mens der vises et mindre lokalområde. Hældning 55°,
+vandret vinkel 25°, automatisk midterlinjegang og skærmorienteret styring
+bevares. Det er en ændring af zoom, ikke blot kameraets verdensafstand,
+da sidstnævnte ikke forstørrer motivet i et ortografisk kamera.
+
+Build 14 er fortsat N1-perspektivprototypen med de gamle spilleregler.
+N2–N5 er ikke startet som del af kamerarettelsen. Afprøvningen dokumenteres
+i [testrapporten](TEST_REPORT.md) og `docs/verification/2026-10-24-build14-*`.
+Brugeren skal vurdere den nye størrelse og balancen mellem nærhed og udsyn;
+feedbacken på build 13 er et ændringsønske, ikke accept af kameraet.
+
+Managed-kompilering består med 0 fejl/advarsler. Native Mac-kontrol består i
+1600×900, 2400×1080 og 1600×1200 med 43 PNG'er pr. format. Fysisk iPhone 13
+består med 47 PNG'er på 2532×1170 inklusive gameplay i begge landscape-
+retninger og safe area. [Aktuel iPhone-visning](verification/2026-10-24-build14-iphone13-view-LandscapeLeft.png).
+Core, inputoversættelse, serializer og spilleregler er uændrede fra build 13's
+65 beståede regeltests; den suite er ikke gentaget for zoomændringen.
+Normal signeret **0.2.0 (14)** er auditeret, installeret og startet på telefonen
+uden testflag; version og kørende proces er kontrolleret efter otte sekunder.
+[Startbevis](verification/2026-10-24-build14-iphone13-normal-launch.json).
+Aktuelle kilde-/asset-/dokumenthashes og testbeviser er gemt med build 14-prefix.
+Ingen ny performance-/stresstest, fysisk iPad-test, Apple-upload eller commit/push.
+
+## Historisk status — build 13, N1
+
+Kameraet er højt, skråt og ortografisk med fast 55° hældning og 25° vandret
+vinkel. Halv billedhøjde er 8,5 meter. Det følger spillerens interpolerede
+position og tunnelens wrap uden at panorere gennem banen. Væggene er 1,15
+meter høje med lav haveudsmykning; tunnelens tag er fjernet. Overlappende
+vægtoppe og coplanar trækanter er rettet til det nye udsyn.
+
+Zelenskyy vises i fuld størrelse med gul fodmarkering og YOU-label. Løb følger
+faktisk tilbagelagt afstand; kast bruger figurens eksisterende Throw-klip.
+Pause fryser positur og kast. Den gamle førstepersonshånd vises ikke.
+Lydlytteren følger spilleren frem for kameraets høje position. Skyggeafstand
+og skyggekort er justeret, så karakterer og hjerter også har skygger fra oven.
+
+Joystickets udslag matches mod kameraets faktiske projektion af de fire
+gangretninger. Et udslag gemmer én verdensretning; hold gentager ikke, slip
+bevarer automatisk gang og ventende retning. Modsat retning vender om,
+og vægge stopper ved midterlinjens feltcenter. Sving ændrer ikke kameravinklen.
+Touch, tastatur og controller bruger den samme oversættelse. Hjælp/tutorial
+er engelske og følger den nye styring; den uvirksomme FOV-indstilling er fjernet.
+
+65 Core-tests består, heraf tre nye for projektion, inputlås og et gemt
+skærmvalg før et sving. Managed-kompilering har 0 fejl/advarsler, og Unitys
+faktiske Newtonsoft-serialisering består. Bane, PNG-referencer, modeller og
+kildemanifester er uændrede; repositorykontrollen finder 139 unikke GUID'er.
+Native kontroller, skærmbilleder og den signerede enhedsbuild dokumenteres i
+[testrapporten](TEST_REPORT.md) og `docs/verification/2026-10-24-build13-*`.
+
+Native kontrol består på Mac i 1600×900, 2400×1080 og 1600×1200, med 43 PNG'er
+pr. format. Fysisk iPhone 13 består med 47 PNG'er inklusive gameplay i begge
+landscape-retninger og safe area. Faktisk OS-baggrund/genoptagelse i 9,31
+sekunder består med frosne timere, checkpoint og lydpolitik efter forgrund.
+Normal signeret **0.2.0 (13)** er auditeret, installeret og startet på telefonen
+uden testflag; proces 39848 er verificeret efter otte sekunder.
+[Startbevis](verification/2026-10-24-build13-iphone13-normal-launch.json).
+Ingen ny performance-/stresstest eller fysisk iPad-test er påstået. Der er
+ikke uploadet til Apple eller udført commit/push.
+
+Konkurrenceregler, figurvalg, nye genstande og fair lokal AI kommer senere.
+Gamle liv/krafthjerter/levelregler er derfor stadig synlige. Brugerens tidligere
+accept af relative sving i build 12 er ikke accept af denne nye styring.
+
+## Historisk status — build 12
 
 24. oktober er det eksisterende Release-projekt åbnet i Xcode 27.1 og genbygget.
 Normal 0.2.0 (12) er signaturkontrolleret og geninstalleret på fysisk iPhone 13;
@@ -631,9 +705,9 @@ ikke slutgodkendt filmisk grafik. Se [produktion](CHARACTER_PRODUCTION.md).
 
 ## Overdragelse og næste konkrete skridt
 
-**Aktiv prioritet:** Designquizzen og den reviderede plan er færdige. Næste
-implementeringstrin er **N1 — lokalt 3D-perspektiv og styring**, efterfulgt af
-N2–N5 ovenfor. Planarbejdet har ikke startet implementeringen. Listen nedenfor
+**Aktiv prioritet:** N1 er implementeret, med tættere kamera i build 14; afprøv udsyn og
+skærmorienterede sving på iPhone. Næste kodeblok er **N2 — fem deltagere og
+grundkonkurrence**, efterfulgt af N3–N5 ovenfor. Listen nedenfor
 er den tidligere build 12-reviewliste; den er ikke længere arbejdsrækkefølgen.
 Produktaccept af den gamle spilmodel er ikke en forudsætning for den nye model.
 
@@ -653,8 +727,10 @@ Produktaccept af den gamle spilmodel er ikke en forudsætning for den nye model.
    er udført. Upload/distribution følger efter review.
 
 De automatiske tests er afsluttet. [Testrapport](TEST_REPORT.md) og
-`docs/verification` indeholder build 12's menu-/funktionskontrol, archive-audit
-og kildehashes samt build 10's Core-/stresstest, OS-livscyklus og korte
+`docs/verification` indeholder build 14's tættere kameravisning, N1-/funktionskontrol,
+normal opstart, archive-audit og 315 kilde-/asset-/dokumenthashes. Build 13's
+første N1-kontrol og OS-livscyklus er bevaret særskilt.
+Derudover bevares build 12's menu-/funktionskontrol samt build 10's stresstest og korte
 Release-måling og build 9's historiske 900-sekunders måling.
 
 Support-URL valgt af brugeren: https://donkeytrump-api-p.azurewebsites.net/support.

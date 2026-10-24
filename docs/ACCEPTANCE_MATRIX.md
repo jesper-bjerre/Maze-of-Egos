@@ -1,12 +1,33 @@
-# Acceptkriterier — alle-mod-alle-plan og build 12-historik
+# Acceptkriterier — tættere N1-kamera i build 14 og alle-mod-alle-plan
 
 ## Planlagt konkurrence — 24. oktober 2026
 
 Quizzen med 24 produktvalg er afsluttet. Regler og arbejdsblokke N1–N5 står i
-[implementeringsplanen](IMPLEMENTATION_PLAN.md). **Alle C-kriterier nedenfor
-er endnu ikke implementeret/verificeret.** Der er ikke lavet en ny build.
+[implementeringsplanen](IMPLEMENTATION_PLAN.md). **N1 er implementeret i build
+13 som perspektivprototype, med tættere zoom i build 14.** C01/C02 har teknisk dækning nedenfor;
+manuel vurdering af kamera og styring afventer. C03–C15 er fortsat åbne.
 De historiske A-kriterier længere nede kan ikke bruges som accept af ændrede
 regler, kamera eller den nye skærmorienterede styring.
+
+N1 tilføjer Core-tests for projicerede retninger, én kommando pr. udslag og et
+ventende verdensretningsvalg. Den native kontrol afprøver lokalt kamera, hel
+spillerfigur, alle fire retninger uafhængigt af spillerens orientering,
+vægstop, tunnel begge veje, sving efter slip, samtidig genstandsbrug og
+pause-/kastanimation. Faktiske platformresultater og billeder findes i
+[testrapporten](TEST_REPORT.md). De gamle forfølgere er bevaret i denne
+prototype; testen er ikke accept af fem konkurrerende deltagere eller fair AI.
+
+**Feedback efter build 13:** Brugeren ønsker kameraet markant tættere på
+karakteren. Build 14 reducerer den ortografiske halve billedhøjde fra 8,5 til
+4,5 meter (cirka 1,89 gange større figurer i hver billedretning). Mac-kontrollen
+består i alle tre formater med 43 PNG'er pr. format. Fysisk iPhone 13 består
+med 47 PNG'er inklusive gameplay i begge landscape-retninger. Det er ikke
+manuel accept af den nye afstand; [testbevis](verification/2026-10-24-build14-native-checks.json).
+
+| N1-kriterium | Teknisk evidens, build 13 | Resterende accept |
+| --- | --- | --- |
+| C01 | Native PASS på Mac 1600×900, 2400×1080 og 1600×1200 samt fysisk iPhone 13 2532×1170 i begge landscape-retninger; hel rigget spiller i lokalt udsnit, fast vinkel og lav geometri | Manuel vurdering af udsyn, læsbarhed og mulighed for at reagere |
+| C02 | Nye Core-tests og native syntetisk touch: alle fire projicerede retninger fra modsat gangretning, svingkø efter slip, vending, vægstop, tunnel begge veje og samtidig genstandsbrug i begge håndlayouts | Ny håndført vurdering af skærmstyringen på iPhone; build 12-feedback gælder de gamle relative sving |
 
 | ID | Det skal verificeres i den nye model |
 | --- | --- |

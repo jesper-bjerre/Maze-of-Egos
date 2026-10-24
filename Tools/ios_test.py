@@ -15,7 +15,7 @@ def main():
     parser.add_argument('--device', required=True, help='devicectl identifier or device name')
     parser.add_argument('--seconds', type=int, default=900)
     parser.add_argument('--output', type=Path)
-    parser.add_argument('--label', default='build12', help='Evidence/log label, e.g. build12')
+    parser.add_argument('--label', default='build14', help='Evidence/log label, e.g. build14')
     args = parser.parse_args()
     if not 10 <= args.seconds <= 3600: parser.error('--seconds must be 10..3600')
     if not args.label.replace('-', '').replace('_', '').isalnum(): parser.error('--label must be alphanumeric with hyphens/underscores')

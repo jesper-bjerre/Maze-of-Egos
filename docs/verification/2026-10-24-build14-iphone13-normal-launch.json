@@ -1,0 +1,22 @@
+{
+  "verifiedAtUtc": "2026-10-24T10:27:06.660667+00:00",
+  "device": "physical iPhone 13",
+  "bundleId": "dk.mazeofegos.game",
+  "version": "0.2.0",
+  "build": "14",
+  "archive": "Builds/Archives/MazeOfEgos-0.2.0-14.xcarchive",
+  "normalRelease": true,
+  "signatureAndHarnessAudit": "2026-10-24-build14-release-audit.json",
+  "installed": true,
+  "launched": true,
+  "launchArguments": [],
+  "mazeTestEnvironmentVariables": [],
+  "processIdentifier": 39948,
+  "processVerifiedAfterSeconds": 8,
+  "stillRunning": true,
+  "normalStorageNotReset": true,
+  "limitations": [
+    "CLI installation, version and running-process verification; no manual camera acceptance implied.",
+    "Local development signing, no Apple upload."
+  ]
+}

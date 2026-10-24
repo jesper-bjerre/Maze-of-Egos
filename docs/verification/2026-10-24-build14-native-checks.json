@@ -1,0 +1,61 @@
+{
+  "build": "0.2.0 (14)",
+  "scope": "Closer N1 camera and existing classic-game fixtures",
+  "cameraHalfHeightMeters": 4.5,
+  "runs": [
+    {
+      "platform": "Mac 16:9",
+      "passed": true,
+      "captures": 43,
+      "dimensions": [
+        [
+          1600,
+          900
+        ]
+      ],
+      "sourceDirectory": ".artifacts/smoke-mac",
+      "syntheticTouch": true
+    },
+    {
+      "platform": "Mac wide",
+      "passed": true,
+      "captures": 43,
+      "dimensions": [
+        [
+          2400,
+          1080
+        ]
+      ],
+      "sourceDirectory": ".artifacts/smoke-mac-2400x1080",
+      "syntheticTouch": true
+    },
+    {
+      "platform": "Mac 4:3",
+      "passed": true,
+      "captures": 43,
+      "dimensions": [
+        [
+          1600,
+          1200
+        ]
+      ],
+      "sourceDirectory": ".artifacts/smoke-mac-1600x1200",
+      "syntheticTouch": true
+    },
+    {
+      "platform": "physical iPhone 13",
+      "passed": true,
+      "captures": 47,
+      "dimensions": [
+        [
+          2532,
+          1170
+        ]
+      ],
+      "sourceDirectory": ".artifacts/smoke-iphone-build14",
+      "syntheticTouch": true
+    }
+  ],
+  "manualAcceptancePending": true,
+  "newPerformanceRun": false
+}

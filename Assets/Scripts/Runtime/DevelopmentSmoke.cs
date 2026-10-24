@@ -64,7 +64,7 @@ namespace MazeOfEgos.Runtime
                 if (!more) break;
                 yield return next;
             }
-            File.WriteAllText(Path.Combine(output, "result.txt"), "PASS native rendering, supplied cover/right-side three-button menu, joystick/item controls in both layouts, automatic motion on release and fixed camera, pause, settings, save/resume, banana flight/hand/landing, mid-flight save/resume, reduced motion, banana/oil visuals, shortcut signals/opening/reservation/closure, pursuer gates, all four rigged pursuers: chase/ground contact/pause/slip/power/return/profile/back; hero celebration/throw rigs; help/privacy and graphics profiles; landscape orientation/safe area (mobile only), level transition, Game Over and replay.\nSynthetic touch and controlled scene fixtures; manual device testing, full rounds against AI and performance remain separate.\n");
+            File.WriteAllText(Path.Combine(output, "result.txt"), "PASS native rendering, supplied cover/right-side three-button menu, screen-oriented joystick/item controls in both layouts, local orthographic camera/full player, automatic motion on release, all four screen headings and tunnel wrap, pause, settings, save/resume, banana flight/full-player throw/landing, mid-flight save/resume, reduced motion, banana/oil visuals, shortcut signals/opening/reservation/closure, pursuer gates, all four rigged pursuers: chase/ground contact/pause/slip/power/return/profile/back; hero celebration/throw rigs; help/privacy and graphics profiles; landscape orientation/safe area (mobile only), level transition, Game Over and replay.\nSynthetic touch and controlled scene fixtures; manual device testing, full rounds against AI and performance remain separate.\n");
             Debug.Log("RUNTIME SMOKE PASSED"); Application.Quit(0);
         }
         private IEnumerator Run()
@@ -109,7 +109,7 @@ namespace MazeOfEgos.Runtime
             TouchControls joystick = GameObject.Find("Movement joystick").GetComponent<TouchControls>();
             Vector2 joy = RectTransformUtility.WorldToScreenPoint(null, joystick.transform.position);
             float scale = joystick.GetComponentInParent<Canvas>().scaleFactor;
-            Vector2 joyUp = joy + Vector2.up * (70 * scale);
+            Vector2 joyUp = StickPosition(app, joystick, CorridorNavigation.FromYaw(app.Session.Yaw));
             Vector2 look = new Vector2(Screen.width * 0.72f, Screen.height * 0.55f);
             Point2 before = app.Session.Player; double yaw = app.Session.Yaw;
             Touch(2, TouchPhase.Began, joyUp); Touch(3, TouchPhase.Began, look);
@@ -182,7 +182,7 @@ namespace MazeOfEgos.Runtime
             yield return new WaitForSecondsRealtime(0.15f);
             joy = RectTransformUtility.WorldToScreenPoint(null, joystick.transform.position);
             Require(joy.x > Screen.width * 0.5f, "Movement joystick did not move to the right.");
-            joyUp = joy + Vector2.up * (70 * scale); look = new Vector2(Screen.width * 0.28f, Screen.height * 0.55f);
+            joyUp = StickPosition(app, joystick, CorridorNavigation.FromYaw(app.Session.Yaw)); look = new Vector2(Screen.width * 0.28f, Screen.height * 0.55f);
             before = app.Session.Player; yaw = app.Session.Yaw;
             Touch(14, TouchPhase.Began, joyUp); Touch(15, TouchPhase.Began, look);
             yield return new WaitForSecondsRealtime(0.1f);
@@ -202,23 +202,25 @@ namespace MazeOfEgos.Runtime
             Require(joystick.Movement == Vector2.zero, "Mirrored joystick did not return to centre on release.");
             yield return new WaitForEndOfFrame(); Capture("04-left-handed.png");
 
-            // The simulation clock drives the flight and hand as well as the trap.
+            // The simulation clock drives the flight and full-player pose as well as the trap.
             IEnumerator handednessSteps = ChangeHandedness(app, false);
             while (handednessSteps.MoveNext()) yield return handednessSteps.Current;
-            // A real touch requests one left turn before the junction. Release must preserve it.
+            // A real touch points toward screen-projected north before the junction. Release preserves it.
             InstallFixture(app, ItemKind.None, new Point2(10.25, 5), 90);
             yield return null;
             joy = RectTransformUtility.WorldToScreenPoint(null, joystick.transform.position);
-            Vector2 joyLeft = joy + Vector2.left * (70 * scale);
+            Vector2 joyLeft = StickPosition(app, joystick, 0);
             Touch(40, TouchPhase.Began, joyLeft); yield return new WaitForSecondsRealtime(.1f);
             Touch(40, TouchPhase.Ended, joyLeft); yield return new WaitForSecondsRealtime(.1f);
             Require(app.Session.QueuedHeading == 0 && app.Session.Yaw == 90 && app.Session.Player.y == 5,
-                "Left touch did not queue the relative turn before the junction.");
+                "Projected screen direction did not queue world north before the junction.");
             deadline = Time.realtimeSinceStartup + 5;
             while (app.Session.Player.y > 4.75 && Time.realtimeSinceStartup < deadline) yield return null;
             Require(app.Session.Yaw == 0 && app.Session.Player.x == 12 && app.Session.Player.y < 4.75 && app.Session.QueuedHeading == -1,
-                "Queued left turn failed to execute on the corridor centre line after release.");
+                "Queued screen direction failed to execute on the corridor centre line after release.");
             yield return new WaitForEndOfFrame(); Capture("41-automatic-turn.png");
+            IEnumerator cameraSteps = CheckLocalCamera(app, joystick);
+            while (cameraSteps.MoveNext()) yield return cameraSteps.Current;
             InstallFixture(app, ItemKind.None, new Point2(25.8, 5), 90);
             app.Session.RequestTurn(RelativeTurn.Forward); yield return new WaitForSecondsRealtime(.5f);
             Require(app.Session.Player.x == 26 && app.Session.Player.y == 5, "Automatic player did not stop at the wall centre.");
@@ -236,14 +238,21 @@ namespace MazeOfEgos.Runtime
             Require(app.Session.Time < flight.landsAt, "Banana flight was not visible before landing.");
             yield return new WaitForEndOfFrame(); Capture("11-banana-flight.png");
             Transform flyingMesh = GameObject.Find("Banana peel").transform.parent;
-            Transform hand = GameObject.Find("Zelenskyy throwing hand").transform;
-            Require(flyingMesh.position.y > 0.4f && hand, "Flight/hand geometry was not visible.");
-            Camera firstPerson = hand.GetComponentInParent<Camera>(); float fieldOfView = firstPerson.fieldOfView;
-            Require(firstPerson.WorldToViewportPoint(hand.position).x > 0.5f, "Standard layout used the wrong throwing hand.");
-            app.Session.Pause(); double flightPausedAt = app.Session.Time; Vector3 frozenMesh = flyingMesh.position, frozenHand = hand.position;
-            yield return new WaitForSecondsRealtime(0.2f);
-            Require(app.Session.Time == flightPausedAt && Vector3.Distance(flyingMesh.position, frozenMesh) < 0.001f &&
-                Vector3.Distance(hand.position, frozenHand) < 0.001f, "Paused throw or hand continued moving.");
+            Transform player = GameObject.Find("Player character").transform;
+            SkinnedMeshRenderer playerSkin = player.GetComponentInChildren<SkinnedMeshRenderer>();
+            Animation playerAnimation = player.GetComponentInChildren<Animation>();
+            Require(flyingMesh.position.y > .4f && playerAnimation["Throw"].weight > .5f,
+                "Flight/full-player throw was not visible.");
+            Camera overhead = app.GameCamera; float viewSize = overhead.orthographicSize;
+            Quaternion fixedRotation = overhead.transform.rotation;
+            RequireLocalView(app);
+            app.Session.Pause(); double flightPausedAt = app.Session.Time; Vector3 frozenMesh = flyingMesh.position;
+            yield return null;
+            Mesh playerBaked = new Mesh(); playerSkin.BakeMesh(playerBaked); Vector3[] frozenPose = playerBaked.vertices;
+            yield return new WaitForSecondsRealtime(.2f); playerSkin.BakeMesh(playerBaked);
+            Require(app.Session.Time == flightPausedAt && Vector3.Distance(flyingMesh.position, frozenMesh) < .001f &&
+                VertexDifference(frozenPose, playerBaked.vertices) < .00001f, "Paused throw/player continued moving.");
+            Destroy(playerBaked);
             app.GoToMenu(); app.ContinueSaved();
             Require(app.Session.Phase == SessionPhase.Paused && app.Session.Time == flightPausedAt &&
                 app.Session.Traps.Count == 1 && app.Session.Traps[0].landsAt == flight.landsAt, "Mid-flight save/resume lost the throw.");
@@ -255,7 +264,7 @@ namespace MazeOfEgos.Runtime
             while ((app.Session.Phase != SessionPhase.Playing || app.Session.Time < flight.landsAt + 0.1) && Time.realtimeSinceStartup < deadline) yield return null;
             Require(app.Session.Traps.Count == 1 && Math.Abs(flyingMesh.position.y) < 0.001 &&
                 !GameObject.Find("Zelenskyy throwing hand"), "Banana did not settle on the floor after resume.");
-            Require(Math.Abs(firstPerson.fieldOfView - fieldOfView) < 0.001, "Throw changed the camera FOV.");
+            Require(Math.Abs(overhead.orthographicSize - viewSize) < .001 && Quaternion.Angle(overhead.transform.rotation, fixedRotation) < .001, "Throw moved or zoomed the camera.");
             yield return new WaitForEndOfFrame(); Capture("12-banana-landed.png");
 
             handednessSteps = ChangeHandedness(app, true);
@@ -268,9 +277,8 @@ namespace MazeOfEgos.Runtime
             while (flight.FlightProgress(app.Session.Time) < 0.33 && Time.realtimeSinceStartup < deadline) yield return null;
             yield return new WaitForEndOfFrame(); Capture("13-banana-reduced-motion.png");
             flyingMesh = GameObject.Find("Banana peel").transform.parent;
-            hand = GameObject.Find("Zelenskyy throwing hand").transform;
             Require(app.Session.Time < flight.landsAt && Quaternion.Angle(flyingMesh.rotation, Quaternion.identity) < 0.01f &&
-                firstPerson.WorldToViewportPoint(hand.position).x < 0.5f, "Reduced-motion throw spun or used the wrong hand.");
+                playerAnimation["Throw"].weight > .5f && !GameObject.Find("Zelenskyy throwing hand"), "Reduced-motion throw spun or lost the full player.");
             app.Settings.reducedMotion = false;
 
             // Exercise the oil button and check the actual pooled representations.
@@ -314,7 +322,7 @@ namespace MazeOfEgos.Runtime
             app.Session.Restore(shortcut); app.Session.Resume(0);
             yield return new WaitForSecondsRealtime(1.6f);
             Require(app.Session.Walls[0].phase == WallPhase.Closed && !app.Session.Maze.IsWalkable(new Cell(13, 1)) &&
-                GameObject.Find("Retracting wall 0").transform.position.y > 2.2, "Unoccupied shortcut did not close consistently.");
+                Mathf.Abs(GameObject.Find("Retracting wall 0").transform.position.y - MazeView.WallHeight / 2) < .001f, "Unoccupied shortcut did not close consistently.");
 
             InstallFixture(app, ItemKind.None, new Point2(13.5, 11), 180);
             SessionSnapshot gate = app.Session.Snapshot(); gate.pursuers[0].life = PursuerLife.Exiting;
@@ -428,12 +436,13 @@ namespace MazeOfEgos.Runtime
                 "Imported gait lost planted/swing foot contact: samples=" + contactSamples + ", error=" + contactError);
             File.WriteAllText(Path.Combine(output, id + "-character-check.json"), JsonUtility.ToJson(new CharacterCheck {
                 groundSamples = contactSamples, maxAnkleContactErrorMeters = contactError, swingFootObserved = liftedFoot }, true));
-            // Reframe after gait measurement: AI roles may turn at different junctions.
+            // Reframe after gait measurement: AI roles may turn at different
+            // junctions. Keep the review model inside the closer camera's view.
             fixture = app.Session.Snapshot();
-            fixture.pursuers[index].from = new Cell(10, 5); fixture.pursuers[index].to = new Cell(9, 5); fixture.pursuers[index].progress = .4;
+            fixture.pursuers[index].from = new Cell(8, 5); fixture.pursuers[index].to = new Cell(7, 5); fixture.pursuers[index].progress = .4;
             app.Session.Restore(fixture); app.Session.Resume(0); app.SynchronizeAutomationPresentation();
             yield return null;
-            Camera camera = GameObject.Find("First person camera").GetComponent<Camera>();
+            Camera camera = app.GameCamera;
             Vector3 screenPoint = camera.WorldToViewportPoint(skin.bounds.center);
             Require(screenPoint.z > 0 && screenPoint.x > .1f && screenPoint.x < .9f && app.Session.Maze.HasLineOfSight(app.Session.Player, app.Session.Pursuers[index].Position(app.Session.Maze)), "Review character is outside the visible corridor: " + id);
             yield return new WaitForEndOfFrame(); Capture(index == 0 ? "14-putin-chase.png" : prefix + id + "-chase.png");
@@ -502,6 +511,83 @@ namespace MazeOfEgos.Runtime
             float distance = 0;
             for (int i = 0; i < first.Length; i++) distance = Mathf.Max(distance, Vector3.Distance(first[i], second[i]));
             return distance;
+        }
+        private static Vector2 StickPosition(GameApp app, TouchControls stick, int heading)
+        {
+            Point2 projected = app.ScreenDirection(CorridorNavigation.Direction(heading)).Normalized;
+            return RectTransformUtility.WorldToScreenPoint(null, stick.transform.position) +
+                new Vector2((float)projected.x, (float)projected.y) * (70 * stick.GetComponentInParent<Canvas>().scaleFactor);
+        }
+        private static void RequireLocalView(GameApp app)
+        {
+            Camera camera = app.GameCamera;
+            Require(camera.enabled && camera.orthographic && camera.transform.eulerAngles.x > 45 &&
+                camera.transform.eulerAngles.x < 70, "Local high camera is not active.");
+            Transform player = GameObject.Find("Player character").transform;
+            SkinnedMeshRenderer skin = player.GetComponentInChildren<SkinnedMeshRenderer>();
+            Vector3 onScreen = camera.WorldToViewportPoint(skin.bounds.center);
+            Require(skin && skin.bones.Length >= 17 && onScreen.z > 0 && onScreen.x > .3f && onScreen.x < .7f &&
+                onScreen.y > .3f && onScreen.y < .75f, "Full player is missing or outside the local view.");
+            Require(!GameObject.Find("Zelenskyy throwing hand") && !GameObject.Find("Tunnel roof"), "First-person geometry obscures the overhead view.");
+            Transform listener = GameObject.Find("Player audio listener").transform;
+            Require(Vector3.Distance(listener.position, MazeView.World(app.Session.Player, 1.4f)) < .5f,
+                "Spatial audio listener moved to the overhead camera.");
+            Plane ground = new Plane(Vector3.up, Vector3.zero); Bounds footprint = new Bounds();
+            bool first = true;
+            foreach (Vector2 corner in new[] { Vector2.zero, Vector2.right, Vector2.one, Vector2.up })
+            {
+                Ray ray = camera.ViewportPointToRay(corner);
+                Require(ground.Raycast(ray, out float distance), "Camera does not see the garden floor.");
+                Vector3 point = ray.GetPoint(distance);
+                if (first) { footprint = new Bounds(point, Vector3.zero); first = false; } else footprint.Encapsulate(point);
+            }
+            Require(footprint.size.x < (app.Session.Maze.Definition.width - 2) * MazeMap.GridMeters &&
+                footprint.size.z < (app.Session.Maze.Definition.height - 2) * MazeMap.GridMeters,
+                "Camera shows the entire maze instead of a local area.");
+        }
+        private IEnumerator CheckLocalCamera(GameApp app, TouchControls joystick)
+        {
+            Quaternion angle = app.GameCamera.transform.rotation;
+            for (int heading = 0; heading < 4; heading++)
+            {
+                InstallFixture(app, ItemKind.None, new Point2(6, 5), ((heading + 2) % 4) * 90);
+                yield return null;
+                Vector2 target = StickPosition(app, joystick, heading);
+                Touch(50 + heading, TouchPhase.Began, target); yield return new WaitForSecondsRealtime(.15f);
+                Touch(50 + heading, TouchPhase.Ended, target); yield return new WaitForSecondsRealtime(.05f);
+                Require(app.Session.Yaw == heading * 90 && Quaternion.Angle(app.GameCamera.transform.rotation, angle) < .001f,
+                    "Screen direction changed with player heading or rotated the camera: " + heading);
+                RequireLocalView(app);
+            }
+            InstallFixture(app, ItemKind.None, new Point2(-.48, 14), 270); app.Session.RequestHeading(3);
+            yield return new WaitForSecondsRealtime(.15f);
+            Require(app.Session.Player.x > 27 && Quaternion.Angle(app.GameCamera.transform.rotation, angle) < .001f,
+                "Tunnel wrap rotated or crossed the camera over the maze.");
+            RequireLocalView(app); yield return new WaitForEndOfFrame(); Capture("43-tunnel-wrap.png");
+            app.Session.RequestHeading(1); yield return new WaitForSecondsRealtime(.3f);
+            Require(app.Session.Player.x < 1, "Reverse tunnel wrap failed.");
+            RequireLocalView(app); yield return new WaitForEndOfFrame(); Capture("44-tunnel-reverse.png");
+            InstallFixture(app, ItemKind.None, new Point2(6, 5), 90);
+            var state = app.Session.Snapshot(); var neighbour = state.pursuers[0];
+            neighbour.life = PursuerLife.Recovering; neighbour.from = neighbour.to = new Cell(8, 5);
+            neighbour.recoverUntil = state.time + 120;
+            app.Session.Restore(state); app.Session.Resume(0); app.SynchronizeAutomationPresentation();
+            yield return null; RequireLocalView(app);
+            yield return new WaitForEndOfFrame(); Capture("45-local-garden.png");
+            if (Application.isMobilePlatform)
+            {
+                foreach (ScreenOrientation orientation in new[] { ScreenOrientation.LandscapeLeft, ScreenOrientation.LandscapeRight })
+                {
+                    Screen.orientation = orientation;
+                    float until = Time.realtimeSinceStartup + 8;
+                    while (Screen.orientation != orientation && Time.realtimeSinceStartup < until) yield return null;
+                    yield return new WaitForSecondsRealtime(.6f);
+                    Require(Screen.orientation == orientation, "Gameplay orientation did not settle.");
+                    RequireLocalView(app);
+                    yield return new WaitForEndOfFrame(); Capture("view-" + orientation + ".png");
+                }
+                Screen.orientation = ScreenOrientation.AutoRotation;
+            }
         }
         private static void InstallFixture(GameApp app, ItemKind item, Point2 position, double yaw)
         {

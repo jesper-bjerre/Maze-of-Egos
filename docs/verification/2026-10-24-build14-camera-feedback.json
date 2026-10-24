@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-24",
+  "feedbackForBuild": "0.2.0 (13)",
+  "userFeedback": "Kameraet skal markant tættere på karakteren",
+  "implementedInBuild": "0.2.0 (14)",
+  "change": {
+    "projection": "orthographic",
+    "previousHalfHeightMeters": 8.5,
+    "newHalfHeightMeters": 4.5,
+    "previousFullHeightMeters": 17,
+    "newFullHeightMeters": 9,
+    "linearMagnificationRatio": 1.8888888888888888,
+    "pitchDegrees": 55,
+    "yawDegrees": 25
+  },
+  "scope": "Camera zoom only; classic N1 game rules and screen-oriented input retained.",
+  "manualAcceptanceOfNewZoom": false
+}

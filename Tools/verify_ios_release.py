@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--version', default='0.2.0')
-    parser.add_argument('--build', default='12')
+    parser.add_argument('--build', default='14')
     parser.add_argument('--archive', type=Path)
     parser.add_argument('--project', type=Path, default=ROOT / 'Builds/iOS-Release')
     parser.add_argument('--output', type=Path)
