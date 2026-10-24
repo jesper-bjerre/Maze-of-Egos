@@ -21,7 +21,6 @@ namespace MazeOfEgos.Runtime
         private string output, runtimeError;
         private Touchscreen screen;
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void StartCheck()
         {
             if (Enabled) new GameObject("Development runtime check").AddComponent<DevelopmentSmoke>();

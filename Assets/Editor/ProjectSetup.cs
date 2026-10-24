@@ -38,7 +38,7 @@ namespace MazeOfEgos.Editor
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.iOS, "dk.mazeofegos.game");
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.iOS, ScriptingImplementation.IL2CPP);
             PlayerSettings.iOS.targetOSVersionString = "17.0";
-            PlayerSettings.iOS.buildNumber = "14";
+            PlayerSettings.iOS.buildNumber = "17";
             PlayerSettings.iOS.appleEnableAutomaticSigning = true;
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
             PlayerSettings.allowedAutorotateToLandscapeLeft = PlayerSettings.allowedAutorotateToLandscapeRight = true;
@@ -106,6 +106,20 @@ namespace MazeOfEgos.Editor
             if (!Resources.Load<Texture2D>("Brand/MenuBackground")) throw new InvalidOperationException("Missing menu cover art.");
             if (!AssetDatabase.LoadAssetAtPath<SceneAsset>(Scene)) throw new InvalidOperationException("Missing playable scene.");
             CharacterModelSetup.Validate();
+            var competitionRules=JsonConvert.DeserializeObject<CompetitionRules>(File.ReadAllText("Assets/Resources/Data/competition_rules.json")); competitionRules.Validate();
+            var competition = new CompetitionSession(data, "trump", 123, competitionRules, countdown: false, computerPlayers: true);
+            for (int tick = 0; tick < 180; tick++)
+            {
+                if (tick % 30 == 0) foreach (string id in CompetitionSession.ParticipantIds)
+                    competition.ApplyCommand(new CompetitionCommand(id, competition.TickIndex, tick / 30 % 4));
+                competition.Tick();
+            }
+            string competitionJson = JsonConvert.SerializeObject(competition.Snapshot());
+            var restoredCompetition = new CompetitionSession(data);
+            restoredCompetition.Restore(JsonConvert.DeserializeObject<CompetitionSnapshot>(competitionJson)); restoredCompetition.Resume(false);
+            if (competitionJson != JsonConvert.SerializeObject(restoredCompetition.Snapshot()))
+                throw new InvalidOperationException("Competition roundtrip failed in Unity.");
+            Debug.Log("COMPETITION VALIDATION PASSED: five stable IDs, shared navigation, combat/AI rules, v4 snapshot and actual Unity JSON.");
             Debug.Log("CONTENT VALIDATION PASSED: 244 hearts, save roundtrip, five references, playable scene.");
         }
         public static void ConfigureAndValidate() { Configure(); Validate(); }

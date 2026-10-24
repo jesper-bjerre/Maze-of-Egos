@@ -1,0 +1,31 @@
+PASS N2 starts five equal stable IDs, 240 ordinary hearts and an independent human ID
+PASS All five actors leave the central base through the same doors; classic access stays closed
+PASS Actor commands reject stale ticks and inactive phases without changing a match
+PASS All five use identical speed and retain a world-heading turn until the junction
+PASS Body contact has no damage, blocking or point penalty
+PASS Tunnel wrapping and corner traces never sweep diagonally or across the whole map
+PASS Each actor can collect an ordinary heart, regardless of human selection
+PASS A shared resource goes to the earliest contact, not the lowest ID
+PASS Exact contact ties vary by seed, never by human ID or snapshot array order
+PASS Contacts before the 120-second deadline score; exact-deadline heart/crate contacts do not
+PASS An empty board keeps playing, silently replenishes small groups, and ends only at 120 seconds
+PASS Replenishment respects capacity, occupied cells, crates and moving-wall approaches
+PASS Every actor replaces a full inventory; a regenerated crate needs exit and re-entry
+PASS Item pool includes all five distinct types; legacy item values remain unchanged
+PASS Pause and resume countdown freeze round, resource, navigation and random clocks
+PASS Shared round trophies and banked points are settled exactly once across restore
+PASS Simultaneous third trophies use total points; later results never award again
+PASS Fewer trophies cannot win via points; full ties share the match
+PASS Any of the five IDs can win a whole match
+PASS Automatic shortcut cycle retains every phase and reserves every participant's current edge
+PASS Snapshots and public participant/resource copies never share mutable state
+PASS Invalid snapshots reject atomically, including corrupt identity, geometry, resources and ledger
+PASS Versioned JSON restore resumes the same seeded five-actor simulation and resources
+MATCH kim: 8 rounds, 960 simulated seconds, 760 collected hearts, winner kim
+MATCH putin: 8 rounds, 960 simulated seconds, 731 collected hearts, winner putin
+MATCH trump: 8 rounds, 960 simulated seconds, 827 collected hearts, winner trump
+MATCH xi: 10 rounds, 1200 simulated seconds, 850 collected hearts, winner putin
+MATCH zelenskyy: 7 rounds, 840 simulated seconds, 649 collected hearts, winner xi
+PASS Five full scripted matches use real ticks, changing resources, wall cycles and each human ID
+
+24 competition checks passed, 0 failed

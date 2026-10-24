@@ -1,0 +1,2504 @@
+{
+  "schemaVersion": 2,
+  "model": "competition-v3",
+  "completed": true,
+  "stabilityPassed": true,
+  "error": null,
+  "developmentBuild": false,
+  "requestedSeconds": 300.0,
+  "measuredSeconds": 300.0039011,
+  "warmupSeconds": 15.0,
+  "automationPolicy": "same-shared-minimap-brain-local-combat-for-human-v3",
+  "utc": "2026-10-24T12:40:09.1063320Z",
+  "appVersion": "0.2.0",
+  "unityVersion": "6000.3.26f1",
+  "buildGuid": "cbaab59dc26d42bea8d4a19e302e4cc5",
+  "deviceModel": "iPhone14,5",
+  "operatingSystem": "iOS 26.6.2",
+  "gpu": "Apple A15 GPU",
+  "width": 2532,
+  "height": 1170,
+  "frameCount": 18000,
+  "averageFps": 59.999377966449217,
+  "p95Ms": 18.0,
+  "p99Ms": 19.5,
+  "worstMs": 46.295700000001716,
+  "framesOver33Ms": 4,
+  "framesOver50Ms": 0,
+  "cpuTimingFrames": 18000,
+  "cpuMainThreadAverageMs": 2.595025302833323,
+  "gpuTimingFrames": 0,
+  "gpuAverageMs": 0.0,
+  "gcCounterAvailable": false,
+  "gcAllocatedBytes": 0,
+  "residentPeakBytes": 297861120,
+  "unityAllocatedPeakBytes": 103313956,
+  "managedPeakBytes": 8151040,
+  "playingSeconds": 289.93389829999995,
+  "countdownSeconds": 5.9830182000000036,
+  "resultsSeconds": 4.0861937000000239,
+  "rounds": 3,
+  "matches": 1,
+  "heartsCollected": 621,
+  "itemsUsed": 38,
+  "captures": 8,
+  "usesByActor": [
+    8,
+    9,
+    6,
+    10,
+    5
+  ],
+  "maximumTotalPointsByActor": [
+    166,
+    172,
+    127,
+    128,
+    117
+  ],
+  "knockouts": 8,
+  "backgroundInterruptions": 0,
+  "samples": [
+    {
+      "elapsedSeconds": 0.016375099999999421,
+      "fps": 61.068329353716031,
+      "p95Ms": 16.5,
+      "residentBytes": 294109184,
+      "unityAllocatedBytes": 103004523,
+      "managedBytes": 7729152,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 89,
+        "itemUses": 0,
+        "knockouts": 0,
+        "respawns": 0,
+        "usesByItem": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "usesByActor": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "knockoutsByActor": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 5.0316389999999984,
+      "fps": 60.020204152165952,
+      "p95Ms": 17.75,
+      "residentBytes": 295354368,
+      "unityAllocatedBytes": 103008195,
+      "managedBytes": 7553024,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 123,
+        "itemUses": 0,
+        "knockouts": 0,
+        "respawns": 0,
+        "usesByItem": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "usesByActor": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "knockoutsByActor": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 10.0320088,
+      "fps": 60.007921843130781,
+      "p95Ms": 17.75,
+      "residentBytes": 295763968,
+      "unityAllocatedBytes": 103004193,
+      "managedBytes": 7376896,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 148,
+        "itemUses": 2,
+        "knockouts": 0,
+        "respawns": 0,
+        "usesByItem": [
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ],
+        "usesByActor": [
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        "knockoutsByActor": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 15.033455699999998,
+      "fps": 59.999511622600536,
+      "p95Ms": 17.75,
+      "residentBytes": 295780352,
+      "unityAllocatedBytes": 102992601,
+      "managedBytes": 7839744,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 168,
+        "itemUses": 2,
+        "knockouts": 0,
+        "respawns": 0,
+        "usesByItem": [
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ],
+        "usesByActor": [
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        "knockoutsByActor": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 20.034193899999998,
+      "fps": 59.997422706386011,
+      "p95Ms": 17.75,
+      "residentBytes": 295665664,
+      "unityAllocatedBytes": 102982545,
+      "managedBytes": 7811072,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 185,
+        "itemUses": 2,
+        "knockouts": 0,
+        "respawns": 0,
+        "usesByItem": [
+          0,
+          1,
+          0,
+          1,
+          0,
+          0
+        ],
+        "usesByActor": [
+          2,
+          0,
+          0,
+          0,
+          0
+        ],
+        "knockoutsByActor": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 25.048921999999997,
+      "fps": 60.002582147048038,
+      "p95Ms": 17.75,
+      "residentBytes": 295682048,
+      "unityAllocatedBytes": 102976820,
+      "managedBytes": 7667712,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 199,
+        "itemUses": 4,
+        "knockouts": 0,
+        "respawns": 0,
+        "usesByItem": [
+          0,
+          1,
+          0,
+          2,
+          1,
+          0
+        ],
+        "usesByActor": [
+          2,
+          0,
+          1,
+          0,
+          1
+        ],
+        "knockoutsByActor": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 30.0627206,
+      "fps": 60.00787566777975,
+      "p95Ms": 17.5,
+      "residentBytes": 295780352,
+      "unityAllocatedBytes": 102952963,
+      "managedBytes": 7766016,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 203,
+        "itemUses": 4,
+        "knockouts": 1,
+        "respawns": 0,
+        "usesByItem": [
+          0,
+          1,
+          0,
+          2,
+          1,
+          0
+        ],
+        "usesByActor": [
+          2,
+          0,
+          1,
+          0,
+          1
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 35.0640682,
+      "fps": 60.0044463751071,
+      "p95Ms": 17.5,
+      "residentBytes": 295944192,
+      "unityAllocatedBytes": 102972753,
+      "managedBytes": 8024064,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 207,
+        "itemUses": 5,
+        "knockouts": 1,
+        "respawns": 1,
+        "usesByItem": [
+          0,
+          2,
+          0,
+          2,
+          1,
+          0
+        ],
+        "usesByActor": [
+          2,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 40.0801039,
+      "fps": 59.979884433383447,
+      "p95Ms": 17.75,
+      "residentBytes": 295944192,
+      "unityAllocatedBytes": 102968225,
+      "managedBytes": 7692288,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 217,
+        "itemUses": 5,
+        "knockouts": 1,
+        "respawns": 1,
+        "usesByItem": [
+          0,
+          2,
+          0,
+          2,
+          1,
+          0
+        ],
+        "usesByActor": [
+          2,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 45.0942697,
+      "fps": 59.985448661118944,
+      "p95Ms": 17.75,
+      "residentBytes": 296419328,
+      "unityAllocatedBytes": 102973118,
+      "managedBytes": 7426048,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 225,
+        "itemUses": 6,
+        "knockouts": 1,
+        "respawns": 1,
+        "usesByItem": [
+          0,
+          2,
+          0,
+          3,
+          1,
+          0
+        ],
+        "usesByActor": [
+          3,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 50.110720099999995,
+      "fps": 59.987164303392312,
+      "p95Ms": 18.0,
+      "residentBytes": 296435712,
+      "unityAllocatedBytes": 102965522,
+      "managedBytes": 7622656,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 6,
+        "knockouts": 1,
+        "respawns": 1,
+        "usesByItem": [
+          0,
+          2,
+          0,
+          3,
+          1,
+          0
+        ],
+        "usesByActor": [
+          3,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 55.1273762,
+      "fps": 59.988343867524783,
+      "p95Ms": 18.0,
+      "residentBytes": 296435712,
+      "unityAllocatedBytes": 102959306,
+      "managedBytes": 7536640,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 6,
+        "knockouts": 1,
+        "respawns": 1,
+        "usesByItem": [
+          0,
+          2,
+          0,
+          3,
+          1,
+          0
+        ],
+        "usesByActor": [
+          3,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 60.1425246,
+      "fps": 59.990830514620569,
+      "p95Ms": 18.0,
+      "residentBytes": 296435712,
+      "unityAllocatedBytes": 102975898,
+      "managedBytes": 7692288,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 7,
+        "knockouts": 1,
+        "respawns": 1,
+        "usesByItem": [
+          0,
+          2,
+          1,
+          3,
+          1,
+          0
+        ],
+        "usesByActor": [
+          3,
+          0,
+          1,
+          1,
+          2
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 65.1590532,
+      "fps": 59.99166359894248,
+      "p95Ms": 18.0,
+      "residentBytes": 296665088,
+      "unityAllocatedBytes": 102987746,
+      "managedBytes": 7671808,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 8,
+        "knockouts": 1,
+        "respawns": 1,
+        "usesByItem": [
+          0,
+          2,
+          2,
+          3,
+          1,
+          0
+        ],
+        "usesByActor": [
+          3,
+          0,
+          1,
+          2,
+          2
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 70.17307679999999,
+      "fps": 59.994519151538746,
+      "p95Ms": 18.0,
+      "residentBytes": 296665088,
+      "unityAllocatedBytes": 102983622,
+      "managedBytes": 7696384,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 9,
+        "knockouts": 1,
+        "respawns": 1,
+        "usesByItem": [
+          0,
+          2,
+          3,
+          3,
+          1,
+          0
+        ],
+        "usesByActor": [
+          3,
+          0,
+          2,
+          2,
+          2
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 75.1886542,
+      "fps": 59.99575398704232,
+      "p95Ms": 18.0,
+      "residentBytes": 296665088,
+      "unityAllocatedBytes": 102994992,
+      "managedBytes": 7655424,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 10,
+        "knockouts": 1,
+        "respawns": 1,
+        "usesByItem": [
+          0,
+          3,
+          3,
+          3,
+          1,
+          0
+        ],
+        "usesByActor": [
+          3,
+          0,
+          2,
+          2,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 80.203205099999991,
+      "fps": 59.9976022653987,
+      "p95Ms": 18.0,
+      "residentBytes": 296665088,
+      "unityAllocatedBytes": 102996600,
+      "managedBytes": 7999488,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 11,
+        "knockouts": 1,
+        "respawns": 1,
+        "usesByItem": [
+          0,
+          3,
+          3,
+          4,
+          1,
+          0
+        ],
+        "usesByActor": [
+          3,
+          0,
+          3,
+          2,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 85.21713419999999,
+      "fps": 59.999670817374231,
+      "p95Ms": 18.0,
+      "residentBytes": 296747008,
+      "unityAllocatedBytes": 103063180,
+      "managedBytes": 7401472,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 13,
+        "knockouts": 2,
+        "respawns": 1,
+        "usesByItem": [
+          0,
+          3,
+          4,
+          4,
+          1,
+          1
+        ],
+        "usesByActor": [
+          3,
+          1,
+          3,
+          3,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 90.231805999999992,
+      "fps": 60.001015606403861,
+      "p95Ms": 18.0,
+      "residentBytes": 296747008,
+      "unityAllocatedBytes": 103065712,
+      "managedBytes": 7536640,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 13,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          4,
+          4,
+          1,
+          1
+        ],
+        "usesByActor": [
+          3,
+          1,
+          3,
+          3,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 95.2329769,
+      "fps": 60.000224565068727,
+      "p95Ms": 18.0,
+      "residentBytes": 296992768,
+      "unityAllocatedBytes": 103060624,
+      "managedBytes": 7987200,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 13,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          4,
+          4,
+          1,
+          1
+        ],
+        "usesByActor": [
+          3,
+          1,
+          3,
+          3,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 100.2331883,
+      "fps": 60.000086817551654,
+      "p95Ms": 18.0,
+      "residentBytes": 296747008,
+      "unityAllocatedBytes": 103056828,
+      "managedBytes": 7528448,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 14,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          4,
+          5,
+          1,
+          1
+        ],
+        "usesByActor": [
+          3,
+          1,
+          4,
+          3,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 105.2489827,
+      "fps": 60.000579939097186,
+      "p95Ms": 18.0,
+      "residentBytes": 296747008,
+      "unityAllocatedBytes": 103055684,
+      "managedBytes": 7802880,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 1,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 14,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          4,
+          5,
+          1,
+          1
+        ],
+        "usesByActor": [
+          3,
+          1,
+          4,
+          3,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 110.2531101,
+      "fps": 59.989237437393683,
+      "p95Ms": 18.0,
+      "residentBytes": 297320448,
+      "unityAllocatedBytes": 103299884,
+      "managedBytes": 8146944,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 240,
+        "itemUses": 15,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          4,
+          5,
+          2,
+          1
+        ],
+        "usesByActor": [
+          3,
+          2,
+          4,
+          3,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 115.2664733,
+      "fps": 59.9914251041807,
+      "p95Ms": 18.0,
+      "residentBytes": 297844736,
+      "unityAllocatedBytes": 103277239,
+      "managedBytes": 7831552,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 257,
+        "itemUses": 15,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          4,
+          5,
+          2,
+          1
+        ],
+        "usesByActor": [
+          3,
+          2,
+          4,
+          3,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 120.2812763,
+      "fps": 59.992712265558126,
+      "p95Ms": 18.0,
+      "residentBytes": 297205760,
+      "unityAllocatedBytes": 103257067,
+      "managedBytes": 7901184,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 294,
+        "itemUses": 16,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          4,
+          6,
+          2,
+          1
+        ],
+        "usesByActor": [
+          3,
+          3,
+          4,
+          3,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 125.2994057,
+      "fps": 59.992303698532204,
+      "p95Ms": 18.0,
+      "residentBytes": 297238528,
+      "unityAllocatedBytes": 103247211,
+      "managedBytes": 7618560,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 319,
+        "itemUses": 17,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          5,
+          6,
+          2,
+          1
+        ],
+        "usesByActor": [
+          3,
+          3,
+          4,
+          4,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 130.3114927,
+      "fps": 59.99470835621856,
+      "p95Ms": 18.0,
+      "residentBytes": 297238528,
+      "unityAllocatedBytes": 103236127,
+      "managedBytes": 7565312,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 336,
+        "itemUses": 17,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          5,
+          6,
+          2,
+          1
+        ],
+        "usesByActor": [
+          3,
+          3,
+          4,
+          4,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 135.3264035,
+      "fps": 59.995682956282906,
+      "p95Ms": 18.0,
+      "residentBytes": 297238528,
+      "unityAllocatedBytes": 103224407,
+      "managedBytes": 7856128,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 356,
+        "itemUses": 17,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          5,
+          6,
+          2,
+          1
+        ],
+        "usesByActor": [
+          3,
+          3,
+          4,
+          4,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 140.34077489999999,
+      "fps": 59.996818501249486,
+      "p95Ms": 18.0,
+      "residentBytes": 297222144,
+      "unityAllocatedBytes": 103203311,
+      "managedBytes": 7962624,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 382,
+        "itemUses": 18,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          5,
+          6,
+          2,
+          2
+        ],
+        "usesByActor": [
+          4,
+          3,
+          4,
+          4,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 145.3552561,
+      "fps": 59.997830377734864,
+      "p95Ms": 18.0,
+      "residentBytes": 297222144,
+      "unityAllocatedBytes": 103186647,
+      "managedBytes": 7589888,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 413,
+        "itemUses": 18,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          5,
+          6,
+          2,
+          2
+        ],
+        "usesByActor": [
+          4,
+          3,
+          4,
+          4,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 150.3700068,
+      "fps": 59.998667234216171,
+      "p95Ms": 18.0,
+      "residentBytes": 297222144,
+      "unityAllocatedBytes": 103180397,
+      "managedBytes": 7577600,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 438,
+        "itemUses": 21,
+        "knockouts": 2,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          5,
+          7,
+          2,
+          4
+        ],
+        "usesByActor": [
+          5,
+          4,
+          4,
+          5,
+          3
+        ],
+        "knockoutsByActor": [
+          1,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 155.3849448,
+      "fps": 59.999377751814407,
+      "p95Ms": 18.0,
+      "residentBytes": 297222144,
+      "unityAllocatedBytes": 103158087,
+      "managedBytes": 7729152,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 453,
+        "itemUses": 21,
+        "knockouts": 3,
+        "respawns": 2,
+        "usesByItem": [
+          0,
+          3,
+          5,
+          7,
+          2,
+          4
+        ],
+        "usesByActor": [
+          5,
+          4,
+          4,
+          5,
+          3
+        ],
+        "knockoutsByActor": [
+          2,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 160.40027,
+      "fps": 59.999899002663966,
+      "p95Ms": 18.0,
+      "residentBytes": 297254912,
+      "unityAllocatedBytes": 103150055,
+      "managedBytes": 8081408,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 470,
+        "itemUses": 21,
+        "knockouts": 3,
+        "respawns": 3,
+        "usesByItem": [
+          0,
+          3,
+          5,
+          7,
+          2,
+          4
+        ],
+        "usesByActor": [
+          5,
+          4,
+          4,
+          5,
+          3
+        ],
+        "knockoutsByActor": [
+          2,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 165.4147955,
+      "fps": 60.00067871800519,
+      "p95Ms": 18.0,
+      "residentBytes": 297271296,
+      "unityAllocatedBytes": 103148219,
+      "managedBytes": 7430144,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 471,
+        "itemUses": 21,
+        "knockouts": 3,
+        "respawns": 3,
+        "usesByItem": [
+          0,
+          3,
+          5,
+          7,
+          2,
+          4
+        ],
+        "usesByActor": [
+          5,
+          4,
+          4,
+          5,
+          3
+        ],
+        "knockoutsByActor": [
+          2,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 170.4296401,
+      "fps": 60.001300208108795,
+      "p95Ms": 18.0,
+      "residentBytes": 297271296,
+      "unityAllocatedBytes": 103127575,
+      "managedBytes": 7962624,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 474,
+        "itemUses": 22,
+        "knockouts": 4,
+        "respawns": 3,
+        "usesByItem": [
+          0,
+          3,
+          5,
+          7,
+          2,
+          5
+        ],
+        "usesByActor": [
+          5,
+          4,
+          4,
+          6,
+          3
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 175.4442683,
+      "fps": 60.00196017802903,
+      "p95Ms": 18.0,
+      "residentBytes": 297287680,
+      "unityAllocatedBytes": 103125507,
+      "managedBytes": 8097792,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 22,
+        "knockouts": 4,
+        "respawns": 4,
+        "usesByItem": [
+          0,
+          3,
+          5,
+          7,
+          2,
+          5
+        ],
+        "usesByActor": [
+          5,
+          4,
+          4,
+          6,
+          3
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 180.4578537,
+      "fps": 60.002930202200709,
+      "p95Ms": 18.0,
+      "residentBytes": 297287680,
+      "unityAllocatedBytes": 103156598,
+      "managedBytes": 7970816,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 24,
+        "knockouts": 4,
+        "respawns": 4,
+        "usesByItem": [
+          0,
+          3,
+          6,
+          7,
+          2,
+          6
+        ],
+        "usesByActor": [
+          5,
+          5,
+          4,
+          7,
+          3
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 185.47345579999998,
+      "fps": 60.003195346727622,
+      "p95Ms": 18.0,
+      "residentBytes": 297287680,
+      "unityAllocatedBytes": 103157966,
+      "managedBytes": 7593984,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 25,
+        "knockouts": 4,
+        "respawns": 4,
+        "usesByItem": [
+          0,
+          3,
+          6,
+          7,
+          2,
+          7
+        ],
+        "usesByActor": [
+          5,
+          5,
+          5,
+          7,
+          3
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 190.48832639999998,
+      "fps": 60.003676949728586,
+      "p95Ms": 18.0,
+      "residentBytes": 297287680,
+      "unityAllocatedBytes": 103136176,
+      "managedBytes": 8081408,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 27,
+        "knockouts": 4,
+        "respawns": 4,
+        "usesByItem": [
+          0,
+          3,
+          7,
+          7,
+          3,
+          7
+        ],
+        "usesByActor": [
+          6,
+          6,
+          5,
+          7,
+          3
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 195.5022617,
+      "fps": 60.004420910492463,
+      "p95Ms": 18.0,
+      "residentBytes": 297287680,
+      "unityAllocatedBytes": 103131124,
+      "managedBytes": 7770112,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 27,
+        "knockouts": 4,
+        "respawns": 4,
+        "usesByItem": [
+          0,
+          3,
+          7,
+          7,
+          3,
+          7
+        ],
+        "usesByActor": [
+          6,
+          6,
+          5,
+          7,
+          3
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 200.51657989999998,
+      "fps": 60.005013081714,
+      "p95Ms": 18.0,
+      "residentBytes": 297304064,
+      "unityAllocatedBytes": 103127463,
+      "managedBytes": 8151040,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 27,
+        "knockouts": 4,
+        "respawns": 4,
+        "usesByItem": [
+          0,
+          3,
+          7,
+          7,
+          3,
+          7
+        ],
+        "usesByActor": [
+          6,
+          6,
+          5,
+          7,
+          3
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 205.53215039999998,
+      "fps": 60.005210746824609,
+      "p95Ms": 18.0,
+      "residentBytes": 297320448,
+      "unityAllocatedBytes": 103202004,
+      "managedBytes": 7335936,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 29,
+        "knockouts": 5,
+        "respawns": 4,
+        "usesByItem": [
+          0,
+          3,
+          7,
+          7,
+          4,
+          8
+        ],
+        "usesByActor": [
+          7,
+          6,
+          5,
+          8,
+          3
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          1,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 210.5470814,
+      "fps": 60.005581250484347,
+      "p95Ms": 18.0,
+      "residentBytes": 297320448,
+      "unityAllocatedBytes": 103139988,
+      "managedBytes": 7393280,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 31,
+        "knockouts": 6,
+        "respawns": 5,
+        "usesByItem": [
+          0,
+          3,
+          7,
+          8,
+          4,
+          9
+        ],
+        "usesByActor": [
+          8,
+          6,
+          5,
+          8,
+          4
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 215.56110759999999,
+      "fps": 60.00618638498792,
+      "p95Ms": 18.0,
+      "residentBytes": 297304064,
+      "unityAllocatedBytes": 103142560,
+      "managedBytes": 7585792,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 31,
+        "knockouts": 6,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          3,
+          7,
+          8,
+          4,
+          9
+        ],
+        "usesByActor": [
+          8,
+          6,
+          5,
+          8,
+          4
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 220.57710989999998,
+      "fps": 60.006226421230522,
+      "p95Ms": 18.0,
+      "residentBytes": 297287680,
+      "unityAllocatedBytes": 103143928,
+      "managedBytes": 7507968,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 31,
+        "knockouts": 6,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          3,
+          7,
+          8,
+          4,
+          9
+        ],
+        "usesByActor": [
+          8,
+          6,
+          5,
+          8,
+          4
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 225.59239989999998,
+      "fps": 60.00645414473486,
+      "p95Ms": 18.0,
+      "residentBytes": 297287680,
+      "unityAllocatedBytes": 103149066,
+      "managedBytes": 7790592,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 31,
+        "knockouts": 6,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          3,
+          7,
+          8,
+          4,
+          9
+        ],
+        "usesByActor": [
+          8,
+          6,
+          5,
+          8,
+          4
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          1,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 230.607066,
+      "fps": 60.006834309231643,
+      "p95Ms": 18.0,
+      "residentBytes": 297320448,
+      "unityAllocatedBytes": 103147448,
+      "managedBytes": 8085504,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 2,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 32,
+        "knockouts": 7,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          3,
+          7,
+          8,
+          4,
+          10
+        ],
+        "usesByActor": [
+          8,
+          7,
+          5,
+          8,
+          4
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 235.61012559999998,
+      "fps": 59.997421435100009,
+      "p95Ms": 18.0,
+      "residentBytes": 297484288,
+      "unityAllocatedBytes": 103313956,
+      "managedBytes": 8089600,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 480,
+        "itemUses": 34,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          3,
+          8,
+          8,
+          5,
+          10
+        ],
+        "usesByActor": [
+          8,
+          7,
+          5,
+          9,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 240.624766,
+      "fps": 59.997980424010208,
+      "p95Ms": 18.0,
+      "residentBytes": 297861120,
+      "unityAllocatedBytes": 103287287,
+      "managedBytes": 7434240,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 503,
+        "itemUses": 34,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          3,
+          8,
+          8,
+          5,
+          10
+        ],
+        "usesByActor": [
+          8,
+          7,
+          5,
+          9,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 245.639334,
+      "fps": 59.998534273831112,
+      "p95Ms": 18.0,
+      "residentBytes": 297336832,
+      "unityAllocatedBytes": 103281957,
+      "managedBytes": 7483392,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 537,
+        "itemUses": 35,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          4,
+          8,
+          8,
+          5,
+          10
+        ],
+        "usesByActor": [
+          8,
+          8,
+          5,
+          9,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 250.6398665,
+      "fps": 59.998436042895236,
+      "p95Ms": 18.0,
+      "residentBytes": 297353216,
+      "unityAllocatedBytes": 103266849,
+      "managedBytes": 7847936,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 562,
+        "itemUses": 35,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          4,
+          8,
+          8,
+          5,
+          10
+        ],
+        "usesByActor": [
+          8,
+          8,
+          5,
+          9,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 255.653136,
+      "fps": 59.99926400276987,
+      "p95Ms": 18.0,
+      "residentBytes": 297402368,
+      "unityAllocatedBytes": 103250761,
+      "managedBytes": 7692288,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 592,
+        "itemUses": 35,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          4,
+          8,
+          8,
+          5,
+          10
+        ],
+        "usesByActor": [
+          8,
+          8,
+          5,
+          9,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 260.66724809999994,
+      "fps": 59.999866166539086,
+      "p95Ms": 18.0,
+      "residentBytes": 296288256,
+      "unityAllocatedBytes": 103232361,
+      "managedBytes": 7655424,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 622,
+        "itemUses": 35,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          4,
+          8,
+          8,
+          5,
+          10
+        ],
+        "usesByActor": [
+          8,
+          8,
+          5,
+          9,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 265.6690208,
+      "fps": 59.999468330934818,
+      "p95Ms": 18.0,
+      "residentBytes": 296189952,
+      "unityAllocatedBytes": 103208705,
+      "managedBytes": 7483392,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 648,
+        "itemUses": 35,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          4,
+          8,
+          8,
+          5,
+          10
+        ],
+        "usesByActor": [
+          8,
+          8,
+          5,
+          9,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 270.6700194,
+      "fps": 59.999256792457629,
+      "p95Ms": 18.0,
+      "residentBytes": 296189952,
+      "unityAllocatedBytes": 103201565,
+      "managedBytes": 7540736,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 661,
+        "itemUses": 36,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          4,
+          8,
+          8,
+          6,
+          10
+        ],
+        "usesByActor": [
+          8,
+          8,
+          6,
+          9,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 275.6852785,
+      "fps": 59.9995766549431,
+      "p95Ms": 18.0,
+      "residentBytes": 296189952,
+      "unityAllocatedBytes": 103194393,
+      "managedBytes": 7512064,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 670,
+        "itemUses": 36,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          4,
+          8,
+          8,
+          6,
+          10
+        ],
+        "usesByActor": [
+          8,
+          8,
+          6,
+          9,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 280.70043039999996,
+      "fps": 59.999908001566418,
+      "p95Ms": 18.0,
+      "residentBytes": 296189952,
+      "unityAllocatedBytes": 103187979,
+      "managedBytes": 7917568,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 688,
+        "itemUses": 37,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          5,
+          8,
+          8,
+          6,
+          10
+        ],
+        "usesByActor": [
+          8,
+          9,
+          6,
+          9,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 285.702406,
+      "fps": 59.999494718991258,
+      "p95Ms": 18.0,
+      "residentBytes": 296206336,
+      "unityAllocatedBytes": 103187231,
+      "managedBytes": 7671808,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 691,
+        "itemUses": 37,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          5,
+          8,
+          8,
+          6,
+          10
+        ],
+        "usesByActor": [
+          8,
+          9,
+          6,
+          9,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 290.70449410000003,
+      "fps": 59.999072439520674,
+      "p95Ms": 18.0,
+      "residentBytes": 259571712,
+      "unityAllocatedBytes": 103188711,
+      "managedBytes": 7970816,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 693,
+        "itemUses": 37,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          5,
+          8,
+          8,
+          6,
+          10
+        ],
+        "usesByActor": [
+          8,
+          9,
+          6,
+          9,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 295.70463259999997,
+      "fps": 59.9990600214902,
+      "p95Ms": 18.0,
+      "residentBytes": 259571712,
+      "unityAllocatedBytes": 103185093,
+      "managedBytes": 7614464,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 698,
+        "itemUses": 38,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          5,
+          8,
+          9,
+          6,
+          10
+        ],
+        "usesByActor": [
+          8,
+          9,
+          6,
+          10,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    },
+    {
+      "elapsedSeconds": 300.0039011,
+      "fps": 59.999377966449217,
+      "p95Ms": 18.0,
+      "residentBytes": 259588096,
+      "unityAllocatedBytes": 103244237,
+      "managedBytes": 7536640,
+      "thermalState": 0,
+      "lowPowerMode": 0,
+      "batteryLevel": 1.0,
+      "round": 3,
+      "statistics": {
+        "hearts": 710,
+        "itemUses": 38,
+        "knockouts": 8,
+        "respawns": 6,
+        "usesByItem": [
+          0,
+          5,
+          8,
+          9,
+          6,
+          10
+        ],
+        "usesByActor": [
+          8,
+          9,
+          6,
+          10,
+          5
+        ],
+        "knockoutsByActor": [
+          3,
+          0,
+          2,
+          3,
+          0
+        ]
+      }
+    }
+  ],
+  "notes": "Production four AI plus the same shared-map/local-combat brain supplying human input. Normal attacks, KO, centre respawn and rounds. No fixtures or invulnerability. Recorder and checkpoints add overhead. USB charging; battery drain not assessed. Automated evidence does not establish subjective fun or manual accessibility."
+}

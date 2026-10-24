@@ -1,0 +1,25 @@
+PASS All five actors have the identical five-item pool and effects
+PASS Cream pie warns before flight, uses heading and knocks out once without score/inventory loss
+PASS Water balloon has a warned small landing area and can hit two nearby opponents
+PASS Banana slips and oil slows; neither knocks out or steals points; owner is immune
+PASS KO waits 300 active ticks, respawns at centre and protects for 180; body contact is harmless
+PASS Own attacks end respawn protection; boost retains it; protected targets ignore attacks
+PASS Walls block heading attacks and splash; moving gate reservations include projectiles
+PASS Pause/countdown freeze active attacks, KO, protection and all AI memory across JSON restore
+PASS Attacks arriving exactly at the round deadline do not knock out; earlier landing does
+PASS Version-one competition save migrates without mutating its envelope or classic enum values
+PASS Malformed combat and brain snapshots reject atomically
+PASS AI observations cannot see distant actors or resources and decisions ignore unseen changes
+PASS Brain decisions and reaction delay restore deterministically with production AI and attacks
+PASS An opening projectile reserves a closing shortcut until the shot has passed
+PASS Simultaneous opposing pies can knock out both throwers; future projectiles survive owner KO
+PASS Occupied central starts do not delay respawn or block body movement
+PASS Round settlement during KO and an airborne item preserves points and clears effects next round
+PASS Ten seeded live-AI rounds stress five actors, wall cycles, combat and checkpoint continuation
+MATCH kim rounds=6 hearts=1537 uses=11,10,15,7,19 KO=8 itemTypes=0,14,15,20,7,6
+MATCH putin rounds=5 hearts=1394 uses=16,7,9,7,10 KO=6 itemTypes=0,13,7,19,6,4
+MATCH trump rounds=4 hearts=1161 uses=5,11,14,8,13 KO=12 itemTypes=0,10,6,17,9,9
+MATCH xi rounds=5 hearts=1352 uses=10,16,12,12,8 KO=9 itemTypes=0,16,6,21,7,8
+MATCH zelenskyy rounds=6 hearts=1688 uses=18,17,15,9,14 KO=13 itemTypes=0,19,14,19,13,8
+PASS Five complete matches use the production local-view AI, attacks, KO and centre respawn
+19 arena checks passed, 0 failed

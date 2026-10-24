@@ -1,0 +1,1 @@
+PASS source maze equality, five exact reference copies, five character source/FBX hashes, editable sources, rig/clip/geometry budgets and imported hero arm, 142 unique Unity GUIDs, package/assembly JSON and references.

@@ -184,14 +184,14 @@ namespace MazeOfEgos.Core
                 }
             return nearest;
         }
-        public bool CanOccupy(Point2 p, double radius = PlayerRadius)
+        public bool CanOccupy(Point2 p, double radius = PlayerRadius, bool homeAccess = false)
         {
             if (!p.IsFinite) return false;
             const double half = 0.5 + WallPadding;
             for (int y = (int)Math.Floor(p.y - radius - half); y <= (int)Math.Ceiling(p.y + radius + half); y++)
                 for (int x = (int)Math.Floor(p.x - radius - half); x <= (int)Math.Ceiling(p.x + radius + half); x++)
                 {
-                    if (IsWalkable(new Cell(x, y))) continue;
+                    if (IsWalkable(new Cell(x, y), homeAccess)) continue;
                     double dx = Math.Max(Math.Abs(p.x - x) - half, 0);
                     double dy = Math.Max(Math.Abs(p.y - y) - half, 0);
                     if (dx * dx + dy * dy < radius * radius - 1e-10) return false;
@@ -207,12 +207,12 @@ namespace MazeOfEgos.Core
             if (CanOccupy(next)) p = next;
             return Wrap(p);
         }
-        public bool HasLineOfSight(Point2 start, Point2 end)
+        public bool HasLineOfSight(Point2 start, Point2 end, bool homeAccess = false)
         {
             end = Near(end, start);
             int steps = Math.Max(1, (int)Math.Ceiling((end - start).Length / 0.05));
             for (int i = 1; i < steps; i++)
-                if (!CanOccupy(Point2.Lerp(start, end, (double)i / steps), 0.01)) return false;
+                if (!CanOccupy(Point2.Lerp(start, end, (double)i / steps), 0.01, homeAccess)) return false;
             return true;
         }
         public Cell PathStep(Cell start, Cell goal, bool homeAccess)

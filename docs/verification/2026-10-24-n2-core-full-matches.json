@@ -1,0 +1,567 @@
+[
+  {
+    "humanId": "kim",
+    "seed": 100,
+    "rounds": 8,
+    "activeTicks": 57600,
+    "simulatedSeconds": 960,
+    "totalHeartsCollected": 760,
+    "winners": [
+      "kim"
+    ],
+    "participants": [
+      {
+        "id": "kim",
+        "position": {
+          "x": 21,
+          "y": 18.59999999999999
+        },
+        "heading": 0,
+        "queuedHeading": -1,
+        "moving": true,
+        "roundScore": 28,
+        "bankedScore": 182,
+        "trophies": 3,
+        "inventory": 2,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "putin",
+        "position": {
+          "x": 6,
+          "y": 14.600000000000037
+        },
+        "heading": 2,
+        "queuedHeading": 2,
+        "moving": true,
+        "roundScore": 16,
+        "bankedScore": 130,
+        "trophies": 1,
+        "inventory": 3,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "trump",
+        "position": {
+          "x": 21,
+          "y": 11.800000000000018
+        },
+        "heading": 2,
+        "queuedHeading": 2,
+        "moving": true,
+        "roundScore": 13,
+        "bankedScore": 154,
+        "trophies": 1,
+        "inventory": 0,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "xi",
+        "position": {
+          "x": 15,
+          "y": 22.40000000000001
+        },
+        "heading": 2,
+        "queuedHeading": -1,
+        "moving": true,
+        "roundScore": 13,
+        "bankedScore": 157,
+        "trophies": 2,
+        "inventory": 0,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "zelenskyy",
+        "position": {
+          "x": 6.799999999999992,
+          "y": 14
+        },
+        "heading": 1,
+        "queuedHeading": 1,
+        "moving": true,
+        "roundScore": 6,
+        "bankedScore": 137,
+        "trophies": 2,
+        "inventory": 0,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "humanId": "putin",
+    "seed": 101,
+    "rounds": 8,
+    "activeTicks": 57600,
+    "simulatedSeconds": 960,
+    "totalHeartsCollected": 731,
+    "winners": [
+      "putin"
+    ],
+    "participants": [
+      {
+        "id": "kim",
+        "position": {
+          "x": 11.399999999999963,
+          "y": 11
+        },
+        "heading": 3,
+        "queuedHeading": 3,
+        "moving": true,
+        "roundScore": 16,
+        "bankedScore": 209,
+        "trophies": 2,
+        "inventory": 1,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "putin",
+        "position": {
+          "x": 21,
+          "y": 14.40000000000001
+        },
+        "heading": 2,
+        "queuedHeading": -1,
+        "moving": true,
+        "roundScore": 33,
+        "bankedScore": 151,
+        "trophies": 3,
+        "inventory": 2,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "trump",
+        "position": {
+          "x": 6,
+          "y": 12.800000000000018
+        },
+        "heading": 2,
+        "queuedHeading": 2,
+        "moving": true,
+        "roundScore": 2,
+        "bankedScore": 102,
+        "trophies": 0,
+        "inventory": 0,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "xi",
+        "position": {
+          "x": 6.799999999999992,
+          "y": 23
+        },
+        "heading": 1,
+        "queuedHeading": 1,
+        "moving": true,
+        "roundScore": 13,
+        "bankedScore": 157,
+        "trophies": 2,
+        "inventory": 3,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "zelenskyy",
+        "position": {
+          "x": 6,
+          "y": 7.600000000000004
+        },
+        "heading": 0,
+        "queuedHeading": -1,
+        "moving": true,
+        "roundScore": 17,
+        "bankedScore": 112,
+        "trophies": 1,
+        "inventory": 2,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "humanId": "trump",
+    "seed": 102,
+    "rounds": 8,
+    "activeTicks": 57600,
+    "simulatedSeconds": 960,
+    "totalHeartsCollected": 827,
+    "winners": [
+      "trump"
+    ],
+    "participants": [
+      {
+        "id": "kim",
+        "position": {
+          "x": 6,
+          "y": 9.199999999999982
+        },
+        "heading": 0,
+        "queuedHeading": 0,
+        "moving": true,
+        "roundScore": 19,
+        "bankedScore": 179,
+        "trophies": 2,
+        "inventory": 5,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "putin",
+        "position": {
+          "x": 21,
+          "y": 8.399999999999963
+        },
+        "heading": 0,
+        "queuedHeading": 0,
+        "moving": true,
+        "roundScore": 22,
+        "bankedScore": 145,
+        "trophies": 1,
+        "inventory": 3,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "trump",
+        "position": {
+          "x": 5.200000000000008,
+          "y": 14
+        },
+        "heading": 3,
+        "queuedHeading": 3,
+        "moving": true,
+        "roundScore": 26,
+        "bankedScore": 198,
+        "trophies": 3,
+        "inventory": 3,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "xi",
+        "position": {
+          "x": 6,
+          "y": 21
+        },
+        "heading": 0,
+        "queuedHeading": 0,
+        "moving": true,
+        "roundScore": 18,
+        "bankedScore": 157,
+        "trophies": 2,
+        "inventory": 5,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "zelenskyy",
+        "position": {
+          "x": 3.6000000000000103,
+          "y": 14
+        },
+        "heading": 1,
+        "queuedHeading": 1,
+        "moving": true,
+        "roundScore": 23,
+        "bankedScore": 148,
+        "trophies": 0,
+        "inventory": 3,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "humanId": "xi",
+    "seed": 103,
+    "rounds": 10,
+    "activeTicks": 72000,
+    "simulatedSeconds": 1200,
+    "totalHeartsCollected": 850,
+    "winners": [
+      "putin"
+    ],
+    "participants": [
+      {
+        "id": "kim",
+        "position": {
+          "x": 6,
+          "y": 14.40000000000001
+        },
+        "heading": 2,
+        "queuedHeading": -1,
+        "moving": true,
+        "roundScore": 15,
+        "bankedScore": 126,
+        "trophies": 1,
+        "inventory": 1,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "putin",
+        "position": {
+          "x": 15.199999999999982,
+          "y": 23
+        },
+        "heading": 3,
+        "queuedHeading": 3,
+        "moving": true,
+        "roundScore": 37,
+        "bankedScore": 204,
+        "trophies": 3,
+        "inventory": 2,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "trump",
+        "position": {
+          "x": 6,
+          "y": 5.599999999999984
+        },
+        "heading": 2,
+        "queuedHeading": 2,
+        "moving": true,
+        "roundScore": 10,
+        "bankedScore": 154,
+        "trophies": 2,
+        "inventory": 4,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "xi",
+        "position": {
+          "x": 6,
+          "y": 12.799999999999972
+        },
+        "heading": 0,
+        "queuedHeading": -1,
+        "moving": true,
+        "roundScore": 15,
+        "bankedScore": 179,
+        "trophies": 2,
+        "inventory": 4,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "zelenskyy",
+        "position": {
+          "x": 6,
+          "y": 16.600000000000037
+        },
+        "heading": 2,
+        "queuedHeading": 2,
+        "moving": true,
+        "roundScore": 15,
+        "bankedScore": 187,
+        "trophies": 2,
+        "inventory": 3,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "humanId": "zelenskyy",
+    "seed": 104,
+    "rounds": 7,
+    "activeTicks": 50400,
+    "simulatedSeconds": 840,
+    "totalHeartsCollected": 649,
+    "winners": [
+      "xi"
+    ],
+    "participants": [
+      {
+        "id": "kim",
+        "position": {
+          "x": 6,
+          "y": 18
+        },
+        "heading": 0,
+        "queuedHeading": 0,
+        "moving": true,
+        "roundScore": 25,
+        "bankedScore": 125,
+        "trophies": 1,
+        "inventory": 0,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "putin",
+        "position": {
+          "x": 6,
+          "y": 20.40000000000001
+        },
+        "heading": 2,
+        "queuedHeading": -1,
+        "moving": true,
+        "roundScore": 25,
+        "bankedScore": 142,
+        "trophies": 2,
+        "inventory": 1,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "trump",
+        "position": {
+          "x": 11,
+          "y": 8
+        },
+        "heading": 1,
+        "queuedHeading": 1,
+        "moving": true,
+        "roundScore": 11,
+        "bankedScore": 121,
+        "trophies": 1,
+        "inventory": 0,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "xi",
+        "position": {
+          "x": 21,
+          "y": 11.799999999999972
+        },
+        "heading": 0,
+        "queuedHeading": -1,
+        "moving": true,
+        "roundScore": 33,
+        "bankedScore": 143,
+        "trophies": 3,
+        "inventory": 4,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "zelenskyy",
+        "position": {
+          "x": 5.3999999999999835,
+          "y": 14
+        },
+        "heading": 3,
+        "queuedHeading": 3,
+        "moving": true,
+        "roundScore": 9,
+        "bankedScore": 118,
+        "trophies": 1,
+        "inventory": 4,
+        "insideCrates": [
+          false,
+          false,
+          false,
+          false
+        ]
+      }
+    ]
+  }
+]

@@ -1,5 +1,268 @@
 # Verifikation — senest opdateret 24. oktober 2026
 
+## Build 17 — selectable character cards, splash hits, early rounds and portrait results
+
+October 24, 2026. All functional checks and normal Release installation/startup pass. No commit, push or Apple upload.
+
+| Verification | Result |
+| --- | --- |
+| Classic / foundation / arena | **65 + 34 + 23 = 122 passed**, zero failures |
+| Character selection | Native taps on the actual photo and name for every character select the correct human; picture/name share one Button rectangle |
+| Balloon landing radius | Radius = 1 map cell; all active unprotected opponents inside/on boundary hit, none outside; wall/protection rules retained; same radius for warning and hit test; 0.3 s visible impact hits only once |
+| Balloon persistence | Restore on last airborne tick gives identical hits/cleanup; entering the visible post-impact splash does not cause a later hit |
+| Early round finish | Last heart awards its point before settlement; empty board ends immediately; reason recorded as HeartsCollected; timeout remains 120 s |
+| Short-round clock / settlement | Real cumulative active ticks continue into following rounds; save/restore preserves start tick and reason; trophies/points settle exactly once; corrupt timing/phase headers reject atomically |
+| Results | Actual character portraits, names and round points stacked below each picture for gold/silver/bronze; all shared places shown; at least three shared gold winners expand across width; overall trophy table below |
+| Production AI matches | Five full matches / 34 rounds / 133,356 active ticks (2,222.6 simulated seconds), 8,160 hearts, 250 items and 42 KO |
+| Serialization | Actual Unity Newtonsoft V1/V2/V3→V4 migration and deterministic combat/AI continuation pass; normal legacy files remain separate |
+| Managed / assets | 0 managed warnings/errors; original maze, supplied images/model hashes and 152 unique metadata GUIDs pass |
+| Native Mac | PASS at 1600×900, 2400×1080 and 1600×1200; 17 fresh captures per format |
+| Physical iPhone 13 | PASS with 19 fresh captures; actual photo/name taps, splash KO, last-heart settlement + save/continue, result portraits, both landscapes/safe areas and simultaneous controls |
+| Actual OS background/foreground | PASS 9.384301 s; frozen combat/AI/timers and matching disk checkpoint; Playback audio policy after foreground |
+| Normal Release archive | PASS local signature/configuration/privacy audit; normal 0.2.0 (17), QA harness absent |
+| Final normal startup | PASS 0.2.0 (17) installed and launched without test flags; same PID after at least 8 s; installed version/executable match; classic saves/settings and backups byte-preserved |
+
+[Character cards](verification/2026-10-24-build17-iphone-03-selection.png),
+[landing splash](verification/2026-10-24-build17-iphone-08b-balloon-splash.png),
+[last-heart result](verification/2026-10-24-build17-iphone-11b-last-heart-results.png),
+[round portraits](verification/2026-10-24-build17-iphone-12-round-results.png),
+[shared winners](verification/2026-10-24-build17-iphone-13-match-results.png),
+[complete matches](verification/2026-10-24-build17-arena-full-matches.json),
+[real lifecycle](verification/2026-10-24-build17-lifecycle.json),
+[normal startup and preserved files](verification/2026-10-24-build17-normal-launch.json).
+
+Native checks use controlled fixtures and synthetic touch through the actual
+application UI. Full Core matches use the normal shared-map/local-combat AI
+for all five slots. Core match time is simulated, not a physical frame measurement.
+Build 16's 300-second Release performance run below is historical; no fresh long
+performance run is claimed for build 17. Manual fun/balance/final art remain open.
+Physical iPad remains excluded at the user's request.
+
+## Historical build 16 — random starts, finite hearts, shared minimap and medals
+
+October 24, 2026. Final Core/shared-map AI and physical functional checks pass.
+Fresh Release performance and final normal installation/startup pass. Build 15 results
+below remain historical and are not substituted for this build's measurements.
+No commit, push or Apple upload.
+
+| Verification | Result |
+| --- | --- |
+| Classic / foundation / arena | 65 + 31 + 21 = **117 passed**, zero failures |
+| New random starts | 100 seeds: unique legal cells outside centre, at least six cells apart, legal initial headings; human-independent allocation and persisted next-round RNG |
+| Finite round hearts | Full production round never increases its heart count; exhausted board stays empty until 120 s; next round restores 240 hearts |
+| Shared map and local combat | All five receive identical remaining hearts and active map positions; AI routes toward distant hearts and removes collected hearts from memory; hidden inventory/protection changes leave observations unchanged |
+| Medals / overall rankings | Round points decide shared gold/silver/bronze with skipped occupied ranks (1, 1, 3); only gold grants a trophy; overall rank uses trophies then total points |
+| Production AI complete matches | Five matches / 34 rounds / 244,800 active ticks (4,080 simulated seconds), 8,160 hearts, 474 item uses and 74 KO |
+| Additional AI stress | Ten seeded rounds / 72,000 ticks, 120 checkpoint roundtrips |
+| Persistence | Actual Unity Newtonsoft continuation and V1/V2→V3 migrations pass; current positions/resources/points preserved; separate legacy files and atomic backups retained |
+| Compilation / repository | 0 managed warnings/errors; 152 unique metadata GUIDs; source maze, supplied images and model hashes preserved |
+| Native Mac | PASS final shared-map build at 1600×900, 2400×1080 and 1600×1200; 15 fresh captures per format |
+| Physical iPhone 13 | Final shared-map build passes with 17 captures, both actual landscape safe areas, simultaneous controls, all five items, KO/respawn, continue, new round and shared match results |
+| Actual iOS background/foreground | PASS: 9.501879 s; identical frozen combat/AI state, verified disk checkpoint and Playback policy after foreground |
+| Fresh Release performance | PASS 300.0039011 s / 18,000 frames: 59.9994 fps; p95 18 ms, p99 19.5 ms, worst 46.30 ms; 4 frames over 33.33 ms, none over 50 ms |
+| Normal archive / install | PASS normal signed 0.2.0 (16) archive installed and launched without test flags; same PID after 8 s; installed version/executable verified; legacy saves/settings and backups byte-preserved; QA harness absent |
+
+The new Release measurement includes 289.934 s of active play, 5.983 s of countdown and 4.086 s of results. Three rounds were started in one match. The measured window collected 621 hearts, used 38 items and produced 8 KO. Uses by canonical actor: 8 / 9 / 6 / 10 / 5. All 61 thermal samples are nominal (0). Peak sampled resident memory is 284.06 MiB; CPU main-thread average is 2.60 ms. GPU timing and GC allocation counters were unavailable. USB charging does not establish battery drain. This is a fresh 300-second build 16 run; the historical 900-second build 15 run is not repeated or reused as current evidence.
+
+[Build 16 performance](verification/2026-10-24-build16-performance.json), [normal archive audit](verification/2026-10-24-build16-release-audit.json), [verified normal launch and preserved files](verification/2026-10-24-build16-normal-launch.json).
+
+The current rules restore hearts only at a new round. Timers, question-box refill,
+five-second central KO respawn and three-second protection remain unchanged.
+All five receive the minimap's active positions, hearts and shortcut state;
+combat information stays local. Round medals do not change the agreed gold-only
+trophy award. The UI uses explicit vector medals/trophies and English labels.
+
+An intermediate Mac smoke run lost a synthetic HELP tap while other build tools
+took focus. The opt-in smoke harness now ignores desktop focus and yields an
+input frame before and after release; the final native suite is rerun. Normal
+Release excludes this harness. The first phone runs before the final shared-map
+answer are retained privately; only the final shared-map evidence is linked here.
+
+[Physical minimap](verification/2026-10-24-build16-iphone-03b-random-start-minimap.png),
+[round medals and overall trophies](verification/2026-10-24-build16-iphone-12-round-results.png),
+[shared final victory](verification/2026-10-24-build16-iphone-13-match-results.png),
+[production matches](verification/2026-10-24-build16-arena-full-matches.json),
+[actual lifecycle](verification/2026-10-24-build16-lifecycle.json).
+
+Manual fun/balance and final character art remain unaccepted. Physical iPad is
+excluded at the user's request. A Mac 4:3 layout check is not a physical iPad test.
+
+## Historical N3–N5 — competition build 15, October 24, 2026
+
+Status: gameplay implementation and automatic N5 verification are complete.
+Normal Release 0.2.0 (15) is installed and launched on the physical iPhone 13.
+Manual gameplay/art acceptance remains open.
+No Apple upload, commit or push was performed.
+
+| Verification | Result |
+| --- | --- |
+| Classic regressions | 65 passed / 0 failed |
+| Competition foundation | 24 passed / 0 failed |
+| New combat/AI/integration Core checks | 19 passed / 0 failed |
+| Complete matches with production local-view AI | 5 matches, one per selected human character; 26 rounds, 187,200 active ticks / 3,120 simulated seconds, 7,132 hearts, 293 items and 48 KO |
+| Additional live AI stress | 10 seeded rounds / 72,000 ticks / 1,200 simulated seconds, 120 exact checkpoint roundtrips |
+| Actual Unity Newtonsoft | Deterministic combat/AI continuation, version migration, corruption/backup recovery, classic-file isolation and exactly-once settlement pass |
+| Host evidence guards | 5 Python checks pass: incomplete, failed, stale, wrong-model and inactive reports reject; durable fresh completion does not require a live console |
+| Managed compilation | 0 warnings / 0 errors against pinned Unity libraries |
+| Repository/assets | Preserved source maze and all supplied PNG copies; FBX/source hashes, rigs and 151 unique metadata GUIDs pass |
+| Unity editor validation | Content, six imported rigs including the retained hand asset, real competition profile and V2 JSON roundtrip pass |
+| Native macOS | PASS: 1600×900, 2400×1080 and 1600×1200; 14 fresh framebuffer captures per format |
+| Physical iPhone 13 | PASS final functional check: 16 fresh captures, gameplay, controls and safe areas in both actual landscape orientations |
+| Actual iOS lifecycle | PASS: 9.509317 s in final background check (first pass: 9.515799 s); identical frozen combat, round and AI state; disk checkpoint matches; resume countdown freezes active time; Playback audio policy survives foreground |
+| Normal archive | Development-signed local 0.2.0 (15) archive passes signature/configuration/privacy audit; all opt-in QA classes absent |
+| Fresh Release performance | PASS durable 900.0032182 s / 53,968 frames: 59.9643 fps; p95 18 ms, p99 18.5 ms, worst 46.1224 ms; 14 frames over 33.33 ms, none over 50 ms |
+| Final normal installation | PASS normal archive installed, version/build and same running PID verified after 8 s, no test arguments/environment; classic save/settings and backups byte-identical |
+
+The measurement includes **864.6914 seconds of active play**, 20.8957 seconds
+of countdown and 14.4145 seconds of results. Eight rounds and two matches were
+started (one match completed and the next continued). During the measured
+window, five actors collected 1,979 hearts, used 79 items and received 16 KO.
+Uses per actor in canonical order: 18 / 13 / 19 / 9 / 20. All 181 thermal
+samples are nominal (0). Peak sampled resident memory is 279.64 MiB; first/last
+samples are 278.02 / 244.92 MiB. CPU main-thread average is 2.57 ms. GPU timing
+and GC allocation counters were unavailable; zero reported values do not mean
+zero GPU work or allocation. USB charging does not establish battery drain.
+
+CoreDevice invalidated its console connection on termination, losing the final
+completion token. The original host runner therefore returned failure despite
+native PASS files. The completed Release report and all 181 monotonic samples
+were independently validated, including duration, phase-time coverage, all five
+actors, no error/interruption and a UTC timestamp newer than this launch log.
+The runner now accepts this strictly validated fresh durable completion for
+performance runs and retains transport status separately. Native failure,
+stale/partial reports and incomplete samples still reject. No second 900-second
+measurement is claimed.
+
+[Performance report](verification/2026-10-24-build15-performance.json),
+[transport record](verification/2026-10-24-build15-performance-transport.json),
+[final OS lifecycle](verification/2026-10-24-build15-lifecycle-final.json),
+[normal startup and preserved files](verification/2026-10-24-build15-normal-launch.json).
+
+The native smoke check uses the actual menu, separate character choice, five
+models, projected direction selection and simultaneous joystick/item touches
+in both hand layouts. It exercises all five items, mid-item save/continue,
+KO with retained points, respawn, settings, next round and shared round/match
+victories. Controlled fixtures and synthetic touch are distinct from the live
+AI measurement and from a human-played match. Text height is checked against
+its real native layout when capturing.
+
+New Core coverage includes all five item users, warned cake/balloon timing,
+nonlethal banana/oil, ownership/protection, reciprocal KO, point/inventory
+retention, occupied-centre respawn, round deadline during combat, projectile
+shortcut reservations, atomic malformed-snapshot rejection, frozen timers,
+AI observation boundaries, seeded AI continuation and V1 migration. Full-match
+reports use the production observation-based brain for all five participants;
+only the human input is supplied automatically.
+
+The first device smoke attempts exposed iOS's filename screenshot behavior.
+The harness now captures the real framebuffer texture and writes the PNG into
+its cache directly. One retry installed before its native rebuild completed;
+that repeated the old screenshot failure. Subsequent installation used the
+completed build and passed. A Mac 4:3 run under build load also exposed a
+wall-clock assumption in the harness's respawn wait. It now waits for the
+actual state with a bounded timeout; Core separately checks exactly 300 active
+ticks. All three formats passed after that test correction. Production rules
+were unchanged by these harness fixes.
+
+Performance profile source hashes are retained separately because later
+smoke-only changes clean stale QA captures, strengthen gameplay rotation
+checks and remove the fragile respawn wait. Normal Release excludes the entire
+QA class. Production game code is identical between those profiles.
+
+The development player's shutdown still reports two persistent native
+allocations, as in earlier builds. This is not a claim that every native
+allocation leak has been diagnosed. The new long measurement reports sampled
+memory and thermal behavior separately. Native builds also emit Unity/libc++
+and script-phase warnings; the zero-warning result above concerns managed
+compilation only.
+
+Manual acceptance still needed: play a complete match using real fingers,
+judge local visibility, reaction opportunities, tactics, difficulty, animation
+and sound quality. Prior build 12 relative controls and build 10 audible-Silent
+feedback do not establish acceptance of the new competitive gameplay. Physical
+iPad testing remains declined for this round.
+
+New evidence uses `verification/2026-10-24-build15-*`; older N2/build 9–14
+reports below are preserved as historical records. Selected Mac captures:
+[character selection](verification/2026-10-24-build15-mac-1600x900-03-selection.png),
+[water balloon warning](verification/2026-10-24-build15-mac-1600x900-07-item-4.png),
+[shared match result](verification/2026-10-24-build15-mac-1600x900-13-match-results.png).
+
+
+## N2 — competition Core and independent storage, October 24, 2026
+
+N2 is implemented as the agreed rules foundation, separate from the classic
+`GameSession`. Five stable participant IDs use identical corridor/base access,
+speed, pickup, inventory and scoring rules. Commands identify the actor and
+current simulation tick. The core covers ordinary regenerating hearts,
+replenishing/re-entry crates, replacement inventory, automatic safe shortcuts,
+120-second rounds, round/banked scores, shared round trophies, first-to-three
+match results and total-score/shared-win tie handling.
+
+**Scope:** Normal `GameApp` still uses the N1 classic simulation in the installed
+build 14. N2 has no new phone build or player-facing competition screen. Attack
+effects/KO/respawn are N3; production AI, character selection and runtime flow
+integration are N4. The five item kinds can be held in N2; they cannot yet be
+used as competition attacks. Scripted routing is a test fixture with global
+state access, not the local-observation AI specified for N4.
+
+| Verification | Result |
+| --- | --- |
+| New competition executable | **24 passed, 0 failed** |
+| Classic regression executable | **65 passed, 0 failed**, including original navigation/save migration |
+| Managed Unity compilation | **0 warnings, 0 errors** |
+| Actual Unity Newtonsoft JSON | Both classic and competition checks passed |
+| Competition disk storage | Atomic primary/backup roundtrip, malformed-primary fallback, old save/settings preservation, invalid-file rejection without live-state mutation, and exactly-once settlement after disk reload passed |
+| Pinned Unity 6000.3.26f1 batch validation | Passed actual five-actor Core/JSON exercise alongside existing asset/scene validation |
+| Repository | Passed, **142 unique GUIDs**, original maze/reference/menu/model assets preserved |
+
+Competition checks exercise all five actor IDs, equal base exits, screen-derived
+world-heading queues, tunnel/corner paths, contact order, deterministic seeded
+ties without human/array-order priority, all five inventory types, full-inventory
+replacement, crate camping/re-entry, resource limits/locations, strict round
+deadline, pause/countdown, shared trophies, simultaneous third trophies,
+full shared match victory, frozen results, corrupted-snapshot rejection and
+continued seeded simulation. Restore normalizes actor order by stable ID.
+
+Five additional full-match fixtures run through every active tick and restore
+each round result before continuing. All five human ID choices are covered:
+
+| Human ID / seed | Rounds | Simulated seconds | Hearts collected by all five | Match winner |
+| --- | --- | --- | --- | --- |
+| kim / 100 | 8 | 960 | 760 | kim |
+| putin / 101 | 8 | 960 | 731 | putin |
+| trump / 102 | 8 | 960 | 827 | trump |
+| xi / 103 | 10 | 1200 | 850 | putin |
+| zelenskyy / 104 | 7 | 840 | 649 | xi |
+
+Total: **41 rounds, 295,200 active ticks, 4,920 simulated seconds and 3,817
+collected hearts**. Each actor collects hearts in every match. These are
+headless rules runs, not 82 minutes of real-device gameplay or a frame/memory/
+thermal performance measurement. No new N5 performance claim is made.
+
+Persistence uses `competition-v1.json` with a required format/version marker,
+maze fingerprint and stored rule profile. It preserves navigation, independent
+random streams, inventory, resource/timer/entry-latch state, wall state and
+settled-round/winner ledgers. Restore validates before commit and opens paused.
+The classic `session-v1.json` and its backup/highscore/settings remain separate.
+Future N3/N4 data requires a versioned extension/migration, not legacy enum
+reinterpretation. Item kinds use a separate enum from classic `ItemKind`.
+
+The first seed-coverage run exposed correlated first draws from adjacent raw
+seeds. Competition stream initialization now mixes each seed/salt before
+xorshift; streams then advance independently and persist exactly. Seed
+coverage now reaches all five item kinds and all five simultaneous-pickup
+winners, while changing the human ID or snapshot array order leaves a given
+seed's result unchanged.
+
+Evidence: [competition checks](verification/2026-10-24-n2-core-competition-checks.txt),
+[full matches](verification/2026-10-24-n2-core-full-matches.json),
+[classic regression](verification/2026-10-24-n2-core-classic-checks.txt),
+[Unity serialization](verification/2026-10-24-n2-core-serialization.txt),
+[editor validation](verification/2026-10-24-n2-core-unity-validation.json) and
+[source inventory](verification/2026-10-24-n2-core-source-inventory.json).
+No commit/push, phone installation or Apple upload was performed for N2.
+
 ## Closer N1 camera — 0.2.0 (14), October 24, 2026
 
 User feedback on build 13: **“Kameraet skal markant tættere på karakteren”.**

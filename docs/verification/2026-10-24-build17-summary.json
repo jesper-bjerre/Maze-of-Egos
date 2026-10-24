@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-24",
+  "version": "0.2.0",
+  "build": 17,
+  "model": "competition-v4",
+  "implemented": [
+    "One selectable picture/name character card",
+    "Balloon landing radius one cell with matching warning and a one-time hit plus 0.3-second splash effect",
+    "Round ends on last heart or at 120 seconds; last point counts",
+    "Round portraits with names and points below; shared-place layout",
+    "V1/V2/V3 migration; persisted real short-round start tick and result reason"
+  ],
+  "gameChecks": {
+    "classic": 65,
+    "foundation": 34,
+    "arena": 23,
+    "failed": 0
+  },
+  "evidenceGuardChecks": 5,
+  "productionMatches": {
+    "matches": 5,
+    "rounds": 34,
+    "activeTicks": 133356,
+    "activeSeconds": 2222.6,
+    "hearts": 8160,
+    "items": 250,
+    "knockouts": 42
+  },
+  "mac": {
+    "passed": true,
+    "formats": [
+      "1600x900",
+      "2400x1080",
+      "1600x1200"
+    ],
+    "capturesPerFormat": 17
+  },
+  "iPhone": {
+    "model": "iPhone 13",
+    "passed": true,
+    "captures": 19,
+    "bothLandscapeSafeAreas": true,
+    "lifecyclePassed": true,
+    "normalBuildInstalledAndLaunched": true
+  },
+  "freshPerformanceMeasurement": false,
+  "previousPerformanceBuild": 16,
+  "manualGameplayAcceptance": false,
+  "physicalIPadExcludedByUser": true,
+  "commit": false,
+  "push": false,
+  "appleUpload": false
+}

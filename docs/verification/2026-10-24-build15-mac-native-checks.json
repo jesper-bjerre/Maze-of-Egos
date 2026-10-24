@@ -1,0 +1,71 @@
+[
+  {
+    "platform": "macOS",
+    "requestedFormat": "1600x900",
+    "passed": true,
+    "captureCount": 14,
+    "result": "PASS competition-v2 RUNTIME SMOKE; real app flow, selected characters, combat, save/resume and English UI. Controlled fixtures and synthetic touch are distinct from live AI performance.",
+    "captureHashes": {
+      "01-menu.png": "e58e11e884af8e189e460be9bdc02c7757c0b8233dacae568fd6a75602ad427e",
+      "02-help.png": "c1dc4f5ca5e5cd3a30a646cb2abf44685a087fcfd0f3a8264f2b5257d2ee9c13",
+      "03-selection.png": "b6d9364fd2ba97161eb19850fcbfa72a0bda3133fa6f853f2af7809506c99de0",
+      "04-item-1.png": "710d153548432c2713cae3525eceb4424defd45c672479aaf215a9f8b4a58148",
+      "05-item-2.png": "122993debb818165e39a133415872ae96e533c04c6d2303fc85d4346f6a7170b",
+      "06-item-3.png": "089aa0a3be4ad3f755e5407f6cff02d183144ee6c5ce1088195c388f26ba9bf6",
+      "07-item-4.png": "d6c2c25b7b9038e644b5d0775c2a4a8db932f1a157182ae2e53525a7588a7b1b",
+      "08-item-5.png": "d9e415ed0065eeb9906fa0ffc6275f89c5196378c5619e24137f330cf5c4cb3a",
+      "09-knockout.png": "36fbb10c5aa9389d8ca1b90297bbd45c7b31a3f1f38678d3ba172302b2669631",
+      "10-settings.png": "9635149a19050d38fe05ef29da758670ea1cb2138bdf9f594d40aaa83c88de89",
+      "11-respawn.png": "5bb3c0ba24be2b4c3fa078c87153faf0bcdc2d6f24cdab876ed050872106c362",
+      "12-round-results.png": "a72e21d313b0e94e6d5919b1e841d44368e98f85372352814d3507a50e965ab6",
+      "13-match-results.png": "191aede7ff786425392e52be3bddc047dfb37939228e7c5c3d1f1d6dfcdf71b9",
+      "15-menu-after-match.png": "057b0de9b0a2312fcfe29330c987b390c9f1b4fc0c7167c5dcc927aa909de03a"
+    }
+  },
+  {
+    "platform": "macOS",
+    "requestedFormat": "2400x1080",
+    "passed": true,
+    "captureCount": 14,
+    "result": "PASS competition-v2 RUNTIME SMOKE; real app flow, selected characters, combat, save/resume and English UI. Controlled fixtures and synthetic touch are distinct from live AI performance.",
+    "captureHashes": {
+      "01-menu.png": "a527e1dd8fe5156e505dda5660efb75666613e8d025206a80b515b6697cd5b40",
+      "02-help.png": "3d3a3b1bf60743696807b75c02d9cb60ca4c64fc719f4a558f520253182b2567",
+      "03-selection.png": "3245a326f5e2c74f8e143565f0aa4210c3242271f41dbfa4c0aa92128c0138e9",
+      "04-item-1.png": "7c4def1366c5932c72fb65bc6272eda724785b1d9c17d7a9c79662f85c025707",
+      "05-item-2.png": "853b2072ac7b48205cfd7f5c27d0662a9620e0064d218c27a664f8cbae1d4f2a",
+      "06-item-3.png": "53033cb7369e8c9f195680cf3eb2e3281ad38ef1a8a819a6041a0a68880ff38c",
+      "07-item-4.png": "dfab79cad2580c58f65cadecd51714dbd38288657f4229508c53e27fcff8b556",
+      "08-item-5.png": "18d741739005cda3866f41e1cc2f0c7e7b2f08149a0319556e84a14a7a146711",
+      "09-knockout.png": "949f33f745c5f07d75d5b313d44953cd5647352225bafe5e66a07fdf6978db28",
+      "10-settings.png": "422a8f1f0e8b4c48a4daa1db6f416b1d8f0f4e3c692ac137498635435e5f7cf4",
+      "11-respawn.png": "42de6776ad8e125a268669ff2ba460087fd96570c91bc0ba0aa38b661e6b9109",
+      "12-round-results.png": "e7fef17d6061fca2b880f0f058271bd261f7272316b63b5a43c4c907e2887571",
+      "13-match-results.png": "c9c90403ce6fb0cb975a38664c9a14aa05252aed6470d212e25f57779f8a6a46",
+      "15-menu-after-match.png": "cd8878b57f1519d17d1c7889bd2a7ccc7cf08d6b697d32d5207a95277e0e80a3"
+    }
+  },
+  {
+    "platform": "macOS",
+    "requestedFormat": "1600x1200",
+    "passed": true,
+    "captureCount": 14,
+    "result": "PASS competition-v2 RUNTIME SMOKE; real app flow, selected characters, combat, save/resume and English UI. Controlled fixtures and synthetic touch are distinct from live AI performance.",
+    "captureHashes": {
+      "01-menu.png": "b145a2ee2972eb1936ada1630698d22edeb4503e5530f6e3c2b2546950b4588c",
+      "02-help.png": "565c67ef39ebeb0809fff3cd6a43d6f685e022b1f23d18d04729a4a9475dec3e",
+      "03-selection.png": "fdc719833b728dedad0b57e8c38b28056679714c37d7d8fd0804bf128efd9b78",
+      "04-item-1.png": "1ff96b07523dea77b6986fce803d54b3adf286208e5a98b92668bdf4501025b7",
+      "05-item-2.png": "7f0db6d40d1b86916fc1afeee563ddda1561fe257faa96f0b25193f58649d171",
+      "06-item-3.png": "8e7127c3fdd22a44c11dfb292a20f69d90e4e95a24e3bc4207135be289574e31",
+      "07-item-4.png": "9dece310d57098ebaeab0c0dbde6b910667d41e0f61c0d502574c3518e1dc017",
+      "08-item-5.png": "69756c8c5921313f2417a1a2139d41b03c7412b81dd5a157cb637e032d23b743",
+      "09-knockout.png": "49c40f6a6dccef846f2f8915dce01c5fab90a8795a335f8408715f4b7b1fc3e6",
+      "10-settings.png": "4f85576a418f35187465949af6fc4ed219775c71b288662a79cd1d296b0beb16",
+      "11-respawn.png": "100fffb4a3b8a8e15ecb88190ad5797d6143c7af3251095ef63b01d17b4c4158",
+      "12-round-results.png": "46979022a02c27d3c8aafef65e4c36a1168a015b915529afa0557b3c593cd467",
+      "13-match-results.png": "7d3d3ecf85faf853611cd13ca3bab45b91f5e498620c6a20c668fd9840a21a03",
+      "15-menu-after-match.png": "5097f0331e0ea24dc3c5f6de8af7808c26ee508d031562279657a0b586f216b5"
+    }
+  }
+]

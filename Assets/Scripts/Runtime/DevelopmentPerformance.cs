@@ -50,7 +50,6 @@ namespace MazeOfEgos.Runtime
             public float batteryLevel;
             public int rounds, heartsCollected, captures, itemsUsed, level, activePursuers;
         }
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Boot()
         { if (Enabled) new GameObject("Opt-in performance recording").AddComponent<DevelopmentPerformance>(); }
         private void Start()

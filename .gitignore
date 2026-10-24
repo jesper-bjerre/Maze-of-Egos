@@ -23,6 +23,7 @@
 .DS_Store
 **/bin/
 **/obj/
+**/__pycache__/
 # Local signing and credentials
 *.p12
 *.mobileprovision

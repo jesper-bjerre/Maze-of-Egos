@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-24",
+  "command": "python3 Tools/unity.py validate",
+  "unityVersion": "6000.3.26f1",
+  "exitCode": 0,
+  "validationMessages": [
+    "CHARACTER VALIDATION PASSED: putin, 17466 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: xi, 17466 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: kim, 17550 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: trump, 17994 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: zelenskyy, 16806 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: zelenskyy-hand, 1896 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: putin, 17466 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: xi, 17466 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: kim, 17550 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: trump, 17994 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: zelenskyy, 16806 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: zelenskyy-hand, 1896 triangles, 17 bones, seven clips, metre scale, URP.",
+    "COMPETITION VALIDATION PASSED: five stable IDs, shared navigation, versioned N2 snapshot and actual Unity JSON.",
+    "CONTENT VALIDATION PASSED: 244 hearts, save roundtrip, five references, playable scene."
+  ],
+  "newPlayerBuild": false,
+  "latestInstalledIPhoneBuild": "0.2.0 (14)",
+  "scope": "Actual Unity Editor N2 Core and Newtonsoft roundtrip; existing assets/scene validation. No new rendering/device acceptance."
+}

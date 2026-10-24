@@ -1,13 +1,74 @@
-# Acceptkriterier — tættere N1-kamera i build 14 og alle-mod-alle-plan
+# Acceptkriterier — konkurrenceversionen, build 17
 
-## Planlagt konkurrence — 24. oktober 2026
+## Build 17 — karakterkort, plaskradius, korte runder og resultatportrætter
+
+| Krav | Teknisk dækning |
+| --- | --- |
+| Hele karakterkortet kan vælges | Native syntetiske tryk separat på foto og navn for alle fem figurer; Mac og fysisk iPhone i begge skærmretninger består |
+| Vandballon rammer omkring landingen | Indenfor/inklusive kanten af én feltradius rammes alle ubeskyttede modstandere; udenfor rammes ingen; træf én gang ved landing, korrekt genindlæsning og kort synligt plask |
+| Sidste hjerte afslutter runden | Sidste point tælles før afgørelse; tidlig slutårsag, præcis én pokaltildeling og videreførelse af faktiske ticks til næste runde består; native save/continue består på Mac |
+| Foto, navn og point ved medaljerne | Portræt med navn og point nedenunder, alle delte placeringer, udvidet guldrække ved mindst tre guldvindere; samlet pokaltabel nedenunder |
+| Ældre gemte kampe | V1/V2/V3→V4; faktisk Unity JSON og uændrede aktuelle positioner/point; korte runders starttick og slutårsag gemmes |
+
+65 klassiske + 34 grundchecks + 23 arenachecks = 122 spilchecks består. Slutresultater for enheder dokumenteres i [testrapporten](TEST_REPORT.md). Manuel oplevelse er fortsat åben.
+
+## Historisk build 16
+
+| Krav | Verifikation |
+| --- | --- |
+| Tilfældig rundestart, kun central KO-genstart | 100 seeds, adskilte lovlige starter, alle med farbar retning; gemt RNG giver samme næste runde; eksisterende KO-regression består |
+| Hjerter kommer ikke igen i runden | Fuld produktionsrunde med monotont faldende hjerteantal, tømt bane forbliver tom indtil 120 s; næste runde har 240 |
+| Minikort viser hjerter og andre spillere | Nordvendt UI med resterende hjerter, fem nummer-/farvemarkører, hvid ramme om mennesket; Visuelt kontrolleret på Mac i tre formater og fysisk iPhone i begge landscapes |
+| Guld/sølv/bronze for runden | Rank fra rundepoint, delte placeringer og spring over optagne pladser; visuel kontrol af særskilte medaljer og femdelte guldvindere |
+| Samlet stilling under rundens medaljer, tydelige pokaler | Pokaler før samlede point, tre synlige guldpokalpladser og antal for hver spiller |
+| Ældre gemte kampe bevares | V1/V2→V3, faktiske Unity JSON-data, ingen flytning af aktive spillere eller nulstilling af hjerter/point |
+
+117 spilchecks består (65 + 31 + 21). Native slutresultater står i [testrapporten](TEST_REPORT.md). Manuel spiloplevelse er ikke accepteret af automatiske checks.
+
+## Historisk teknisk dækning — build 15
+
+N1–N4 er implementeret i konkurrenceflowet. N5's lange fysiske Release-måling
+og normale installation består. Manuel gameplayaccept står åben. Den opdaterede [testrapport](TEST_REPORT.md)
+er autoritativ for faktiske platformresultater.
+
+| Kriterier | Ny dækning i build 15 | Resterende accept |
+| --- | --- | --- |
+| C01–C03 | Tæt lokalt kamera, fem valgbare importerede figurer, skærmretning og samtidig syntetisk joystick/genstandsinput i begge håndlayouts; fire aktive computerfigurer | Manuel vurdering af udsyn og fingerspil |
+| C04–C07 | 24 grundchecks plus fulde kampe med produktions-AI: timer, point/pokaler, delte sejre, genopfyldning og erstatningsinventar | Balance vurderes ved håndført kamp |
+| C08–C10 | Alle fem genstande fra hver figur; varsling/rækkevidde/vægge, KO, point-/inventarbevaring, 300 ticks ude, 180 ticks beskyttet og eget angreb/boost; samtidig gensidigt KO og optaget midte | Visuel og taktisk læsbarhed på telefon |
+| C11 | Modellen modtager lokale observationer; kontrafaktiske usete positioner/ressourcer ændrer ikke beslutningen; hukommelse og reaktionstilstand gemmes; fem fulde kampe og ti ekstra stressrunder | Sjov og passende sværhedsgrad |
+| C12 | Gangkantreservation fra N2 udvidet til flyvende angreb/fælder; lukning udskydes, mens et projektil skal gennem passagen | Ingen kendt teknisk rest |
+| C13 | Faktisk Unity JSON/backup/migrering og fysisk OS-baggrund/forgrund med identisk frosset kamp/AI-checkpoint; normal lagring er adskilt fra classic | Ingen kendt teknisk rest |
+| C14 | Original billedmenu, separat figurvalg, engelsk femspiller-HUD, hjælp, indstillinger, runde- og kampresultater med flere vindere | Endelig produkt-/grafikvurdering |
+| C15 | 900,003 s Release på iPhone: 59,964 fps/p95 18 ms, normal temperatur; normal signeret build installeret/startet uden testflag; begge gameplay-landscapes og byte-bevarede gamle filer består | Håndført hel kamp og gameplayaccept; fysisk iPad er fravalgt |
+
+De følgende N2-/N1-tabeller er den tidligere milepælsevidens. De erstattes af
+ovenstående for den aktive model og bevares som historik.
+
+## Historisk N2/N1-status før build 15
 
 Quizzen med 24 produktvalg er afsluttet. Regler og arbejdsblokke N1–N5 står i
 [implementeringsplanen](IMPLEMENTATION_PLAN.md). **N1 er implementeret i build
 13 som perspektivprototype, med tættere zoom i build 14.** C01/C02 har teknisk dækning nedenfor;
-manuel vurdering af kamera og styring afventer. C03–C15 er fortsat åbne.
+manuel vurdering af kamera og styring afventer. **N2's Core-del er nu
+implementeret og verificeret** som angivet nedenfor. C03–C15 har stadig
+produkt-/integrationsdele til N3–N5; de er ikke fuldt accepteret.
 De historiske A-kriterier længere nede kan ikke bruges som accept af ændrede
 regler, kamera eller den nye skærmorienterede styring.
+
+| N2-område | Aktuel teknisk evidens | Resterende integration/accept |
+| --- | --- | --- |
+| C03 | Fem lige Core-deltagere, alle mulige menneske-id'er, samme fart/baseadgang/input; alle fem kan vinde en hel kamp | Figurvalg, produktionens AI og runtimeflow i N4 |
+| C04–C05 | 120 sekunder, præcis frist, separate/bankede point, delte runde-/kampsejre, tredje pokal og engangstildeling efter filindlæsning består | N3-test af rundeslut under KO/angreb; UI og fuld spilleroplevelse N4/N5 |
+| C06–C07 | Ens dynamiske hjerter, små grupper uden varsling, cap/lovlige felter, seedede samtidige opsamlinger, genopfyldning, erstatningsinventar og ny kasseindgang består | Visning, AI-observationer og balance på enhed N4/N5 |
+| C10/C12 | Ufarlig passage mellem aktører og automatisk vægreservation af alle fems aktuelle gangkanter består | KO/genstart/beskyttelse og reservation af projektiler/fælder N3 |
+| C13 | Nyt versioneret snapshot, atomisk backup, gamle filer bevaret, frosne Core-timere og paused restore består med Unitys faktiske JSON | N3/N4-felter og tilslutning til appens OS-/CONTINUE-flow; fysisk samlet test N5 |
+
+N2 har **24 konkurrencechecks og 65 klassiske regressionstests** samt fem
+fulde scriptede kampe over 41 runder/295.200 ticks. Unity-editorvalidering
+og managed-kompilering består. [Aktuelt testbevis](TEST_REPORT.md).
+Scriptede inputs er den aftalte N2-testafgrænsning, ikke den færdige AI.
+Installeret build 14 er fortsat N1; der er ikke lavet en N2-enhedsbuild.
 
 N1 tilføjer Core-tests for projicerede retninger, én kommando pr. udslag og et
 ventende verdensretningsvalg. Den native kontrol afprøver lokalt kamera, hel

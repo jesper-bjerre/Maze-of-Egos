@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "model": "competition-v4",
+  "build": 17,
+  "device": "iPhone 13",
+  "captures": [
+    "01-menu.png",
+    "02-help.png",
+    "03-selection.png",
+    "03b-random-start-minimap.png",
+    "04-item-1.png",
+    "05-item-2.png",
+    "06-item-3.png",
+    "07-item-4.png",
+    "08-item-5.png",
+    "08b-balloon-splash.png",
+    "09-knockout.png",
+    "10-settings.png",
+    "11-respawn.png",
+    "11b-last-heart-results.png",
+    "12-round-results.png",
+    "13-match-results.png",
+    "14-LandscapeLeft.png",
+    "14-LandscapeRight.png",
+    "15-menu-after-match.png"
+  ],
+  "result": "PASS competition-v4 RUNTIME SMOKE; real app flow, selected characters, combat, save/resume and English UI. Controlled fixtures and synthetic touch are distinct from live AI performance.",
+  "checks": [
+    "Separate photo and name taps select all five characters",
+    "Balloon knocks out target 0.8 cell from landing",
+    "Last heart ends immediately, point/trophy preserved through save/continue",
+    "Three podium photos and five shared-gold photos",
+    "Both landscape safe areas and simultaneous joystick/item control"
+  ],
+  "input": "Synthetic touchscreen events through the actual UI; not manual gameplay acceptance."
+}

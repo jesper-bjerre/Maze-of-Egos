@@ -1,73 +1,76 @@
-# Release readiness — Maze of Egos 0.2.0 (14), closer N1 camera
+# Release readiness — Maze of Egos 0.2.0 (17), competition candidate
 
-Product direction changed on October 24: the completed design quiz specifies a
-local five-player free-for-all with a high camera, timed rounds, and trophies.
-See the [new implementation plan](../IMPLEMENTATION_PLAN.md). Build 13
-implements N1: a local overhead 3D camera, full player avatar and
-screen-oriented controls. Build 14 responds to user feedback with a much
-closer view: orthographic half-height 4.5 m instead of 8.5 m, approximately
-1.89 times larger characters in each screen direction. It retains the classic rules as a perspective
-prototype. N2–N5 remain unimplemented; this is not a release-ready version of
-the competitive game.
+October 24, 2026. Build 17 adds a single selectable picture/name card, a one-cell
+water-balloon splash radius with matching warning and landing effect, immediate
+round completion after the last heart, and round portraits with names/points below.
+Snapshot V4 migrates V1/V2/V3 and persists actual short-round timing and result reason.
+122 game checks, native tests in three Mac formats/both iPhone landscapes, real OS lifecycle and normal Release 17 installation/startup pass.
+All five retain the shared map and local combat information policy from build 16.
+Manual gameplay acceptance remains open. No upload or distribution is performed.
 
-Verified October 24, 2026. New Mac and physical iPhone checks, source inventory,
-screenshots and signed normal Release archive audit are recorded for build 14.
-No App Store Connect submission or TestFlight distribution has been performed.
-The supplied cover art and three-action menu remain intact. Product copy is
-English; store drafts still describe the classic rules and must be rewritten
-after the competitive implementation. Product acceptance and public release
-requirements remain separate from this local implementation.
+Build 16's 300-second Release measurement is retained as historical evidence;
+it is not repeated or presented as a build 17 performance measurement.
 
-| Deliverable | Status |
+## Historical build 15 evidence
+
+October 24, 2026. N2–N4 are implemented in the normal player flow. N5's fresh
+900-second physical iPhone Release measurement, final native QA and normal
+installation pass. Normal build 15 is running on iPhone 13; manual gameplay
+acceptance remains open. See the [test report](../TEST_REPORT.md).
+No App Store Connect submission or TestFlight distribution is included.
+
+PLAY opens a separate character selection. Any of the five characters can be
+the human; the remaining four are local AI with the same movement and item
+rules. Hearts score points during two-minute rounds. Tied leaders share the
+round trophy. The match ends at three trophies, with total points breaking
+simultaneous third-trophy ties and equal totals sharing the match.
+
+The close local 3D camera and screen-oriented automatic movement remain.
+Water balloons and cream pies have heading-based, wall-blocked paths and
+visible warnings. Banana and oil only delay; boost speeds up movement. KO
+retains points/inventory, waits five active seconds and returns the player to
+the centre with three seconds of protection. Contact is harmless.
+
+| Deliverable | Current evidence / acceptance |
 | --- | --- |
-| Local 3D camera and screen-oriented movement | N1 implemented; build 14 closer view passes native checks. Manual assessment of the new zoom and controls pending |
-| Illustrated start screen | Original supplied artwork, PLAY / CONTINUE SAVED GAME / HELP on the right; no extra title, character overlays, or start Settings action |
-| English product copy | Menus, HUD, tutorials, events/errors, 3D signs, and character display names translated |
-| English formatting | Score grouping and decimal timers use invariant English formatting on all device languages |
-| iOS language declaration | English (`en`) development region and supported localization verified in the signed archive |
-| 65 rule/measurement/animation tests and Unity JSON | Passed for build 13, including three new screen-input checks |
-| Native functional and text layout checks | Passed again for build 14 on Mac 16:9/wide/4:3 (43 captures each) and physical iPhone 13 (47 captures), including gameplay in both landscape directions and safe areas |
-| Actual iOS background/resume | Historical build 13 pass: frozen timers/checkpoint/countdown and native Playback policy after foreground, 9.31 s background interval; not repeated for camera zoom |
-| Normal Release without test harness | Build 14 signed archive/audit passed; normal Release installed/launched on physical iPhone without test flags; installed version and running process verified |
-| Historical build 10 simulation stress | 10 seeds / 540,000 ticks; 7,564 hearts, 235 captures, 145 items, 702 wall transitions, 900 checkpoints |
-| Historical build 10 short Release measurement | 60.0021 s, 60.00 fps, p95 18.00 ms, worst 20.40 ms; no frames over 33.33 ms |
-| Historical build 9 long Release measurement | 900.01 s, 59.95 fps; applies to build 9. No new build 14 performance measurement |
-| App icon | Original SVG and 1024px RGB PNG in Xcode's AppIcon catalog |
-| English store metadata and privacy policy | Review drafts in this folder |
-| Public support/privacy website | Existing URL concerns Donkey Trump 3D; game-specific English content still needs publication |
-| Physical iPad test | Not performed; user chose to continue without it |
-| Manual controls/camera | User requested a much closer camera after build 13; build 14 zoom awaits review. Screen-oriented controls still await acceptance. Previous relative turns were accepted in build 12; [historical feedback](../verification/2026-10-24-build12-manual-controls.json) |
-| Complete hand-played round against AI | Awaiting confirmation; controls feedback does not confirm a complete round |
-| Sound with physical Ring/Silent switch set to silent | Native Playback policy verified in build 10; user confirmed both music/effects audible on October 21 in reply to the build 10 question (not a separately identified build 12 listening test) |
-| Final art/audio acceptance | Review models, faces/hair/materials, garden, and sound awaiting acceptance |
-| Sources and rights | Inventory available; character reference images and classic maze topology still require final review |
-| App Store Connect / TestFlight | English primary listing language, territories, metadata/age/privacy forms, release screenshots, and distribution require review/setup |
+| Competition rules, resources and settlement | 24 competition checks, 19 arena checks and 65 classic regressions pass |
+| Production AI and combat stress | Five complete matches, one per human character: 26 rounds / 187,200 active ticks, 7,132 hearts, 293 items, 48 KO; ten additional seeded stress rounds / 72,000 ticks / 120 checkpoints |
+| Local information policy | Observation-only brain, persisted memory and counterfactual tests for unseen actor/resource changes |
+| Native Mac | PASS at 1600×900, 2400×1080 and 1600×1200; 14 new captures per format |
+| Physical iPhone 13 | PASS final check, 16 fresh captures including gameplay/controls and safe areas in both landscape orientations |
+| Actual iOS background/foreground | PASS: 9.51 seconds in final background check, identical frozen combat/AI/disk snapshot, resume countdown and Playback audio policy |
+| Versioned storage | V2 combat/AI snapshot in independent competition-v1.json; V1 migration, atomic backup and actual Unity JSON continuation pass; classic files and old highscore remain separate |
+| Normal Release archive | Local signature/configuration audit passed; normal build 15 installed/launched with no test flags and same PID after 8 s; classic files/settings byte-preserved; QA classes absent |
+| Fresh long Release measurement | PASS 900.003 s, 59.964 fps, p95 18 ms, worst 46.12 ms; no frames >50 ms; all 181 thermal samples nominal; resident peak 279.64 MiB |
+| English UI and metadata | New HUD/help/selection/results and updated English store/privacy drafts |
+| Illustrated main menu | Original supplied image; PLAY / CONTINUE SAVED GAME / HELP on the right; no added title or character overlays |
+| Manual gameplay acceptance | Open: readability, reaction time, tactics, fingers on controls, and a complete hand-played match on iPhone |
+| Physical iPad | Not performed; user declined this round |
+| Art/animation quality | Existing review models retained. All five have seven common clips; the four non-Zelenskyy models use their Surprise gesture for throws |
+| Public release | Support/privacy publication, asset/maze rights, final owner/store forms, screenshots and distribution remain separate review work |
 
-## Local deliverables
+## Local deliverables and scope
 
-- `Builds/macOS/Maze of Egos.app`: development app with opt-in functional checks.
-- `Builds/iOS/`: Xcode project for development checks.
-- `Builds/iOS-Release/`: normal Release without the three test harness classes.
-- `Builds/Archives/MazeOfEgos-0.2.0-14.xcarchive`: local development-signed normal archive, audited for the closer N1 view.
-- `Builds/iOS-Performance/`: the previous build 10 performance export.
-- `docs/verification`: immutable reports and selected framebuffer captures by build.
-- `art/characters`: editable Blender sources and SHA-256 manifests for all five characters.
+- `Builds/macOS/Maze of Egos.app`: development app with opt-in native checks.
+- `Builds/iOS`: development Xcode export, separate Debug DerivedData.
+- `Builds/iOS-Performance`: dedicated Release profile with local performance recorder.
+- `Builds/iOS-Release`: normal Release export without automation.
+- `Builds/Archives/MazeOfEgos-0.2.0-15.xcarchive`: audited development-signed local archive; not an App Store distribution export.
+- `docs/verification/2026-10-24-build15-*`: new reports, selected actual framebuffer captures and source hashes.
+- [Competition handover](../COMPETITION_HANDOVER.md): exact code roles, balance, storage and reproduction on PC/Mac.
 
-Builds and machine-local logs are ignored by Git and can be reproduced. Source,
-assets, metadata, scripts, and documentation have not been committed or pushed
-in this work session.
+Normal and QA saves use separate locations. All builds, logs and caches are
+ignored by Git. The implementation and documentation have not been committed
+or pushed in this work session; copying the workspace preserves local changes,
+while a fresh clone only includes commits.
 
-`Tools/verify_ios_release.py` checks the actual signed archive: version,
-iPhone/iPad device family, iOS 17 minimum, English language declarations,
-landscape orientations, permission keys, RGB icon, bundled privacy manifests,
-and absence of DevelopmentSmoke/DevelopmentLifecycle/DevelopmentPerformance.
-This is a local technical audit, not App Store validation.
+The local archive audit checks iOS 17 minimum, iPhone/iPad device family,
+English localization, both landscape orientations, permission keys, RGB icon,
+privacy manifests, signature and absence of test code. It does not replace
+Apple validation or manual gameplay/art acceptance. Unity services/analytics,
+ads, accounts and in-app purchases remain disabled. The manifest declares no
+tracking or collected data types.
 
-Unity Connect, Analytics, Ads, cloud diagnostics, and Purchasing are disabled.
-No analytics, advertising, or account SDK was added. The generated manifest
-declares SystemBootTime 35F9.1, DiskSpace E174.1, UserDefaults CA92.1, and
-FileTimestamp 0A2A.1/C617.1. It declares no tracking or collected data types.
-The final App Privacy submission must match the actual submitted build.
-
-See [asset sources](ASSET_SOURCES.md), [English metadata](APP_STORE_EN.md),
-[privacy draft](PRIVACY_POLICY_DRAFT.md), and [test report](../TEST_REPORT.md).
+The support URL is the user's chosen existing endpoint. Public website content
+has not been updated or revalidated as part of this build. The [English metadata](APP_STORE_EN.md)
+and [privacy policy](PRIVACY_POLICY_DRAFT.md) are local review drafts.

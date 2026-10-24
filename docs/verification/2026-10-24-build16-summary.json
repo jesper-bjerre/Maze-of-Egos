@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-24",
+  "version": "0.2.0",
+  "build": 16,
+  "model": "competition-v3",
+  "implemented": [
+    "Separate random legal round starts; central KO respawn only",
+    "Finite hearts within each round; reset next round",
+    "Top-left minimap with remaining hearts and active numbered players",
+    "Same map positions, hearts and shortcut information for all five; local combat details",
+    "Round gold/silver/bronze above overall golden trophy standings",
+    "V1/V2 save migration without resetting current positions/points/resources"
+  ],
+  "gameChecks": {
+    "classic": 65,
+    "foundation": 31,
+    "arena": 21,
+    "failed": 0
+  },
+  "evidenceGuardChecks": 5,
+  "productionMatches": {
+    "matches": 5,
+    "rounds": 34,
+    "activeTicks": 244800,
+    "hearts": 8160,
+    "items": 474,
+    "knockouts": 74
+  },
+  "mac": {
+    "formats": [
+      "1600x900",
+      "2400x1080",
+      "1600x1200"
+    ],
+    "capturesPerFormat": 15,
+    "passed": true
+  },
+  "iPhone": {
+    "model": "iPhone 13",
+    "captures": 17,
+    "bothLandscapeSafeAreas": true,
+    "lifecyclePassed": true,
+    "normalBuildInstalledAndLaunched": true
+  },
+  "releasePerformance": {
+    "passed": true,
+    "measuredSeconds": 300.0039011,
+    "averageFps": 59.99937796644922,
+    "thermalSamples": 61,
+    "allThermalNominal": true
+  },
+  "manualGameplayAcceptance": false,
+  "physicalIPadExcludedByUser": true,
+  "commit": false,
+  "push": false,
+  "appleUpload": false
+}

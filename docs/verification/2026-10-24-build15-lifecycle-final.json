@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "model": "competition-v2",
+  "realOsPause": true,
+  "realOsResume": true,
+  "backgroundSeconds": 9.509317,
+  "frozenTick": 24,
+  "checkpointVerified": true,
+  "combatAndAiMemoryFrozen": true,
+  "playbackAudioAfterForeground": true
+}

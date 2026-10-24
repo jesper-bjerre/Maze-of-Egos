@@ -1,0 +1,29 @@
+PASS All five actors have the identical five-item pool and effects
+PASS Cream pie warns before flight, uses heading and knocks out once without score/inventory loss
+PASS Water balloon has a warned small landing area and can hit two nearby opponents
+PASS Balloon hits every opponent inside or on its one-cell landing radius, but none outside
+PASS Balloon landing restores at its last airborne tick with identical hits and cleanup
+PASS Banana slips and oil slows; neither knocks out or steals points; owner is immune
+PASS KO waits 300 active ticks, respawns at centre and protects for 180; body contact is harmless
+PASS Own attacks end respawn protection; boost retains it; protected targets ignore attacks
+PASS Walls block heading attacks and splash; moving gate reservations include projectiles
+PASS Pause/countdown freeze active attacks, KO, protection and all AI memory across JSON restore
+PASS Attacks arriving exactly at the round deadline do not knock out; earlier landing does
+PASS Version-one competition save migrates without mutating its envelope or classic enum values
+PASS Malformed combat and brain snapshots reject atomically
+PASS AI observations cannot see distant actors or resources and decisions ignore unseen changes
+PASS Shared minimap gives all five identical hearts and active positions, with combat details kept local
+PASS AI uses distant map hearts for routes and removes globally collected hearts from memory
+PASS Brain decisions and reaction delay restore deterministically with production AI and attacks
+PASS An opening projectile reserves a closing shortcut until the shot has passed
+PASS Simultaneous opposing pies can knock out both throwers; future projectiles survive owner KO
+PASS Occupied central starts do not delay respawn or block body movement
+PASS Round settlement during KO and an airborne item preserves points and clears effects next round
+PASS Ten seeded live-AI rounds stress five actors, wall cycles, combat and checkpoint continuation
+MATCH kim rounds=7 hearts=1680 uses=9,11,7,11,9 KO=9 itemTypes=0,10,7,13,9,8
+MATCH putin rounds=7 hearts=1680 uses=12,15,9,10,15 KO=6 itemTypes=0,16,10,20,9,6
+MATCH trump rounds=7 hearts=1680 uses=11,9,8,11,12 KO=12 itemTypes=0,10,6,17,10,8
+MATCH xi rounds=6 hearts=1440 uses=9,7,11,6,10 KO=7 itemTypes=0,6,10,16,4,7
+MATCH zelenskyy rounds=7 hearts=1680 uses=11,11,7,12,7 KO=8 itemTypes=0,7,10,17,8,6
+PASS Five complete matches use the production shared-map AI, local attacks, KO and centre respawn
+23 arena checks passed, 0 failed

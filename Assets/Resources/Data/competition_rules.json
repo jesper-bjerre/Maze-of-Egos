@@ -1,0 +1,9 @@
+{
+  "id": "competition-v4", "roundDurationTicks": 7200, "trophiesToWin": 3,
+  "speed": 1.6, "heartWaveTicks": 600, "groupsPerWave": 2, "heartsPerGroup": 3, "maximumHearts": 240,
+  "crateCooldownTicks": 600, "knockoutTicks": 300, "protectionTicks": 180,
+  "slipTicks": 48, "oilTicks": 150, "boostTicks": 240, "windupTicks": 21,
+  "balloonFlightTicks": 36, "bananaFlightTicks": 22, "reactionTicks": 18,
+  "boostMultiplier": 1.6, "oilMultiplier": 0.55, "cakeRange": 4, "cakeSpeed": 4,
+  "balloonRange": 3, "splashRadius": 1.0, "movingWalls": true, "randomRoundStarts": true, "replenishHearts": false, "sharedMinimap": true, "endWhenHeartsCollected": true
+}

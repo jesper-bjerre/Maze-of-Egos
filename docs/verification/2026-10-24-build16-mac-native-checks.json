@@ -1,0 +1,20 @@
+[
+  {
+    "resolution": "1600x900",
+    "passed": true,
+    "captureCount": 15,
+    "result": "PASS competition-v3 RUNTIME SMOKE; real app flow, selected characters, combat, save/resume and English UI. Controlled fixtures and synthetic touch are distinct from live AI performance."
+  },
+  {
+    "resolution": "2400x1080",
+    "passed": true,
+    "captureCount": 15,
+    "result": "PASS competition-v3 RUNTIME SMOKE; real app flow, selected characters, combat, save/resume and English UI. Controlled fixtures and synthetic touch are distinct from live AI performance."
+  },
+  {
+    "resolution": "1600x1200",
+    "passed": true,
+    "captureCount": 15,
+    "result": "PASS competition-v3 RUNTIME SMOKE; real app flow, selected characters, combat, save/resume and English UI. Controlled fixtures and synthetic touch are distinct from live AI performance."
+  }
+]

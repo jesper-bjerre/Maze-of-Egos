@@ -1,0 +1,4 @@
+PASS competition Release performance stability; inspect report.json.
+Measured 900.00s; development=False; FPS 59.96; p95 18.00ms; p99 18.50ms; worst 46.12ms; frames >50ms 0
+Hearts 1979; captures 16; rounds 8; items 79; peak sampled resident 279.6MiB
+Stability completion and frame-budget acceptance are separate. See report.json and its samples.

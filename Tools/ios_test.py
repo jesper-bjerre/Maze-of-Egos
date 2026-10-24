@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 import subprocess
 import time
+from datetime import datetime, timezone
+from performance import validate_competition_report
 
 ROOT = Path(__file__).resolve().parents[1]
 BUNDLE = 'dk.mazeofegos.game'
@@ -27,6 +29,7 @@ def main():
              'performance': {'MAZE_PERFORMANCE_TEST': '1', 'MAZE_PERFORMANCE_SECONDS': str(args.seconds), 'MAZE_PERFORMANCE_WARMUP_SECONDS': '15'}}[args.mode]
     command = ['xcrun', 'devicectl', 'device', 'process', 'launch', '--device', args.device,
                '--terminate-existing', '--environment-variables', json.dumps(flags), '--console', BUNDLE]
+    launched_at = datetime.now(timezone.utc)
     with log.open('w') as console:
         process = subprocess.Popen(command, cwd=ROOT, stdout=console, stderr=subprocess.STDOUT)
         deadline = time.monotonic() + (args.seconds + 120 if args.mode == 'performance' else 180)
@@ -54,12 +57,16 @@ def main():
     result = (output / 'result.txt').read_text()
     token = {'smoke': 'RUNTIME SMOKE PASSED', 'lifecycle': 'LIFECYCLE PASSED', 'performance': 'PERFORMANCE COMPLETED'}[args.mode]
     # devicectl may return zero even when the app reports a failed check.
-    if not result.startswith('PASS ') or token not in log.read_text(errors='replace'):
+    console_completed = token in log.read_text(errors='replace')
+    if not result.startswith('PASS ') or (args.mode != 'performance' and not console_completed):
         raise RuntimeError(result + '\nInspect ' + str(log))
     if args.mode == 'performance':
-        report = json.loads((output / 'report.json').read_text())
-        if not (report['completed'] and report['stabilityPassed'] and not report['developmentBuild'] and report['measuredSeconds'] >= args.seconds):
-            raise RuntimeError('Incomplete or non-Release performance evidence')
+        validate_competition_report(output, args.seconds, launched_at)
+        transport = dict(consoleCompletionTokenPresent=console_completed, remoteExitCode=process.returncode,
+                         launchedUtc=launched_at.isoformat(), durableCompletionValidated=True)
+        (output / 'transport.json').write_text(json.dumps(transport, indent=2) + '\n')
+        if not console_completed:
+            print('Console completion token unavailable; validated fresh durable completion and the full measurement series.')
     if args.mode == 'lifecycle' and not json.loads((output / 'report.json').read_text())['passed']:
         raise RuntimeError('Lifecycle assertions failed')
     print(result.strip()); print('Evidence: ' + str(output))

@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-24",
+  "bundleId": "dk.mazeofegos.game",
+  "version": "0.2.0",
+  "build": "15",
+  "normalArchiveInstalled": true,
+  "launchedWithoutAutomationFlags": true,
+  "launchPid": 40406,
+  "samePidRunningAfterEightSeconds": true,
+  "installedExecutableMatched": true,
+  "classicSavesAndSettingsBytePreserved": true,
+  "preservedFileSha256": {
+    "session-v1.json": "3696813474c20c1f24a63a8fb14f66f473ad3d619d2c90bef43df960ab4143cd",
+    "session-v1.json.bak": "3696813474c20c1f24a63a8fb14f66f473ad3d619d2c90bef43df960ab4143cd",
+    "settings-v1.json": "9207f49027951ca5d30ed3c8e16744342cb62be1095b174c60bae23a0cdfdf6b",
+    "settings-v1.json.bak": "9207f49027951ca5d30ed3c8e16744342cb62be1095b174c60bae23a0cdfdf6b"
+  },
+  "note": "File bytes compared across final Debug checks, normal archive installation and normal startup. No normal game fixture, reset, uninstall or account change."
+}

@@ -91,6 +91,19 @@ namespace MazeOfEgos.Runtime
                 clip == 1 ? (float)(gait.Cycles % 1) * clips[1].length : (float)session.Time;
             Sample(clip, time); playerTime = session.Time; playerPosition = session.Player;
         }
+        public void RenderCompetition(CompetitionSession session, CompetitionActorView actor, bool reducedMotion)
+        {
+            double time = session.TickIndex / 60.0;
+            if (playerTime == time) return;
+            double elapsed = time - playerTime, distance = (session.Maze.Near(actor.Position, playerPosition) - playerPosition).Length;
+            double speed = elapsed > 0 && distance < 2 ? distance / elapsed * MazeMap.GridMeters : 0;
+            gait.Update(time, speed);
+            int clip = actor.Life == CompetitionLife.KnockedOut ? 5 : actor.ProtectedUntil > session.TickIndex ? 6 :
+                actor.SlipUntil > session.TickIndex || actor.OilUntil > session.TickIndex ? 3 : actor.ThrowUntil > session.TickIndex ? (clips[7] != null ? 7 : 2) : speed > .01 ? 1 : 0;
+            float sample = clip == 5 ? (float)((session.TickIndex - actor.KnockoutAt) / 60.0) : clip == 6 ? (float)((180 - (actor.ProtectedUntil - session.TickIndex)) / 60.0) :
+                clip == 7 || clip == 2 ? (float)((session.TickIndex - actor.LastUseTick) / 60.0) : clip == 1 ? (float)(gait.Cycles % 1) * clips[1].length : reducedMotion && clip == 3 ? .3f : (float)time;
+            Sample(clip, sample); playerTime = time; playerPosition = actor.Position;
+        }
         private void Sample(int index, float time)
         {
             for (int i = 0; i < clips.Length; i++) { if (clips[i] != null) { clips[i].enabled = false; clips[i].weight = 0; } }

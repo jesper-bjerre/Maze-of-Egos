@@ -1,6 +1,6 @@
 # Maze of Egos — implementeringsplan og overdragelse
 
-Senest opdateret: 24. oktober 2026, N1 justeret med markant tættere kamera i build 14 efter brugerens feedback. Manuel vurdering af den nye afstand afventer. Arbejdssprog: dansk. Spillets brugerflade og udgivelsestekster: engelsk.
+Senest opdateret: 24. oktober 2026. Build 17 tilføjer klikbare karakterkort, større og tydeligt afgrænset vandballonplask, tidlig rundeslut ved sidste hjerte og portrætter i rundeafgørelsen. 122 spilchecks og native tests består; normal Release 0.2.0 (17) er installeret og startet på iPhone 13. Manuel gameplayaccept står åben. Arbejdssprog: dansk. Spillets brugerflade og udgivelsestekster: engelsk.
 
 ## Læs først
 
@@ -14,6 +14,58 @@ tidligere spilmodel og er ikke krav om førsteperson, krafttilstand eller liv.
 
 Referencer til filer er relative, så planen kan bruges på både Windows og macOS.
 Referencearkene i [images](images/) bevares som originale kilder.
+
+## Aktuel ændring — build 17
+
+Brugerens seneste rettelser har forrang for build 16's faste ventetid ved tom bane:
+
+- Valg af karakter: foto og navn ligger i samme synlige kort og samme knap. Hele kortet kan vælges. Native testen trykker separat på foto og navn for alle fem figurer.
+- Vandballon: et cirkulært plask rammer alle aktive, ubeskyttede modstandere højst ét banefelt fra landingspunktet, inklusive kanten. Vægge stopper stadig skade. Aim-markering og varslet ring bruger samme radius som Core. Selve landingen giver et kort synligt plask i 0,3 s; det rammer én gang ved landing og er ikke en vedvarende fælde.
+- Runden slutter ved **sidste indsamlede hjerte eller senest efter 120 sekunder**. Sidste hjerte tælles med før afgørelsen. Point/pokaler afgøres én gang. Næste runde har nye hjerter og tilfældige, adskilte starter som i build 16.
+- Rundeafgørelse: portræt med faktisk navn og rundepoint direkte under hver figur ved guld/sølv/bronze. Delte placeringer viser alle de berørte portrætter. Ved tre eller flere delte guldvindere udvides rækken over hele bredden. Samlet stilling med guldpokaler står nedenunder.
+- Snapshot V4 / profil competition-v4 gemmer rundens faktiske starttick og slutårsag. V1/V2/V3 migreres uden at ændre aktuelle positioner, hjerter eller point. Korte runders faktiske tid gemmes, så næste runde og AI-/angrebstimere fortsætter korrekt.
+
+Native slutstatus dokumenteres i [testrapporten](TEST_REPORT.md). Ingen commit eller push.
+
+## Historisk ændring — build 16
+
+Brugerens seneste instruktion erstatter tidligere quizvalg om genopfyldning af hjerter:
+
+- Ved hver rundestart fordeles alle fem tilfældigt på forskellige lovlige gangfelter, mindst seks felter fra hinanden og uden for midten. Alle får en farbar startretning. Kun knockout giver genstart fra midten.
+- En runde har 240 almindelige hjerter. Indsamlede hjerter kommer ikke igen i samme runde. Et nyt fuldt sæt kommer ved næste rundestart. Den eksisterende timer på 120 sekunder gælder også ved en tømt bane.
+- Et fast nordvendt minikort øverst til venstre viser de resterende hjerter og alle aktive spillere. Farver og numre matcher HUD'et; menneskets markør har hvid ramme. Spillere under KO vises igen, når de genstarter.
+- Rundens guld, sølv og bronze bestemmes af rundepoint. Lige point deler placering, med spring over optagne pladser: 1, 1, 3. Kun guld giver en samlet pokal; øvrige medaljer er rundens placeringer.
+- Under medaljerne vises OVERALL STANDINGS, sorteret efter pokaler og derefter samlede point. Tre synlige guldpokalpladser pr. deltager viser vejen til kampsejr.
+- Alle fem får samme minikortinformation: resterende hjerter, aktive spillernes positioner og kortets genvejsstatus. AI bruger kortet til rutevalg; sigtning og reaktion på angreb bruger fortsat lokale observationer. Skjulte genstande, beskyttelse og angreb afsløres ikke af kortet.
+- Snapshot V3 / profil competition-v3 gemmer en separat spawn-RNG. V1/V2-kampe migreres uden at flytte igangværende spillere, nulstille point eller genindsætte indsamlede hjerter. Den nye regel gælder fremover og ved næste rundestart.
+
+Core-verifikation: 65 klassiske checks, 31 konkurrencechecks og 21 arenachecks består. Native tests består på Mac i tre formater og fysisk iPhone i begge landscapes. OS-livscyklus består; en frisk 300-sekunders Release-måling giver 60,00 fps og normal temperatur. Normal build 16 er installeret og startet. Ingen commit eller push.
+
+## Historisk levering — build 15
+
+N2–N4 er nu integreret i det normale spilflow. PLAY åbner separat figurvalg;
+alle fem figurer kan være mennesket, og de øvrige fire er konkurrerende AI.
+De fem genstande, varsling, ét-træfs KO, fem sekunders genstart, tre sekunders
+beskyttelse, point/pokaler og delte resultater er implementeret. Det tættere
+N1-kamera og skærmorienteret midterlinjestyring bevares.
+
+65 klassiske checks, 24 N2-checks og 19 arena-checks består. Fem fulde kampe
+med produktions-AI giver 26 runder/187.200 aktive ticks, 7.132 hjerter, 293
+anvendte genstande og 48 KO. Ti yderligere seedede stressrunder giver 72.000
+ticks og 120 checkpoints. Faktisk Unity JSON, V1-migrering og separate backups
+består. Den fysiske iPhone består funktionstest og OS-livscyklus (9,52 sekunder
+baggrund, identisk frosset kamp/AI-checkpoint og Playback-lydpolitik).
+
+N5's friske Release-måling består: 900,003 sekunder, 59,964 fps, p95 18 ms,
+værste frame 46,12 ms og normal temperatur i alle 181 samples. Fysisk native
+kontrol, OS-livscyklus og normal installation/opstart består; gamle gemte filer
+og indstillinger er byte-bevaret. Se [testrapporten](TEST_REPORT.md).
+**Manuel gameplayaccept står åben**: kameravinkel/zoom, mulighed for at læse og
+undvige angreb samt en håndført hel kamp. Fysisk iPad er fortsat fravalgt.
+
+Den konkrete filopdeling, balance, lagring og fortsættelse på pc/Mac findes i
+[overdragelsen for konkurrencen](COMPETITION_HANDOVER.md). Ældre statusafsnit
+nedenfor er historik; de angiver ikke den aktuelle implementeringsblok.
 
 ## Aftalt spildesign — alle mod alle, 24. oktober 2026
 
@@ -42,7 +94,7 @@ Genvejene **åbner/lukker automatisk som i den nuværende version**.
   ikke valgt. De eksisterende modeller og referencebilleder bruges fortsat.
 - Alle konkurrerer om hjerter/point. AI skal også samle hjerter, bruge genstande
   og konkurrere indbyrdes, frem for at fire forfølgere kun jager mennesket.
-- Hver runde varer **2 minutter**. Flest point i den enkelte runde giver
+- Hver runde varer **højst 2 minutter og slutter tidligere, når alle hjerter er taget** (build 17). Flest point i den enkelte runde giver
   rundesejren og en pokal til det samlede regnskab. Kampen slutter, når en
   spiller har vundet **3 pokaler**; antallet af runder er derfor variabelt.
 - Optjente point føres videre mellem runder. Rundepoint skal derfor kunne
@@ -68,12 +120,8 @@ Genvejene **åbner/lukker automatisk som i den nuværende version**.
   runder. At blive slået ud koster kun tid: **5 sekunders ventetid** før genstart.
   Derefter gives **3 sekunders beskyttelse**, som ophører straks ved eget angreb.
   **Ét træf** fra et knockout-angreb slår ud. Spillere kan passere hinanden;
-  almindelig kropskontakt giver ingen skade. Almindelige hjerter dukker løbende
-  op i **små grupper i skiftende områder uden varsling**; man opdager dem
-  undervejs. Ingen områdeannoncering eller retningspil afslører hjertebølgerne.
-- Computerne må kende **banens faste layout**, men bruger kun **samme lokale
-  udsyn som mennesket og hukommelse om det sete** om andre deltageres positioner.
-  De må ikke målrette efter usete modstanderes aktuelle positioner.
+  almindelig kropskontakt giver ingen skade. **Hjerter kommer ikke igen under runden (revideret i build 16).** Næste runde starter med et nyt sæt. Figurer starter tilfældigt ved rundestart, kun KO-genstart sker i midten.
+- Computerne får **samme minikortinformation som mennesket** om hjerter, positioner og genveje (revideret i build 16). Lokale kampobservationer og hukommelse bevares til sigtning og undvigelse.
 - **De fire store krafthjerter fjernes, så alle hjerter er ens.** Den gamle
   krafttilstand, kædepoint for at fange forfølgere og særlige store hjerters
   bonus-/skjoldeffekt indgår ikke i den nye model. Referencebanens form bevares;
@@ -150,8 +198,8 @@ Genvejene **åbner/lukker automatisk som i den nuværende version**.
 
 Quizzen er afsluttet. Reglerne ovenfor er brugerbeslutninger. Startværdier og
 udfyldende regler i prøveprofilen nedenfor er derimod forslag til afprøvning.
-N1 er nu implementeret som perspektivprototype i build 13. Der er endnu ikke
-lavet en build med den nye konkurrencesimulation; N2–N5 er åbne.
+N1 blev implementeret i build 13/14. Konkurrencesimulationen fra N2 er nu
+koblet til genstande, fair AI og skærmflow fra N3/N4. N5 verificeres i build 15.
 
 ## Revideret implementeringsplan — alle mod alle
 
@@ -285,22 +333,27 @@ en påstand om nye færdige builds.
   **Kode implementeret i build 13; tættere kamera i build 14.** Automatisk verifikation og begrænsninger
   står i [testrapporten](TEST_REPORT.md). Afkrydsning af hele blokken afventer
   brugerens manuelle vurdering af det nye udsyn og de skærmorienterede sving.
-- [ ] **N2 — fem deltagere og grundkonkurrence.** Fælles Core-tilstand, samme
+- [x] **N2 — fem deltagere og grundkonkurrence.** Fælles Core-tilstand, samme
   navigation for alle, dynamiske ens hjerter, genopfyldelige kasser,
   erstatningsinventar, 120-sekunders runder og regnskab til tre pokaler. Implementér
   delt runde-/kampsejr og et nyt versioneret snapshot. Deterministiske inputs
-  er nok til regeltest her; de er ikke færdig AI.
-- [ ] **N3 — genstande og genstart.** Alle fem genstande, tydelige varsler,
+  er nok til regeltest her; de er ikke færdig AI. **Implementeret og verificeret
+  24. oktober:** 24 konkurrencechecks, 65 klassiske regressionstests, faktisk
+  Unity JSON/backup og fem fulde scriptede kampe. UI-/AI-integration følger N4.
+- [x] **N3 — genstande og genstart.** Alle fem genstande, tydelige varsler,
   væg-/rækkeviddebegrænsninger, ejerskab, glid/olie/boost, ét træf til KO,
   5 sekunders ventetid og 3 sekunders beskyttelse. Udvid vægreservationer og
   test samtidige træf, genstart ved optaget midte og rundeslut under KO/kast.
-- [ ] **N4 — fire fair computerdeltagere og samlet flow.** Observationer og
+- [x] **N4 — fire fair computerdeltagere og samlet flow.** Observationer og
   hukommelse, konkurrence om ressourcer, angreb/flugt mod alle andre og en
   afprøvet balanceprofil. Figurvalg efter PLAY, fem deltagere i HUD, timer,
   rundepoint, samlede point, pokaler og resultatskærme med flere vindere.
   Opdatér hjælp/tutorial/lyd/haptik og fjern den gamle lives-/kraft-/level-logik
   fra den nye brugeroplevelse. Alle tekster er engelske.
-- [ ] **N5 — samlet test og overdragelse.** Fuld kamp med hver af de fem valgbare
+- [ ] **N5 — samlet test og overdragelse.** Automatisk verifikation, normal
+  installation og overdragelse er færdige i build 15; afkrydsningen afventer
+  den særskilte håndførte gameplayaccept.
+  Fuld kamp med hver af de fem valgbare
   figurer i automatiske fixtures, stress af fem aktive deltagere, faktisk
   baggrund/save/resume og frisk Release-performance på iPhone. Native layout
   i begge landscape-retninger samt Mac 16:9, bredformat og 4:3. Manuel kamp-
@@ -340,9 +393,9 @@ overskriv ikke tidligere beviser. Opdatér plan, acceptmatrix, testrapport og
 udgivelsesstatus efter hver implementeret blok. Ved fejl eller maskinskifte
 fortsættes fra sidste dokumenterede blok, ikke fra afkrydsede historiske M1–M6.
 
-**Aktuel blokstatus:** N1 er implementeret og under manuel vurdering; N2–N5
-er ikke implementeret. N1 bruger stadig den gamle regelsimulation og
-gamle gemte spil. Den er beregnet til at bedømme kamera og styring først.
+**Aktuel blokstatus:** N1–N4 er implementeret. N3/N4 har automatisk regel- og
+integrationsdækning; N5's fysiske lange måling og normale installation består.
+Manuel kamp- og gameplayaccept er fortsat en særskilt rest.
 
 ## Implementeret grundlag og tidligere beslutninger — til og med build 12
 
@@ -514,7 +567,69 @@ TestFlight kan kræve eksterne oplysninger; de må ikke erklæres gennemført ud
 bevis. Ingen betalt tjeneste bestilles. Offentlig udgivelse/Apple-upload er
 ikke udført som del af lokal implementering og test.
 
-## Aktuel status — build 14, tættere N1-kamera
+## Historisk status — N2, konkurrencens regelsystem
+
+`CompetitionSession` og `CompetitionSnapshot` er nye typer; det gamle
+`GameSession` og dets fil er bevaret. Fem stabile id'er (`kim`, `putin`,
+`trump`, `xi`, `zelenskyy`) bruger samme midterlinjenavigation, fart og adgang
+til midte/døre. `humanId` kan være et hvilket som helst af dem. Startfelter
+roterer mellem runder. Kropskontakt spærrer eller skader ikke.
+
+Kommandoer har deltager-id, simulationstick og verdensretning. Kun kommandoer
+til det aktuelle aktive tick accepteres. Navigationen kan aflevere delstræk,
+så opsamling følger den faktiske rute ved sving og tunnel, ikke en diagonal
+eller en linje gennem hele banen. Den klassiske navigationsadgang er fortsat
+standard; kun konkurrencen åbner centralbasen for alle.
+
+120 sekunder er præcis 7.200 aktive ticks. Pause, nedtælling og resultatskærme
+forbruger ingen rundetid. Kontakter før fristen tæller; kontakt ved fristen
+tæller ikke (numerisk lighed behandles med tolerance 1e-9 af ét tick).
+Rundepoint og bankede point er separate; `TotalScore` tæller aldrig den netop
+bankede runde dobbelt. Rundens id og settlementstatus bevares gennem lagring.
+Alle lige rundevindere får én pokal. Samtidig tredje pokal afgøres af bankede
+totalpoint blandt dem med tre; fuld lighed giver fælles kampsejr.
+
+Startpuljen er 240 ens hjerter fra de små referencepositioner. Der er ingen
+krafthjerter/krafttilstand i Core-konkurrencen. Hvert tiende aktive sekund
+forsøges op til to sammenhængende grupper med tre hjerter, højst 240 aktive.
+Nye grupper undgår optagne felter, deltagere, kasser, centralbasen og
+genvejenes væg-/tilgangsfelter. Ingen spawnannoncering udsendes.
+Kasserne genopfyldes efter ti sekunder, afrundet op til næste 60-Hz-tick.
+En spiller skal forlade og genindtræde for ny opsamling; venten oven på
+kassen giver ingen automatisk ny genstand. Nyt fund erstatter det gamle,
+og puljen har banan, olie, boost, vandballon og lagkage. **Anvendelse/angreb
+og KO er N3 og er ikke implementeret i N2.**
+
+Samtidige delte opsamlinger afgøres først efter kontakttid. Ved numerisk
+lighed bruges en separat seedet lodtrækning med kanoniske id'er. Mennesket
+og det laveste arrayindeks får ingen prioritet. Ressourcer, genstande,
+lighedsafgørelser og vægge har hver sin gemte tilfældighedsstrøm med blandede
+startseeds. Automatiske genveje er genbrugt med reservation af begge ender
+af hver af de fem deltageres aktuelle gangkant; kast/fælder tilføjes i N3.
+
+`CompetitionSaveStore` gemmer version 1 med formatmarkør, banefingerprint,
+regelprofil, alle fem navigationer/regnskaber/inventarer/kasselåse, ressourcer,
+timere, vægge, seedstrømme og vinder-/settlementdata i **`competition-v1.json`**
+med atomisk backup. Ukendte/ugyldige snapshots afvises før en live kamp ændres.
+Indlæsning starter altid i pause. `session-v1.json`, backup, indstillinger og
+gammel highscore læses/omskrives ikke af den nye store. N3/N4 skal udvide og
+versionere formatet med angreb, KO og AI-hukommelse; gamle data bevares/migreres.
+
+**Verifikation:** 24 konkurrencechecks og 65 klassiske tests består. Fem hele
+kampe med scriptede inputs består: 41 runder, 295.200 aktive ticks, 4.920
+simulerede sekunder og 3.817 samlede hjerter. Hvert muligt menneske-id indgår.
+Unitys faktiske Newtonsoft JSON, atomisk backup, bevarelse af gamle filer og
+præcis fortsættelse/engangstildeling består. Managed-kompilering har 0 fejl/
+advarsler; den fastlåste Unity-editor validerer også den nye Core. Repository-
+kontrollen består med 142 GUID'er og uændrede kildereferencer/modeller/bane.
+[Testrapport](TEST_REPORT.md) og `docs/verification/2026-10-24-n2-core-*`.
+
+Ingen ny iPhone-build er lavet i denne Core-blok. Det er ikke manuel gameplay-
+accept, færdig konkurrence-AI eller en performancekørsel på enhed. Næste
+implementering er **N3 — genstande, varsler, KO og genstart**, fulgt af N4's
+AI/skærmflow og N5's fulde enhedsaccept. Der er ikke committet eller pushet.
+
+## Historisk status — build 14, tættere N1-kamera
 
 Brugeren bad efter build 13 om kameraet **markant tættere på karakteren**.
 Den ortografiske halve billedhøjde er derfor reduceret fra 8,5 til 4,5 meter:
@@ -705,11 +820,11 @@ ikke slutgodkendt filmisk grafik. Se [produktion](CHARACTER_PRODUCTION.md).
 
 ## Overdragelse og næste konkrete skridt
 
-**Aktiv prioritet:** N1 er implementeret, med tættere kamera i build 14; afprøv udsyn og
-skærmorienterede sving på iPhone. Næste kodeblok er **N2 — fem deltagere og
-grundkonkurrence**, efterfulgt af N3–N5 ovenfor. Listen nedenfor
-er den tidligere build 12-reviewliste; den er ikke længere arbejdsrækkefølgen.
-Produktaccept af den gamle spilmodel er ikke en forudsætning for den nye model.
+**Aktiv prioritet:** Manuel gameplayvurdering af den installerede build 15.
+Koden til N1–N4 og N5's automatiske test/overdragelse er færdige.
+Se [aktuel overdragelse](COMPETITION_HANDOVER.md). Listen nedenfor er den
+historiske build 12-reviewliste, ikke arbejdsrækkefølgen for den nye model.
+Produktaccept af den gamle spilmodel er ikke en forudsætning for konkurrencen.
 
 1. Resterende manuel accept på build 12: hel runde mod AI, den nye startmenu,
    læsbarhed og lyd-/haptikkvalitet. Automatisk gang og relative sving er
@@ -727,7 +842,9 @@ Produktaccept af den gamle spilmodel er ikke en forudsætning for den nye model.
    er udført. Upload/distribution følger efter review.
 
 De automatiske tests er afsluttet. [Testrapport](TEST_REPORT.md) og
-`docs/verification` indeholder build 14's tættere kameravisning, N1-/funktionskontrol,
+`docs/verification` indeholder N2's Core-/serializer-/backupkontrol, fem fulde
+scriptede kampe og 323 aktuelle kilde-/asset-/dokumenthashes med prefix
+`2026-10-24-n2-core-`. Desuden bevares build 14's tættere kameravisning, N1-/funktionskontrol,
 normal opstart, archive-audit og 315 kilde-/asset-/dokumenthashes. Build 13's
 første N1-kontrol og OS-livscyklus er bevaret særskilt.
 Derudover bevares build 12's menu-/funktionskontrol samt build 10's stresstest og korte

@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-24",
+  "stage": "N2 Core",
+  "classicChecksPassed": 65,
+  "competitionChecksPassed": 24,
+  "failed": 0,
+  "scriptedMatches": 5,
+  "rounds": 41,
+  "activeTicks": 295200,
+  "simulatedSeconds": 4920,
+  "heartsCollected": 3817,
+  "actualUnityJsonPassed": true,
+  "atomicBackupAndLegacyIsolationPassed": true,
+  "editorValidationPassed": true,
+  "managedCompileWarnings": 0,
+  "managedCompileErrors": 0,
+  "newIPhoneBuild": false,
+  "productionAiImplemented": false,
+  "attacksKoRespawnImplemented": false,
+  "runtimeCompetitionFlowImplemented": false,
+  "newDevicePerformanceMeasurement": false,
+  "sourceBaselineCommit": "03f94fb"
+}

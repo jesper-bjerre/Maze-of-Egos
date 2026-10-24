@@ -2,10 +2,15 @@
 
 Et 3D-arkadespil til iPhone og iPad. Det aftalte nye design er alle mod alle:
 én menneskestyret og fire computerstyrede figurer konkurrerer om hjerter i
-2-minutters runder med et lokalt, skråt kamera. Først til tre pokaler vinder.
-**Build 14 viser N1 med markant tættere kamera og skærmorienteret styring.**
-Den er en perspektivprototype med de hidtidige spilleregler. Konkurrence,
-runder, pokaler, figurvalg og nye angreb implementeres i N2–N5.
+runder på højst 2 minutter med et lokalt, skråt kamera. Runden slutter også,
+når sidste hjerte er taget. Først til tre pokaler vinder.
+**Build 17:** Foto og navn er ét klikbart karakterkort. Vandballonen rammer alle
+ubeskyttede modstandere inden for ét banefelt fra landingen; den synlige ring
+viser samme radius. Rundens guld/sølv/bronze viser portræt med navn og point
+under. Samlet stilling med guldpokaler står nedenunder.
+Tilfældige rundestarter, central KO-genstart og fælles minikort bevares.
+122 spilchecks og native tests i tre Mac-formater samt begge iPhone-landscapes består. Normal Release 0.2.0 (17) er installeret og startet på iPhone 13.
+Manuel gameplayaccept står åben. Se [testrapporten](docs/TEST_REPORT.md).
 
 Start med [implementeringsplan og aktuel status](docs/IMPLEMENTATION_PLAN.md).
 Planen indeholder aftalte beslutninger, milepæle og instruktioner til overdragelse
@@ -34,7 +39,7 @@ stick vælger også skærmretning; mellemrum/nederste controllerknap bruger
 genstanden, og Escape/Start åbner pause.
 
 Touch-overlayet har et rundt joystick, større berøringsområde og symboler for
-banan, olie og boost. Venstrehåndslayout kan vælges i Indstillinger.
+banan, olie, boost, vandballon og lagkage. Venstrehåndslayout kan vælges i Indstillinger.
 Se [valget af touchstyring](docs/INPUT_DECISION.md) for vurderingen af Apples
 native controllere og vores samlede Unity-inputvej.
 
@@ -46,14 +51,16 @@ Alle fem figurer har importerede, riggede FBX-modeller
 fra lokale Blender-kilder med referencebaserede ansigter og animationer.
 Endelig karakterkvalitet udestår. Redigerbare Blender-kilder, FBX og
 [produktionsvejledning](docs/CHARACTER_PRODUCTION.md) følger repoet; Blender
-kræves kun for at ændre modellerne. Zelenskyy vises som hel figur med en gul
-markering og YOU over hovedet. Frit figurvalg tilføjes i N4. Den gamle
+kræves kun for at ændre modellerne. Den valgte figur vises i fuld størrelse med
+en gul markering og YOU over hovedet. Den gamle
 førstepersonshånd bevares som kildeasset, men vises ikke i spillet.
 
 ## Kontroller
 
 ```sh
 dotnet run --project Tests/MazeOfEgos.Checks.csproj
+dotnet run --project Tests/MazeOfEgos.CompetitionChecks.csproj
+dotnet run --project Tests/MazeOfEgos.ArenaChecks.csproj -- Logs/arena-matches.json
 python3 Tools/verify_repository.py
 ```
 
@@ -64,6 +71,12 @@ Newtonsoft-serialisering også kontrolleres uden at starte Unity:
 python3 Tools/unity.py compile-check
 python3 Tools/unity.py serialization-check
 ```
+
+N2-kontrollen gennemfører fem kampe med scriptede inputs. Arena-kontrollen
+har 19 checks, ti stressrunder og fem hele kampe med den færdige lokale AI,
+angreb og genstarter. Den vælger hver figur som mennesket, hvis input leveres
+af samme lokale AI under testen. Rapporten angiver simuleret tid; fysisk
+Release-performance dokumenteres særskilt.
 
 Unity-validering og builds kræver en aktiveret Unity-licens:
 
@@ -78,15 +91,14 @@ På Windows bruges normalt `python` i stedet for `python3` og `build-windows`
 til en lokal prototype. iOS-eksport til Xcode foretages på en Mac med iOS Build
 Support. Resultater ligger i `Builds/`; logfiler ligger i `Logs/`.
 
-`smoke-mac` starter den grafiske udviklingsbuild og kontrollerer den nuværende
-spilmodel: lokalt kamera, hel spillerfigur, alle fire projicerede retninger,
-tunnelovergange, startmenu, syntetisk touch i begge layouts, automatisk gang/sving,
-genstande, pause, indstillinger, save/resume midt i kast, reduceret bevægelse,
-vægskift, importerede figurer/animationer, levelskifte, Game Over og genstart.
-Disse checks skal udvides til den nye konkurrence; de er ikke evidens for den
-planlagte model. Testdata er isoleret fra spillerens gemte spil. Billeder gemmes i
-`.artifacts/smoke-mac/`. Se [testresultater og aktuelle begrænsninger](docs/TEST_REPORT.md).
-En automatisk touchtest erstatter ikke manuel afprøvning på en fysisk iPhone.
+`smoke-mac` starter udviklingsbuilden og kontrollerer konkurrencens normale
+skærme: billedmenu, figurvalg, alle fem modeller, projicerede retninger og
+samtidigt joystick/genstandsinput i begge layouts, alle fem genstande,
+pause/indstillinger, save/resume midt i kast, KO/genstart og delte runde-/kampsejre.
+Testdata bruger særskilt cache og rører ikke normale gemte kampe. Billeder ligger
+i `.artifacts/smoke-mac/`. Se [testrapporten](docs/TEST_REPORT.md) og
+[overdragelsen](docs/COMPETITION_HANDOVER.md). Automatisk touch erstatter ikke
+en håndført kamp på iPhone.
 
 Til måling af billedtider, hukommelse og længere stabilitet findes en særskilt
 Release-testbuild. Se [performance og gentagelse](docs/PERFORMANCE.md).

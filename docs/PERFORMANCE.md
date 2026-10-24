@@ -1,5 +1,54 @@
 # Performance og stabilitet
 
+Build 17 ændrer karakterkort/resultatportrætter, vandballonradius og tidlig rundeslut. Der er ikke kørt en ny tidsmåling af build 17; den seneste måling nedenfor gælder build 16.
+
+## Seneste måling — build 16
+
+Den nye fælles minikort-/lokale kampmodel er målt i en frisk Release på fysisk iPhone 13: 300.004 sekunder, 59.9994 fps, p95 18 ms, p99 19.5 ms og værste frame 46.30 ms. Fire frames oversteg 33,33 ms; ingen oversteg 50 ms. Alle 61 temperatursamples var normale. Peak sampled resident memory: 284.06 MiB. Alle fem brugte genstande; 621 målte hjerter, 38 genstande og 8 KO. Tre runder blev startet. Ingen baggrundsafbrydelse eller runtimefejl.
+
+[Frisk rapport](verification/2026-10-24-build16-performance.json) og [kildehashes](verification/2026-10-24-build16-performance-sources.json). Samme gameplay/UI-kilder bruges i den normale Release; kun måleprofilen har opt-in QA. GPU-timing og GC-tællere var utilgængelige. Denne femminuttersmåling er adskilt fra build 15's historiske 900 sekunder nedenfor; den beviser ikke manuel spilleglæde eller batteriforbrug.
+
+## Historisk model — build 15, 24. oktober 2026
+
+Den gamle nearest-heart-automation er erstattet af produktions-AI'en med lokale
+observationer for den menneskestyrede plads. De fire andre deltagere kører
+normalt. Angreb, KO, genstart, ressourcer, genveje og rundeslut er aktive.
+Automationen går videre efter to sekunders resultatvisning og starter en ny
+kamp ved behov. Der bruges ingen teleports, fixtures, beskyttelsesændringer
+eller global viden i denne måling. Haptik er slået fra.
+
+Build 15's friske fysiske iPhone Release-måling består: 900,003 sekunder,
+59,964 fps, p95 18 ms, værste frame 46,12 ms og ingen frames over 50 ms.
+864,69 sekunder var aktivt spil. Alle 181 temperaturmålinger var normale;
+samplet resident peak var 279,64 MiB. GPU- og GC-counters var utilgængelige.
+[Den aktuelle testrapport](TEST_REPORT.md) angiver det afsluttede resultat.
+Byg `build-ios-performance`, kompilér med Release i egen DerivedData, installér
+først efter afsluttet xcodebuild, og kør derefter:
+
+```sh
+python3 Tools/ios_test.py performance --device <id> --label <nyt-label> --seconds 900 --output .artifacts/<ny-mappe>
+```
+
+Rapport schema 2 / `model: competition-v2` (historik) eller `competition-v3` / `competition-v4` (nyere målinger) indeholder målte sekunder, aktive
+spille-/nedtællings-/resultatsekunder, framefordeling, CPU/GPU-counteres
+faktiske tilgængelighed, GC, samplet resident/Unity/managed memory, termisk
+status, alle fems genstandsbrug og repræsentative KO/hjerter. Ordenen er
+kim, putin, trump, xi, zelenskyy. `knockoutsByActor` i simulationsstatistikken
+tæller modtagne KO, ikke ekstra point eller drabspoint.
+
+`stabilityPassed` er afsluttet kørsel uden fejl/afbrydelse, mindst 80 % aktiv
+spilletid og genstandsbrug fra alle fem. Framebudget og hukommelsesudvikling
+skal desuden vurderes ud fra rapporten; PASS betyder ikke automatisk 60 fps
+eller dokumentation for fravær af alle lækager. USB-opladning kan ikke bruges
+til en konklusion om batteriforbrug. Normal Release udelader QA-klassen helt.
+
+## Tidligere målinger og oprindelig protokol
+
+Afsnittene nedenfor gælder historiske builds. De dokumenterer ikke den nye
+konkurrenceversion. Ny schema-2-evidens ligger med build 15-prefix i
+`docs/verification`.
+
+
 Målet er 60 fps på iPhone 13 og mindst 15 minutters sammenhængende afvikling.
 En afsluttet stabilitetstest er ikke i sig selv accept af billedhastighed,
 batteriforbrug, manuel styring eller de endelige karaktermodellers performance.

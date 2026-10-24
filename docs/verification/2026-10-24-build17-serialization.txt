@@ -1,0 +1,3 @@
+PASS actual Unity Newtonsoft JSON roundtrip, paused restore, queued automatic turn, no derived-property recursion, deterministic simulation, airborne banana/landing and version 1 migration.
+PASS N2 actual Unity Newtonsoft competition roundtrip/determinism, version/legacy rejection, atomic backup recovery, old-file preservation and exactly-once round result after disk reload.
+PASS competition-v4 combat and production shared-map/local-combat AI deterministic continuation with actual Unity Newtonsoft; v1 migration without legacy writes.

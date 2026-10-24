@@ -31,7 +31,7 @@ def main():
     assert not permissions, 'Unexpected permission prompts: ' + str(permissions)
     icon = args.project / 'Unity-iPhone/Images.xcassets/AppIcon.appiconset/Icon-Store-1024.png'
     assert struct.unpack('>IIBB', icon.read_bytes()[16:26]) == (1024, 1024, 8, 2), 'Store icon must be RGB without alpha'
-    forbidden = ('DevelopmentSmoke', 'DevelopmentLifecycle', 'DevelopmentPerformance')
+    forbidden = ('DevelopmentSmoke', 'DevelopmentLifecycle', 'DevelopmentPerformance', 'CompetitionAutomation')
     generated = list((args.project / 'Il2CppOutputProject/Source/il2cppOutput').glob('MazeOfEgos.Runtime*.cpp'))
     assert generated, 'No generated game assembly found'
     assert all(not any(name in path.read_text() for name in forbidden) for path in generated), 'Test harness leaked into normal Release'

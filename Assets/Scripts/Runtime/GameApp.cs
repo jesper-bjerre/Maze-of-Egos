@@ -44,7 +44,6 @@ namespace MazeOfEgos.Runtime
             TypeNameHandling = TypeNameHandling.None, MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
             MaxDepth = 64, ObjectCreationHandling = ObjectCreationHandling.Replace };
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
         {
             if (!FindFirstObjectByType<GameApp>()) new GameObject("Maze of Egos application").AddComponent<GameApp>();

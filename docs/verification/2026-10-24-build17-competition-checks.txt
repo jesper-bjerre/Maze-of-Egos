@@ -1,0 +1,41 @@
+PASS Round starts are random, distinct, separated, outside the centre and immediately traversable
+PASS Spawn lottery is human-independent and survives saving into the next round
+PASS Production hearts never replenish during a round and reset only at the next round
+PASS An exhausted board ends immediately, preserves scores and settles only once
+PASS The last collected heart awards its point before early round settlement
+PASS Consecutive short rounds keep their real cumulative tick and restore deterministically
+PASS V3 live and result saves migrate to V4 with original clocks and a fresh early-end policy
+PASS Round medals use round points, share ties and skip occupied ranks
+PASS Build 15 saves retain current positions and resources while upgrading future round rules
+PASS A corrupt spawn random stream rejects atomically
+PASS N2 starts five equal stable IDs, 240 ordinary hearts and an independent human ID
+PASS All five actors leave the central base through the same doors; classic access stays closed
+PASS Actor commands reject stale ticks and inactive phases without changing a match
+PASS All five use identical speed and retain a world-heading turn until the junction
+PASS Body contact has no damage, blocking or point penalty
+PASS Tunnel wrapping and corner traces never sweep diagonally or across the whole map
+PASS Each actor can collect an ordinary heart, regardless of human selection
+PASS A shared resource goes to the earliest contact, not the lowest ID
+PASS Exact contact ties vary by seed, never by human ID or snapshot array order
+PASS Contacts before the 120-second deadline score; exact-deadline heart/crate contacts do not
+PASS Legacy explicit profile: an empty board keeps playing, silently replenishes small groups, and ends only at 120 seconds
+PASS Legacy explicit profile: replenishment respects capacity, occupied cells, crates and moving-wall approaches
+PASS Every actor replaces a full inventory; a regenerated crate needs exit and re-entry
+PASS Item pool includes all five distinct types; legacy item values remain unchanged
+PASS Pause and resume countdown freeze round, resource, navigation and random clocks
+PASS Shared round trophies and banked points are settled exactly once across restore
+PASS Simultaneous third trophies use total points; later results never award again
+PASS Fewer trophies cannot win via points; full ties share the match
+PASS Any of the five IDs can win a whole match
+PASS Automatic shortcut cycle retains every phase and reserves every participant's current edge
+PASS Snapshots and public participant/resource copies never share mutable state
+PASS Invalid snapshots reject atomically, including corrupt identity, geometry, resources and ledger
+PASS Versioned JSON restore resumes the same seeded five-actor simulation and resources
+MATCH kim: 7 rounds, 840 simulated seconds, 733 collected hearts, winner putin
+MATCH putin: 6 rounds, 720 simulated seconds, 612 collected hearts, winner trump
+MATCH trump: 3 rounds, 360 simulated seconds, 300 collected hearts, winner putin
+MATCH xi: 7 rounds, 840 simulated seconds, 734 collected hearts, winner kim
+MATCH zelenskyy: 3 rounds, 360 simulated seconds, 302 collected hearts, winner trump
+PASS Five full scripted matches use real ticks, changing resources, wall cycles and each human ID
+
+34 competition checks passed, 0 failed

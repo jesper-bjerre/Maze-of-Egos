@@ -4,6 +4,42 @@ Start altid med [implementeringsplanens status](IMPLEMENTATION_PLAN.md).
 Kildekode, banedata, grafikreferencer, Unity-metadata og projektindstillinger er
 samlet i repositoryet. Unity-editoren, caches og builds er lokale værktøjer.
 
+## Aktuel videreførelse — konkurrencen i build 17
+
+Build 17 tilføjer klikbare karakterkort, vandballonradius på ét banefelt, tidlig rundeslut ved sidste hjerte og portrætter/navne/point i afgørelsen. Snapshot V4 migrerer V1/V2/V3 uden at flytte igangværende spillere og gemmer faktiske korte runders tid. Native tests og normal installation/opstart af build 17 består. Manuel gameplayaccept står åben. Se [testrapporten](TEST_REPORT.md) og den øverste status i
+[implementeringsplanen](IMPLEMENTATION_PLAN.md) for faktisk installeret build.
+
+Kør fra rodmappen på en ny pc/Mac med .NET 10:
+
+```sh
+dotnet run --project Tests/MazeOfEgos.Checks.csproj
+dotnet run --project Tests/MazeOfEgos.CompetitionChecks.csproj -- --report Logs/competition-matches.json
+dotnet run --project Tests/MazeOfEgos.ArenaChecks.csproj -- Logs/arena-matches.json
+python3 Tools/verify_repository.py
+python3 Tools/unity.py compile-check
+python3 Tools/unity.py serialization-check
+python3 Tools/unity.py validate
+```
+
+Arena-suiten gennemfører fem fulde kampe med produktions-AI og hver valgbare
+figur. Den samme fælles kort-/lokale kampobservationsmodel leverer menneskets automatiske input
+i testen. Dette er simuleret tid, ikke fysisk enhedsperformance.
+
+`CompetitionApp` starter nu spillet; det gamle `GameApp`-flow har ingen
+bootstrap. Classic Core og dens regressionstests er bevaret. Redigér balancen i
+`Assets/Resources/Data/competition_rules.json`. Kameraets delte udsnitsmodel
+ligger i `LocalArenaView` og bruges både af præsentation og AI-observationer.
+
+`competition-v1.json` er den selvstændige fil, nu med **snapshot-version 2**:
+combat, KO, navigation, alle seedstrømme, AI-hukommelse og regnskab. V1 fra N2
+migreres i hukommelsen. Klassiske `session-v1.json` og dens backup bevares.
+`settings-v1.json` bevarer eksisterende indstillinger og gammel highscore;
+highscore blandes ikke ind i kampens point. CONTINUE åbner i pause.
+
+Testflag er udeladt fra normal Release. Opt-in-smoke/lifecycle/performance
+bruger egne mapper under appens cache og rører ikke normale gemte kampe.
+Fysisk iPad er fravalgt denne omgang; ingen Apple-upload indgår.
+
 ## Unity Hub og licens
 
 1. Installér [Unity Hub](https://unity.com/download), og log ind med din egen
@@ -76,29 +112,20 @@ skabelonens cache med C# 9/.NET Standard 2.1. Det starter ikke editoren og bevis
 ikke, at rendering, sceneimport eller multi-touch fungerer. `serialization-check`
 bruger editorens Newtonsoft-bibliotek til et faktisk save/resume-rundløb.
 
-`smoke-mac` kræver den grafiske macOS-udviklingsbuild. Den starter appen med et
-udtrykkeligt testflag, sender syntetiske touchhændelser gennem Input System og
-kontrollerer menu, bevægelse/kamera/genstand samtidigt i begge layouts, slip,
-pause, indstillinger, lagring/genoptagelse (også midt i banankast), reduceret
-bevægelse, genstande, sikre vægskift, baseporte,
-levelskifte, Game Over og genstart. Flere forløb opsættes med kontrollerede
-snapshots; testen er ikke en normal hel spilrunde mod AI.
-Testdata gemmes i en særskilt midlertidig mappe; brugerens
-gemte spil ændres ikke. Putin-piloten kontrolleres også for skeletbevægelse,
-frosset pause, retning/skala, glid, reduceret bevægelse, power og retur.
-Fodhøjde under jagt samt profil og bagfra kontrolleres også. Resultat,
-`character-check.json` og 19 faktiske skærmbilleder ligger i
-`.artifacts/smoke-mac/`; runtime-loggen ligger i `Logs/runtime-smoke-mac.log`.
-Testkoden er kun med i editor- og udviklingsbuilds og kører kun med testflaget.
+`smoke-mac` kræver den grafiske udviklingsbuild og starter kun med et udtrykkeligt
+flag. Den bruger syntetisk touch i begge håndlayouts og kontrollerede kampfixtures:
+menu, figurvalg, lokalt kamera, alle fem genstande, pause/indstillinger,
+save/continue midt i kast, KO/genstart samt delte runde- og kampresultater.
+Der gemmes 14 faktiske framebuffer-PNG'er pr. Mac-format; iPhone har desuden
+gameplay i begge landscape-retninger og i alt 16 PNG'er. Testkoden bruger
+særskilt cache og rører ikke normale gemte kampe. Fuld AI og 900-sekunders
+performance er særskilte checks; syntetisk touch erstatter ikke fingerspil.
 
-Grundprofilen kan afprøves ved at sætte de tre uafhængige flag i
-`Assets/Resources/Data/rules.json` til false. Hovedoplevelsen har alle tre true.
-Et gemt spil bevarer sin egen regelprofil ved genoptagelse. Fra build 10 er
-snapshotindholdets version 3 med gangretning og svingkø. Version 1/2 migreres
-til automatisk gang på en lovlig midterlinje ved indlæsning.
-Filnavnet `session-v1.json` bevares med vilje, så eksisterende spil findes.
-Version 3 kan ikke åbnes i builds før 10. Kastets position og tider gemmes
-sammen med resten af runden; pause og nedtælling forbruger ingen kasttid.
+`CompetitionAutomation` findes kun i editor-, udviklings- og den særlige
+MAZE_PERFORMANCE-Release-build. Normal Release udelader klassen helt.
+`competition_rules.json` indeholder den nye balance. Den klassiske `rules.json`
+og `session-v1.json` med internt snapshot v3 er historiske, bevarede data;
+de er ikke konkurrenceflowets profil eller kampfil.
 
 ## Bygning til iPhone
 
@@ -123,7 +150,7 @@ xcrun devicectl device copy from --device "DIN_IPHONE" --domain-type appDataCont
 
 Kontrollér både **RUNTIME SMOKE PASSED** i loggen og `PASS` i det hentede
 `result.txt`; iOS kan afslutte processen med kode 0 også ved en testfejl.
-Testen sender syntetiske touchhændelser og gemmer 19 faktiske framebuffer-PNG'er.
+Testen sender syntetiske touchhændelser og gemmer 16 faktiske framebuffer-PNG'er.
 Den gemmer særskilte testdata og lukker processen efter kontrollen.
 Start derefter appen normalt fra hjemmeskærmen for manuel afprøvning.
 De første dokumenterede iPhone-skærmbilleder findes under `docs/verification/`.
@@ -131,7 +158,7 @@ De første dokumenterede iPhone-skærmbilleder findes under `docs/verification/`
 ## Performance og lang afprøvning
 
 Se [performancevejledningen](PERFORMANCE.md) for den særskilte Release-build,
-automatisk gennemspilning, isolerede testdata og eksport af JSON/CSV.
+automatisk gennemspilning, isolerede testdata og JSON med den fulde måleserie.
 En kort Mac-kørsel erstatter ikke den planlagte 15-minuttersmåling på iPhone.
 
 ## Redigér karakterpiloten
@@ -178,7 +205,8 @@ Læs den seneste status i planen, da ældre Build 1–6-beskrivelser ovenfor er
 historiske. N1 viser hele spilleren fra et lokalt, højt kamera og bruger
 joysticket efter gangene på skærmen. Build 14 har en markant tættere visning:
 9 meter i billedhøjde mod build 13's 17 meter. Det er stadig den gamle regelsimulation;
-konkurrence/figurvalg/angreb kommer i N2–N5. Den udvidede kontrol producerer
+konkurrence-Core er nu implementeret i N2; angreb følger N3 og figurvalg/
+integration følger N4. Den udvidede N1-kontrol producerer
 43 PNG'er pr. Mac-format og 47 på iPhone.
 Fire separate `*-character-check.json` indeholder fodmålingerne. Begge fysiske
 landscape-retninger og safe area testes på iOS; desktop springer netop den

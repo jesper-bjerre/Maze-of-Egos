@@ -19,7 +19,6 @@ namespace MazeOfEgos.Runtime
         private double pausedAt, power, boost, wall;
         private float backgroundAt;
         private bool ready, paused, resumed;
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Boot() { if (Enabled) new GameObject("Actual OS lifecycle check").AddComponent<DevelopmentLifecycle>(); }
         private IEnumerator Start()
         {

@@ -74,7 +74,7 @@ namespace MazeOfEgos.Runtime
             // A fixed voice budget prevents a dense heart trail from accumulating voices.
             AudioSource source = effects[voice++ % effects.Length]; source.Stop(); source.clip = clip; source.volume = volume; source.Play();
         }
-        private static AudioClip Tone(string name, float start, float end, float seconds)
+        internal static AudioClip Tone(string name, float start, float end, float seconds)
         {
             const int rate = 22050; var data = new float[(int)(rate * seconds)]; float phase = 0;
             for (int i = 0; i < data.Length; i++)
@@ -84,7 +84,7 @@ namespace MazeOfEgos.Runtime
             }
             AudioClip clip = AudioClip.Create(name, data.Length, 1, rate, false); clip.SetData(data, 0); return clip;
         }
-        private static AudioClip Melody()
+        internal static AudioClip Melody()
         {
             const int rate = 22050; const float beat = 0.32f;
             int[] notes = { 60, 64, 67, 64, 62, 65, 69, 65, 59, 62, 67, 62, 60, 64, 67, 72 };

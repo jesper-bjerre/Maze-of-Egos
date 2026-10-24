@@ -1,0 +1,28 @@
+{
+  "platform": "physical iPhone 13",
+  "width": 2532,
+  "height": 1170,
+  "passed": true,
+  "captureCount": 16,
+  "gameplayLandscapeLeftAndRight": true,
+  "nativeOrientationAndSafeAreaAssertionsPassed": true,
+  "result": "PASS competition-v2 RUNTIME SMOKE; real app flow, selected characters, combat, save/resume and English UI. Controlled fixtures and synthetic touch are distinct from live AI performance.",
+  "captureHashes": {
+    "01-menu.png": "a687f4508e19fdecf7c65b79f3f3e69a11c24420d49277a17572a958b58201df",
+    "02-help.png": "cb8b3345d912d91271c6c0b2e4f3b0abac025b1ce1ad026ba0b7d79fff7efaac",
+    "03-selection.png": "b7f8624f77a0a3502cf42cbb457cc7c816cd424e080b2b2ac7e2c378a81b844b",
+    "04-item-1.png": "52c7610283bcfa6dcb0af20fafc012b1b2b61ffa5c5f7e841caed3386fa811c3",
+    "05-item-2.png": "ebb3aa23079b655cd705b468c464e406361d4222c70ad50c1aab3b631c004dfb",
+    "06-item-3.png": "3170790538515ac36e7744365a8dd822c3f95f36ed5c9168c2b62a04e6473d94",
+    "07-item-4.png": "33faa012ccae42689062149400b6168cfd1ad248b894d00c7cc6a7896e98f5fd",
+    "08-item-5.png": "09bb81ce1ba652bbd5cbcae39ec63b2971db9b953fedf07147baa5f5887d847e",
+    "09-knockout.png": "43f7e73c16f36ca8f6f78ec13320d21ef8fa92aa4597449e3e4ab72852fa7539",
+    "10-settings.png": "ffdc18d0b5f4360ceef8a39eccd8af7ed88b5e93f856062c209d5481fe74e126",
+    "11-respawn.png": "b0ed5882d00dd79ffc359661232f82290de7e367f3e5d7b8c5dfdd4d5a2b748d",
+    "12-round-results.png": "270caaff5ca6e546a39b7751b5e6b2af0f8f90375321de906f0ecb43ac390008",
+    "13-match-results.png": "abd12ff3c163d41941f6db2a93096affcafab10ce0c7fb23c64c460881385617",
+    "14-LandscapeLeft.png": "c1cfa5f8554331d61fd78c6698a044065319a6050e8423a513b97893e203d8eb",
+    "14-LandscapeRight.png": "8bb5f5fae1a6b4fa7ab65254082d578c0c488e9f4bcf677e27e02e63b3d6f794",
+    "15-menu-after-match.png": "f997230e43ab5c624da398567b8ab3da9508ebb7b24bbb5d040bf377ab2edea4"
+  }
+}

@@ -29,9 +29,11 @@ namespace MazeOfEgos.Core
             if (heading < 0 || heading > 3) throw new ArgumentOutOfRangeException(nameof(heading));
             QueuedHeading = heading; Moving = true;
         }
-        public Point2 Advance(MazeMap map, Point2 position, double distance)
+        public Point2 Advance(MazeMap map, Point2 position, double distance, bool homeAccess = false,
+            System.Collections.Generic.List<CorridorSegment> trace = null)
         {
             const double epsilon = 1e-8;
+            double total = distance, travelled = 0;
             if (!Moving) return position;
             for (int step = 0; step < 8 && distance > epsilon; step++)
             {
@@ -41,36 +43,45 @@ namespace MazeOfEgos.Core
                 if (atCentre)
                 {
                     position = new Point2(Math.Round(position.x), Math.Round(position.y));
-                    if (QueuedHeading >= 0 && CanStep(map, position, QueuedHeading)) { Heading = QueuedHeading; QueuedHeading = -1; }
-                    if (!CanStep(map, position, Heading)) { break; }
+                    if (QueuedHeading >= 0 && CanStep(map, position, QueuedHeading, homeAccess)) { Heading = QueuedHeading; QueuedHeading = -1; }
+                    if (!CanStep(map, position, Heading, homeAccess)) { break; }
                 }
                 Point2 direction = Direction(Heading);
                 double coordinate = Heading % 2 == 0 ? position.y : position.x;
                 double sign = Heading == 0 || Heading == 3 ? -1 : 1;
                 double centre = sign > 0 ? Math.Floor(coordinate + epsilon) + 1 : Math.Ceiling(coordinate - epsilon) - 1;
                 double travel = Math.Min(distance, Math.Abs(centre - coordinate));
-                position = map.Wrap(position + direction * travel); distance -= travel;
+                Point2 next = position + direction * travel;
+                trace?.Add(new CorridorSegment(position, next, travelled / total, (travelled + travel) / total));
+                position = map.Wrap(next); distance -= travel; travelled += travel;
             }
             return position;
         }
-        private static bool CanStep(MazeMap map, Point2 position, int heading)
+        private static bool CanStep(MazeMap map, Point2 position, int heading, bool homeAccess)
         {
             Point2 next = position + Direction(heading);
-            return map.IsWalkable(new Cell((int)Math.Round(next.x), (int)Math.Round(next.y)));
+            return map.IsWalkable(new Cell((int)Math.Round(next.x), (int)Math.Round(next.y)), homeAccess);
         }
         public static Point2 AlignLegacy(MazeMap map, Point2 point, int heading)
         {
             Point2 aligned = heading % 2 == 0 ? new Point2(Math.Round(point.x), point.y) : new Point2(point.x, Math.Round(point.y));
             return map.CanOccupy(aligned) && HasLegalPosition(map, aligned, heading) ? map.Wrap(aligned) : map.NearestPlayerCell(point).Position;
         }
-        public static bool HasLegalPosition(MazeMap map, Point2 point, int heading)
+        public static bool HasLegalPosition(MazeMap map, Point2 point, int heading, bool homeAccess = false)
         {
             if (!OnCentreLine(point, heading)) return false;
             Cell a = new Cell((int)Math.Floor(point.x + 1e-8), (int)Math.Floor(point.y + 1e-8));
             Cell b = new Cell((int)Math.Ceiling(point.x - 1e-8), (int)Math.Ceiling(point.y - 1e-8));
-            return map.IsWalkable(a) && map.IsWalkable(b);
+            return map.IsWalkable(a, homeAccess) && map.IsWalkable(b, homeAccess);
         }
         public static bool OnCentreLine(Point2 point, int heading) =>
             Math.Abs((heading % 2 == 0 ? point.x : point.y) - Math.Round(heading % 2 == 0 ? point.x : point.y)) < 1e-7;
+    }
+    public readonly struct CorridorSegment
+    {
+        public readonly Point2 Start, End;
+        public readonly double From, Until;
+        public CorridorSegment(Point2 start, Point2 end, double from, double until)
+        { Start = start; End = end; From = from; Until = until; }
     }
 }

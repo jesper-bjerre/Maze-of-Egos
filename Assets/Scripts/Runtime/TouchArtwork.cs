@@ -6,7 +6,7 @@ namespace MazeOfEgos.Runtime
     // Vector artwork stays sharp at every device scale and needs no texture download.
     public sealed class TouchArtwork : MaskableGraphic
     {
-        public enum Shape { Base, Thumb, Button, Empty, Banana, Oil, Boost, Heart }
+        public enum Shape { Base, Thumb, Button, Empty, Banana, Oil, Boost, Heart, Balloon, Pie, Medal, Trophy }
         private Shape shape;
         public Shape Artwork { get => shape; set { if (shape == value) return; shape = value; SetVerticesDirty(); } }
         protected override void OnPopulateMesh(VertexHelper mesh)
@@ -31,6 +31,38 @@ namespace MazeOfEgos.Runtime
                 Disc(mesh, Vector2.zero, 45 * unit, color * new Color(0.85f, 0.78f, 0.53f, 0.75f));
                 Ring(mesh, 45 * unit, 1.8f * unit, color);
                 Disc(mesh, Vector2.zero, 7 * unit, color * new Color(1, 1, 1, 0.5f));
+            }
+            else if (shape == Shape.Medal)
+            {
+                Quad(mesh,new Vector2(-30,43)*unit,new Vector2(-7,43)*unit,new Vector2(13,-5)*unit,new Vector2(-9,-5)*unit,new Color(.22f,.55f,.85f));
+                Quad(mesh,new Vector2(7,43)*unit,new Vector2(30,43)*unit,new Vector2(9,-5)*unit,new Vector2(-13,-5)*unit,new Color(.32f,.67f,.95f));
+                Disc(mesh,new Vector2(0,-13)*unit,30*unit,color);
+                Disc(mesh,new Vector2(0,-13)*unit,22*unit,color*new Color(.82f,.82f,.82f));
+                Disc(mesh,new Vector2(0,-13)*unit,8*unit,color);
+            }
+            else if (shape == Shape.Trophy)
+            {
+                Quad(mesh,new Vector2(-27,34)*unit,new Vector2(27,34)*unit,new Vector2(17,-5)*unit,new Vector2(-17,-5)*unit,color);
+                Line(mesh,new Vector2(-27,24)*unit,new Vector2(-42,24)*unit,7*unit,color);
+                Line(mesh,new Vector2(-42,24)*unit,new Vector2(-31,-4)*unit,7*unit,color);
+                Line(mesh,new Vector2(-31,-4)*unit,new Vector2(-14,-8)*unit,7*unit,color);
+                Line(mesh,new Vector2(27,24)*unit,new Vector2(42,24)*unit,7*unit,color);
+                Line(mesh,new Vector2(42,24)*unit,new Vector2(31,-4)*unit,7*unit,color);
+                Line(mesh,new Vector2(31,-4)*unit,new Vector2(14,-8)*unit,7*unit,color);
+                Line(mesh,new Vector2(0,-5)*unit,new Vector2(0,-30)*unit,9*unit,color);
+                Line(mesh,new Vector2(-25,-34)*unit,new Vector2(25,-34)*unit,10*unit,color);
+            }
+            else if (shape == Shape.Balloon)
+            {
+                Disc(mesh, new Vector2(0, 5) * unit, 29 * unit, color);
+                Triangle(mesh, new Vector2(0,-24)*unit, new Vector2(-8,-37)*unit, new Vector2(8,-37)*unit,color);
+                Line(mesh,new Vector2(-12,14)*unit,new Vector2(-8,23)*unit,4*unit,Color.white);
+            }
+            else if (shape == Shape.Pie)
+            {
+                for (int i = -1; i <= 1; i++) Disc(mesh,new Vector2(i*18,5)*unit,18*unit,color);
+                Line(mesh,new Vector2(-35,-16)*unit,new Vector2(35,-16)*unit,8*unit,new Color(1,.65f,.25f)*color);
+                Disc(mesh,new Vector2(0,29)*unit,7*unit,new Color(1,.25f,.3f)*color);
             }
             else if (shape == Shape.Heart)
             {

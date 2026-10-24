@@ -1,0 +1,6 @@
+{
+  "consoleCompletionTokenPresent": false,
+  "durableCompletionValidated": true,
+  "launchLogBirthUtc": "2026-10-24T11:45:21.164601+00:00",
+  "validation": "Fresh competition-v2 Release report, native PASS, >=900 seconds, full monotonic samples, all five active, no error/interruption. CoreDevice console connection invalidated on termination; runner originally rejected missing final console token."
+}

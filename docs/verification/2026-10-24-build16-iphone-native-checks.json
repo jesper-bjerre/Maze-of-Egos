@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "model": "competition-v3",
+  "build": 16,
+  "physicalDevice": "iPhone 13",
+  "captures": [
+    "01-menu.png",
+    "02-help.png",
+    "03-selection.png",
+    "03b-random-start-minimap.png",
+    "04-item-1.png",
+    "05-item-2.png",
+    "06-item-3.png",
+    "07-item-4.png",
+    "08-item-5.png",
+    "09-knockout.png",
+    "10-settings.png",
+    "11-respawn.png",
+    "12-round-results.png",
+    "13-match-results.png",
+    "14-LandscapeLeft.png",
+    "14-LandscapeRight.png",
+    "15-menu-after-match.png"
+  ],
+  "result": "PASS competition-v3 RUNTIME SMOKE; real app flow, selected characters, combat, save/resume and English UI. Controlled fixtures and synthetic touch are distinct from live AI performance.",
+  "humanInput": "Synthetic simultaneous joystick/item touches in both hand layouts; not manual gameplay acceptance."
+}

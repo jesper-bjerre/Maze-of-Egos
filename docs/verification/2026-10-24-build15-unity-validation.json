@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-24",
+  "build": "15",
+  "unity": "6000.3.26f1",
+  "competitionValidationPassed": true,
+  "contentValidationPassed": true,
+  "characterValidationPassed": false,
+  "markers": [
+    "CHARACTER VALIDATION PASSED: putin, 17466 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: xi, 17466 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: kim, 17550 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: trump, 17994 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: zelenskyy, 16806 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: zelenskyy-hand, 1896 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: putin, 17466 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: xi, 17466 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: kim, 17550 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: trump, 17994 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: zelenskyy, 16806 triangles, 17 bones, seven clips, metre scale, URP.",
+    "CHARACTER VALIDATION PASSED: zelenskyy-hand, 1896 triangles, 17 bones, seven clips, metre scale, URP.",
+    "COMPETITION VALIDATION PASSED: five stable IDs, shared navigation, combat/AI rules, v2 snapshot and actual Unity JSON.",
+    "CONTENT VALIDATION PASSED: 244 hearts, save roundtrip, five references, playable scene."
+  ],
+  "note": "244 is the preserved classic source topology. Competition starts with 240 ordinary hearts; its four power hearts are removed."
+}
